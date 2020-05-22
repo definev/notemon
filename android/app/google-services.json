@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "409676819250",
+    "firebase_url": "https://gottask-take-note-and-do.firebaseio.com",
+    "project_id": "gottask-take-note-and-do",
+    "storage_bucket": "gottask-take-note-and-do.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:409676819250:android:299f39afa4ce276599852b",
+        "android_client_info": {
+          "package_name": "com.definev_.gottask"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "409676819250-5rpfo4vcl1cq8j85n5s1vd8804rjoqbq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.definev_.gottask",
+            "certificate_hash": "3238d9427fbaad1cc63185bd7d8c39e06c6afa92"
+          }
+        },
+        {
+          "client_id": "409676819250-i9q8ak8mf1f2at6i31f5vr05et25nss1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-HAUAbe3Ejk1ipwALFULeM4nvyATXHs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "409676819250-i9q8ak8mf1f2at6i31f5vr05et25nss1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-7224518266029611~6904469212"
+    }
+  ],
+  "configuration_version": "1"
+}
