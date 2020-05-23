@@ -5,6 +5,8 @@ import 'package:bloc/bloc.dart';
 import 'package:gottask/database/todayTaskDatabase.dart';
 import 'package:gottask/database/todayTaskTable.dart';
 import 'package:gottask/models/today_task.dart';
+import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/utils.dart';
 import 'package:meta/meta.dart';
 
 part 'todo_event.dart';
@@ -12,18 +14,23 @@ part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   List<TodayTask> todoList = [];
+  FirebaseRepository _repository = FirebaseRepository();
 
   @override
   TodoState get initialState => TodoInitial();
 
   Future<void> _initTodayBloc() async {
     await TodayTaskDatabase.instance.init();
-    todoList = await TodayTaskTable().selectAllTodo();
+    todoList = await TodayTaskTable.selectAllTodo();
+    checkConnection(
+        () async => await _repository.uploadAllTodoToFirebase(todoList));
   }
 
   Future<void> _addEvent(TodayTask todayTask) async {
-    await TodayTaskTable().insertTodo(todayTask);
-    todoList = await TodayTaskTable().selectAllTodo();
+    await TodayTaskTable.insertTodo(todayTask);
+    todoList = await TodayTaskTable.selectAllTodo();
+    checkConnection(
+        () async => await _repository.updateTodoToFirebase(todayTask));
   }
 
   Future<void> _deleteEvent(TodayTask todayTask) async {
@@ -39,13 +46,17 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       var audioFile = File(todayTask.audioPath);
       audioFile.deleteSync(recursive: true);
     }
-    await TodayTaskTable().deleteTodo(todayTask.id);
-    todoList = await TodayTaskTable().selectAllTodo();
+    await TodayTaskTable.deleteTodo(todayTask.id);
+    todoList = await TodayTaskTable.selectAllTodo();
+    checkConnection(
+        () async => await _repository.updateTodoToFirebase(todayTask));
   }
 
-  Future<void> _editEvent(TodayTask newTodayTask) async {
-    await TodayTaskTable().updateTodo(newTodayTask);
-    todoList = await TodayTaskTable().selectAllTodo();
+  Future<void> _editEvent(TodayTask todayTask) async {
+    await TodayTaskTable.updateTodo(todayTask);
+    todoList = await TodayTaskTable.selectAllTodo();
+    checkConnection(
+        () async => await _repository.updateTodoToFirebase(todayTask));
   }
 
   @override

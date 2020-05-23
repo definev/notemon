@@ -787,7 +787,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       if (!isLeft)
                         Material(
                           child: Text(
-                            _allPokemonBloc.allPokemonStateList
+                            _allPokemonBloc.pokemonStateList
                                 .collectedPokemon(),
                             style: TextStyle(
                               fontFamily: 'Alata',
@@ -814,7 +814,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       if (isLeft)
                         Material(
                           child: Text(
-                            _allPokemonBloc.allPokemonStateList
+                            _allPokemonBloc.pokemonStateList
                                 .collectedPokemon(),
                             style: TextStyle(
                               fontFamily: 'Alata',

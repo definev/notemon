@@ -51,19 +51,29 @@ class AuthServices {
 
       // Return current user
       FirebaseUser _user = _authResult.user;
+      updateUserData(_user);
       return _user;
     } catch (e) {
       print(e);
-      throw Exception("Failed to connect with google :(");
+      return null;
     }
   }
 
-  Future<void> updateUserData(FirebaseUser user) {
+  Future<void> updateUserData(FirebaseUser user) async {
     // Save time when user sign in in to the app
-    DocumentReference historyRef =
-        _firestore.collection('history').document(user.uid);
-    return historyRef.setData(
-      {'uid': user.uid, 'lastActive': DateTime.now()},
+    await _firestore.collection('users').document(user.uid).setData(
+      {
+        'uid': user.uid,
+        'email': user.email,
+        'photoUrl': user.photoUrl,
+      },
+      merge: true,
+    );
+    await _firestore.collection('history').document(user.uid).setData(
+      {
+        'uid': user.uid,
+        'lastActive': DateTime.now(),
+      },
       merge: true,
     );
   }

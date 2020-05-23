@@ -102,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen>
                             onTap: () async {
                               if (widget.isInit == null) {
                                 await updateStartState();
-                                Navigator.popAndPushNamed(context, '/home');
+                                Navigator.popAndPushNamed(context, '/signIn');
                               } else {
                                 Navigator.pop(context);
                               }

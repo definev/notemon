@@ -8,6 +8,7 @@ import 'package:gottask/bloc/habit/bloc/habit_bloc.dart';
 import 'package:gottask/bloc/star/bloc/star_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/screens/home_screen.dart';
+import 'package:gottask/screens/sign_in_sign_up_screen/sign_in_screen.dart';
 import 'package:gottask/screens/splash_screen/splash_screen.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isStart;
+  bool _isLogin;
 
   @override
   void initState() {
@@ -28,7 +30,18 @@ class _MyAppState extends State<MyApp> {
 
   isStart() async {
     _isStart = await currentStartState();
+    _isLogin = await currentLoginState();
     setState(() {});
+  }
+
+  String getRoute() {
+    if (_isLogin == false && _isStart == false) {
+      return '/splash';
+    } else if (_isLogin == false) {
+      return '/signIn';
+    } else if (_isStart == true) {
+      return '/home';
+    }
   }
 
   @override
@@ -61,7 +74,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
               child: MaterialApp(
-                title: 'Gottash',
+                title: 'Notemon',
                 debugShowCheckedModeBanner: false,
                 theme: ThemeData(
                   canvasColor: Colors.transparent,
@@ -73,10 +86,11 @@ class _MyAppState extends State<MyApp> {
                   accentColor: TodoColors.deepPurple,
                   primaryColor: TodoColors.deepPurple,
                 ),
-                initialRoute: _isStart ? '/home' : '/splash',
+                initialRoute: getRoute(),
                 routes: {
                   '/splash': (context) => SplashScreen(),
                   '/home': (context) => HomeScreen(),
+                  '/signIn': (context) => SignInScreen(),
                 },
               ),
             )

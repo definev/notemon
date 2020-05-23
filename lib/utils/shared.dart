@@ -15,6 +15,20 @@ Future<bool> updateStartState() async {
   return prefs.getBool(key);
 }
 
+Future<bool> currentLoginState() async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = "my_login_key";
+  final res = prefs.getBool(key) == null ? false : prefs.getBool(key);
+  return res;
+}
+
+Future<bool> updateLoginState(bool value) async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = "my_login_key";
+  prefs.setBool(key, value);
+  return prefs.getBool(key);
+}
+
 Future<int> currentFavouritePokemon() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_favourite_pokemon_key";

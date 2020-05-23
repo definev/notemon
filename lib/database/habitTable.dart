@@ -24,7 +24,7 @@ class HabitTable {
       DROP TABLE IF EXISTS $TABLE_NAME
   ''';
 
-  Future<int> insertHabit(Habit habit) {
+  static Future<int> insertHabit(Habit habit) {
     Database database = HabitDatabase.instance.database;
     return database.insert(
       TABLE_NAME,
@@ -33,7 +33,7 @@ class HabitTable {
     );
   }
 
-  Future<int> deleteHabit(Habit habit) {
+  static Future<int> deleteHabit(Habit habit) {
     Database database = HabitDatabase.instance.database;
     return database.delete(
       TABLE_NAME,
@@ -42,7 +42,7 @@ class HabitTable {
     );
   }
 
-  Future<int> updateHabit(Habit habit) {
+  static Future<int> updateHabit(Habit habit) {
     final Database db = HabitDatabase.instance.database;
     print('update ${habit.toMap().toString()}');
     return db.update(
@@ -53,7 +53,7 @@ class HabitTable {
     );
   }
 
-  Future<Habit> selectHabit(int index) async {
+  static Future<Habit> selectHabit(int index) async {
     final Database db = HabitDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       TABLE_NAME,
@@ -85,7 +85,7 @@ class HabitTable {
     );
   }
 
-  Future<List<Habit>> selectAllHabit() async {
+  static Future<List<Habit>> selectAllHabit() async {
     final Database db = HabitDatabase.instance.database;
     final List<Map<String, dynamic>> maps = await db.query('$TABLE_NAME');
     if (maps.length == 0) return [];

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import "package:firebase_admob/firebase_admob.dart";
 import "package:flutter/material.dart";
 
@@ -61,6 +63,17 @@ String durationFormatByDuration(Duration duration) {
   }
 
   return "${twoDigits(duration.inHours)} : ${twoDigits(duration.inMinutes.remainder(60))} : ${twoDigits(duration.inSeconds.remainder(60))}";
+}
+
+void checkConnection(VoidCallback command) async {
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      command();
+    }
+  } on SocketException catch (_) {
+    print('not connected');
+  }
 }
 
 int getTaskComplete(List<bool> isDoneAchieve) {

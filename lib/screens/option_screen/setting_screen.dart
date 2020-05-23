@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/hand_side/bloc/hand_side_bloc.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:gottask/screens/option_screen/about_me_screen.dart';
@@ -80,46 +81,74 @@ class _SettingScreenState extends State<SettingScreen>
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Handside control ',
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Handside control ',
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    ToggleButtons(
+                      isSelected:
+                          _leftOrRight != null ? _leftOrRight : [false, false],
+                      onPressed: (index) {
+                        if (index == 0) {
+                          _handSide = HandSide.Left;
+                          _refreshLeftOrRight();
+                          _handsideBloc
+                              .add(HandSideChanged(handSide: _handSide));
+                        } else {
+                          _handSide = HandSide.Right;
+                          _refreshLeftOrRight();
+                          _handsideBloc
+                              .add(HandSideChanged(handSide: _handSide));
+                        }
+                      },
+                      children: <Widget>[
+                        Text('L'),
+                        Text('R'),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: () {
+                  AuthServices _auth = AuthServices();
+                  _auth.signOut().then((value) async {
+                    updateLoginState(false);
+                    Navigator.pushNamed(context, '/signIn');
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    'Sign out',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontFamily: 'Alata',
+                      color: Colors.red,
+                      fontSize: 18,
                     ),
                   ),
-                  ToggleButtons(
-                    isSelected:
-                        _leftOrRight != null ? _leftOrRight : [false, false],
-                    onPressed: (index) {
-                      if (index == 0) {
-                        _handSide = HandSide.Left;
-                        _refreshLeftOrRight();
-                        _handsideBloc.add(HandSideChanged(handSide: _handSide));
-                      } else {
-                        _handSide = HandSide.Right;
-                        _refreshLeftOrRight();
-                        _handsideBloc.add(HandSideChanged(handSide: _handSide));
-                      }
-                    },
-                    children: <Widget>[
-                      Text('L'),
-                      Text('R'),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

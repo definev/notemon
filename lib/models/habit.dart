@@ -23,8 +23,7 @@ class Habit {
     @required this.isDoneAchieve,
     @required this.catagories,
   });
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => {
       'id': id,
       'icon': icon,
       'habitName': habitName,
@@ -36,5 +35,4 @@ class Habit {
       'isDoneAchieve': isDoneAchieve,
       'catagories': catagories,
     };
-  }
 }

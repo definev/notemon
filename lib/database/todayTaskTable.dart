@@ -19,7 +19,7 @@ class TodayTaskTable {
       DROP TABLE IF EXISTS $TABLE_NAME
   ''';
 
-  Future<int> insertTodo(TodayTask todayTask) {
+  static Future<int> insertTodo(TodayTask todayTask) {
     final Database db = TodayTaskDatabase.instance.database;
     print('insert ${todayTask.toMap().toString()}');
 
@@ -30,7 +30,7 @@ class TodayTaskTable {
     );
   }
 
-  Future<int> deleteTodo(int index) {
+  static Future<int> deleteTodo(int index) {
     final Database db = TodayTaskDatabase.instance.database;
     print('delete!');
     return db.delete(
@@ -40,7 +40,7 @@ class TodayTaskTable {
     );
   }
 
-  Future<int> updateTodo(TodayTask todayTask) {
+  static Future<int> updateTodo(TodayTask todayTask) {
     final Database db = TodayTaskDatabase.instance.database;
     print('update checked/edit ${todayTask.toMap().toString()}');
     return db.update(
@@ -51,7 +51,7 @@ class TodayTaskTable {
     );
   }
 
-  Future<TodayTask> selectTodo(int index) async {
+  static Future<TodayTask> selectTodo(int index) async {
     final Database db = TodayTaskDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       TABLE_NAME,
@@ -78,7 +78,7 @@ class TodayTaskTable {
     );
   }
 
-  Future<List<TodayTask>> selectAllTodo() async {
+  static Future<List<TodayTask>> selectAllTodo() async {
     final Database db = TodayTaskDatabase.instance.database;
     final List<Map<String, dynamic>> maps = await db.query('$TABLE_NAME');
     if (maps.length == 0) return [];
