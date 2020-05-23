@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:gottask/database/pokemonStateDatabase.dart';
-import 'package:gottask/database/pokemonStateTable.dart';
+import 'package:gottask/database/pokemon_state_database.dart';
+import 'package:gottask/database/pokemon_state_table.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/utils.dart';
 import 'package:meta/meta.dart';
 
 part 'all_pokemon_event.dart';
@@ -21,12 +22,17 @@ class AllPokemonBloc extends Bloc<AllPokemonEvent, AllPokemonState> {
   Future<void> _initAllPokemonBloc() async {
     await PokemonStateDatabase.instance.init();
     pokemonStateList = await PokemonStateTable.selectAllPokemonState();
-    _repository.uploadAllPokemonStateToFirebase(pokemonStateList);
+    if (await checkConnection() == true) {
+      await _repository.uploadAllPokemonStateToFirebase(pokemonStateList);
+    }
   }
 
   Future<void> _updateEvent(PokemonState pokemonState) async {
     await PokemonStateTable.updatePokemonState(pokemonState);
     pokemonStateList = await PokemonStateTable.selectAllPokemonState();
+    if (await checkConnection() == true) {
+      await _repository.updatePokemonStateToFirebase(pokemonState);
+    }
   }
 
   @override

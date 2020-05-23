@@ -1,19 +1,20 @@
-import 'package:gottask/database/habitTable.dart';
+import 'package:gottask/database/todo_table.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class HabitDatabase {
-  static const DB_NAME = 'habitdb.db';
+class TodoDatabase {
+  static const DB_NAME = 'Tododb.db';
   static const DB_VERSION = 1;
   static Database _database;
 
-  HabitDatabase._internal();
-  static final HabitDatabase instance = HabitDatabase._internal();
+  TodoDatabase._internal();
+  static final TodoDatabase instance = TodoDatabase._internal();
 
   Database get database => _database;
 
-  static const initScripts = [HabitTable.CREATE_TABLE_QUERY];
+  static const initScripts = [TodoTable.CREATE_TABLE_QUERY];
   static const migrationScripts = [];
+
   init() async {
     _database = await openDatabase(
       join(await getDatabasesPath(), DB_NAME),

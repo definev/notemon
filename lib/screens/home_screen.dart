@@ -7,19 +7,19 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
-import 'package:gottask/bloc/do_del_done_habit/bloc/do_del_done_habit_bloc.dart';
+import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
 import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
 import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
-import 'package:gottask/bloc/habit/bloc/habit_bloc.dart';
 import 'package:gottask/bloc/hand_side/bloc/hand_side_bloc.dart';
 import 'package:gottask/bloc/star/bloc/star_bloc.dart';
+import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/components/habit_tile.dart';
 import 'package:gottask/components/today_task_tile.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/screens/habit_screen/habit_export.dart';
 import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
-import 'package:gottask/screens/todo_screen/add_today_task_screen.dart';
+import 'package:gottask/screens/task_screen/task_export.dart';
+import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -34,16 +34,15 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isInit = false;
 
   TodoBloc _todoBloc;
-  HabitBloc _habitBloc;
-  DoDelDoneHabitBloc _doDelDoneHabitBloc;
+  TaskBloc _taskBloc;
+  DoDelDoneTaskBloc _doDelDoneTaskBloc;
   DoDelDoneTodoBloc _doDelDoneTodoBloc;
   AllPokemonBloc _allPokemonBloc;
   StarBloc _starBloc;
   FavouritePokemonBloc _favouritePokemonBloc;
 
   void _modalBottomSheetMenu() {
-    showModalBottomSheet(
-        context: context, builder: (_) => AddTodayTaskScreen());
+    showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
   }
 
   @override
@@ -56,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     _todoBloc = findBloc<TodoBloc>();
-    _habitBloc = findBloc<HabitBloc>();
-    _doDelDoneHabitBloc = findBloc<DoDelDoneHabitBloc>();
+    _taskBloc = findBloc<TaskBloc>();
+    _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
     _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
     _allPokemonBloc = findBloc<AllPokemonBloc>();
     _starBloc = findBloc<StarBloc>();
@@ -65,8 +64,8 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (_isInit == false) {
       _todoBloc.add(InitTodoEvent());
-      _habitBloc.add(InitHabitEvent());
-      _doDelDoneHabitBloc.add(InitDoDelDoneHabitEvent());
+      _taskBloc.add(InitTaskEvent());
+      _doDelDoneTaskBloc.add(InitDoDelDoneTaskEvent());
       _doDelDoneTodoBloc.add(InitDoDelDoneTodoEvent());
       _allPokemonBloc.add(InitAllPokemonEvent());
       _starBloc.add(InitStarBloc());
@@ -100,12 +99,12 @@ class _HomeScreenState extends State<HomeScreen>
                 children: <Widget>[
                   _buildHeader(),
                   _buildPetCollection(),
-                  _buildHabitTitle(),
-                  _buildHabit(),
+                  _buildTaskTitle(),
+                  _buildTask(),
                   _buildTodaysTaskHeader(),
                 ],
               ),
-              _buildTodayTask(),
+              _buildTodo(),
             ],
           ),
         ),
@@ -113,12 +112,12 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildHabit() {
-    return BlocBuilder<HabitBloc, HabitState>(
-      bloc: _habitBloc,
+  Widget _buildTask() {
+    return BlocBuilder<TaskBloc, TaskState>(
+      bloc: _taskBloc,
       builder: (context, state) {
-        if (state is HabitLoaded) {
-          if (state.habit.isEmpty) {
+        if (state is TaskLoaded) {
+          if (state.task.isEmpty) {
             return SizedBox(
               height: kListViewHeight + 2,
               width: double.infinity,
@@ -137,17 +136,17 @@ class _HomeScreenState extends State<HomeScreen>
                 width: double.infinity,
                 child: ListView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: state.habit.length + 1,
+                  itemCount: state.task.length + 1,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    if (index == state.habit.length) {
+                    if (index == state.task.length) {
                       return Center(
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddHabitScreen(),
+                                builder: (context) => AddTaskScreen(),
                               ),
                             );
                           },
@@ -174,8 +173,8 @@ class _HomeScreenState extends State<HomeScreen>
                     }
 
                     return Center(
-                      child: HabitTile(
-                        habit: state.habit[index],
+                      child: TaskTile(
+                        task: state.task[index],
                         key: UniqueKey(),
                       ),
                     );
@@ -410,7 +409,8 @@ class _HomeScreenState extends State<HomeScreen>
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => BlocProvider<HandSideBloc>.value(
+                                builder: (_) =>
+                                    BlocProvider<HandSideBloc>.value(
                                   value: HandSideBloc(),
                                   child: AllPokemonScreen(
                                     currentPokemon: index,
@@ -520,7 +520,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
 
-  Widget _buildTodayTask() => Expanded(
+  Widget _buildTodo() => Expanded(
         child: BlocBuilder<TodoBloc, TodoState>(
           bloc: _todoBloc,
           builder: (context, state) {
@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen>
                   physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.zero,
                   itemCount: state.todo.length,
-                  itemBuilder: (context, index) => TodayTaskTile(
+                  itemBuilder: (context, index) => TodoTile(
                     task: state.todo[index],
                     index: index,
                     key: UniqueKey(),
@@ -561,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
 
-  Widget _buildHabitTitle() => Padding(
+  Widget _buildTaskTitle() => Padding(
         padding: const EdgeInsets.only(
           left: 20,
           top: 10,
@@ -594,7 +594,7 @@ class _HomeScreenState extends State<HomeScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailHabitScreen(),
+                          builder: (context) => DetailTaskScreen(),
                         ),
                       );
                     },
@@ -616,7 +616,7 @@ class _HomeScreenState extends State<HomeScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddHabitScreen(),
+                          builder: (context) => AddTaskScreen(),
                         ),
                       );
                     },

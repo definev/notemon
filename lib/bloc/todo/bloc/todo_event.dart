@@ -5,26 +5,26 @@ abstract class TodoEvent {}
 
 class InitTodoEvent extends TodoEvent {}
 
-class AddTodayTaskEvent extends TodoEvent {
-  final TodayTask todayTask;
+class AddTodoEvent extends TodoEvent {
+  final Todo todo;
 
-  AddTodayTaskEvent({this.todayTask});
+  AddTodoEvent({this.todo});
 }
 
-class DeleteTodayTaskEvent extends TodoEvent {
-  final TodayTask todayTask;
+class DeleteTodoEvent extends TodoEvent {
+  final Todo todo;
 
-  DeleteTodayTaskEvent({this.todayTask});
+  DeleteTodoEvent({this.todo});
 }
 
-class CheckedTodayTaskEvent extends TodoEvent {
-  final TodayTask todayTask;
+class CheckedTodoEvent extends TodoEvent {
+  final Todo todo;
 
-  CheckedTodayTaskEvent({this.todayTask});
+  CheckedTodoEvent({this.todo});
 }
 
-class EditTodayTaskEvent extends TodoEvent {
-  final TodayTask todayTask;
+class EditTodoEvent extends TodoEvent {
+  final Todo todo;
 
-  EditTodayTaskEvent({this.todayTask});
+  EditTodoEvent({this.todo});
 }

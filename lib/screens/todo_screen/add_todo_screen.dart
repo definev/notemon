@@ -8,28 +8,28 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
+import 'package:gottask/models/do_del_done_todo.dart';
+import 'package:gottask/models/todo.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/models/do_del_done_task.dart';
-import 'package:gottask/models/today_task.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:path_provider/path_provider.dart';
 
-class AddTodayTaskScreen extends StatefulWidget {
+class AddTodoScreen extends StatefulWidget {
   @override
-  _AddTodayTaskScreenState createState() => _AddTodayTaskScreenState();
+  _AddTodoScreenState createState() => _AddTodoScreenState();
 }
 
-class _AddTodayTaskScreenState extends State<AddTodayTaskScreen>
+class _AddTodoScreenState extends State<AddTodoScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   AnimationController animationController;
   Animation animation;
   Animation opacityAnimation;
   int indexColor = 0;
 
-  final TextEditingController _todayTaskEditting = TextEditingController();
+  final TextEditingController _todoEditting = TextEditingController();
   bool isExpandCamera = false;
   bool _isRecording = false;
   bool isCreate = false;
@@ -835,7 +835,7 @@ class _AddTodayTaskScreenState extends State<AddTodayTaskScreen>
           ),
         ),
         child: TextField(
-          controller: _todayTaskEditting,
+          controller: _todoEditting,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'To-do name',
@@ -854,11 +854,11 @@ class _AddTodayTaskScreenState extends State<AddTodayTaskScreen>
         onTap: () async {
           if (_isRecording == false) {
             isCreate = true;
-            int id = await saveTodayTaskID();
+            int id = await saveTodoID();
             _todoBloc.add(
-              AddTodayTaskEvent(
-                todayTask: TodayTask(
-                  content: _todayTaskEditting.text,
+              AddTodoEvent(
+                todo: Todo(
+                  content: _todoEditting.text,
                   id: id,
                   isDone: false,
                   images: images.toString(),

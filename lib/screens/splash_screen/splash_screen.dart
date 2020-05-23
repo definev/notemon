@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
                       )
                     : Material(
                         child: Container(
-                          width: MediaQuery.of(context).size.width,
+                          width: 200,
                           margin: const EdgeInsets.all(20),
                           padding: const EdgeInsets.symmetric(
                             vertical: 20,

@@ -40,8 +40,8 @@ class TodoColors {
 List<String> splashScreen = [
   "assets/splash/screen_home.jpg",
   "assets/splash/screen_add_todo.png",
-  "assets/splash/screen_habit.jpg",
-  "assets/splash/screen_habit.png",
+  "assets/splash/screen_task.jpg",
+  "assets/splash/screen_task.png",
   "assets/splash/screen_pokemon_all.jpg",
 ];
 
@@ -65,14 +65,15 @@ String durationFormatByDuration(Duration duration) {
   return "${twoDigits(duration.inHours)} : ${twoDigits(duration.inMinutes.remainder(60))} : ${twoDigits(duration.inSeconds.remainder(60))}";
 }
 
-void checkConnection(VoidCallback command) async {
+Future<bool> checkConnection() async {
   try {
     final result = await InternetAddress.lookup('google.com');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-      command();
+      return true;
     }
+    return false;
   } on SocketException catch (_) {
-    print('not connected');
+    return false;
   }
 }
 
@@ -1426,7 +1427,7 @@ List<Map<String, dynamic>> pokedex = [
       "Rock",
     ],
     "introduction":
-        """Wingull has the habit of carrying prey and valuables in its beak and hiding them in all sorts of locations. This Pokémon rides the winds and flies as if it were skating across the sky.""",
+        """Wingull has the Task of carrying prey and valuables in its beak and hiding them in all sorts of locations. This Pokémon rides the winds and flies as if it were skating across the sky.""",
   },
   {
     "name": "Yanma",

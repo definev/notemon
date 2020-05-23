@@ -8,14 +8,14 @@ import 'package:flutter_incall/flutter_incall.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/do_del_done_habit/bloc/do_del_done_habit_bloc.dart';
-import 'package:gottask/bloc/habit/bloc/habit_bloc.dart';
+import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
 import 'package:gottask/bloc/star/bloc/star_bloc.dart';
+import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/components/countdown_clock.dart';
+import 'package:gottask/models/do_del_done_task.dart';
+import 'package:gottask/models/habit.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/models/do_del_done_habit.dart';
-import 'package:gottask/models/habit.dart';
 import 'package:icons_helper/icons_helper.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:vibration/vibration.dart';
@@ -28,14 +28,14 @@ class MyBehavior extends ScrollBehavior {
   }
 }
 
-class HabitScreen extends StatefulWidget {
-  final Habit habit;
-  HabitScreen({this.habit});
+class TaskScreen extends StatefulWidget {
+  final Task task;
+  TaskScreen({this.task});
   @override
-  _HabitScreenState createState() => _HabitScreenState();
+  _TaskScreenState createState() => _TaskScreenState();
 }
 
-class _HabitScreenState extends State<HabitScreen> with BlocCreator {
+class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   List<String> _achievelists;
   Duration _timer;
   int _percent;
@@ -48,8 +48,8 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
   SlideCountdownClock countdownClock;
   TimerState _timerState = TimerState.PAUSE;
 
-  HabitBloc _habitBloc;
-  DoDelDoneHabitBloc _doDelDoneHabitBloc;
+  TaskBloc _taskBloc;
+  DoDelDoneTaskBloc _doDelDoneTaskBloc;
   StarBloc _starBloc;
   TextEditingController _achieveTextController = TextEditingController();
 
@@ -79,7 +79,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
 
   _onBackPress() async {
     //Back and update data
-    List<String> durTimer = widget.habit.timer.split(':');
+    List<String> durTimer = widget.task.timer.split(':');
     List<String> durTimerSecond = durTimer[2].split('.');
     if (_timerState == TimerState.PLAY)
       setState(() {
@@ -93,17 +93,17 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
       seconds: int.parse(durTimerSecond[0]),
     );
     Duration _completeTimer = _oldTimer - _timer;
-    _habitBloc.add(
-      UpdateHabitEvent(
-        Habit(
+    _taskBloc.add(
+      UpdateTaskEvent(
+        Task(
           achieve: _achievelists.toString(),
-          color: widget.habit.color,
+          color: widget.task.color,
           catagories: _catagoryItems.toString(),
           completeTimer: _completeTimer.toString(),
-          habitName: widget.habit.habitName,
-          id: widget.habit.id,
+          taskName: widget.task.taskName,
+          id: widget.task.id,
           icon: _iconIndex,
-          timer: widget.habit.timer,
+          timer: widget.task.timer,
           isDoneAchieve: _isDoneAchieve.toString(),
           percent: _percent,
         ),
@@ -135,7 +135,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         style: TextStyle(
           fontFamily: 'Alata',
           fontSize: 30,
-          color: Color(int.parse(colors[widget.habit.color])),
+          color: Color(int.parse(colors[widget.task.color])),
         ),
       );
     } else {
@@ -143,7 +143,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         _getTimerState(),
         color: Color(
           int.parse(
-            colors[widget.habit.color],
+            colors[widget.task.color],
           ),
         ),
         size: 50,
@@ -158,8 +158,8 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
     myInterstitial = _interstitialAds();
 
     myFocusNode = FocusNode();
-    var _rawCatagoryItems = widget.habit.catagories
-        .substring(1, widget.habit.catagories.length - 1)
+    var _rawCatagoryItems = widget.task.catagories
+        .substring(1, widget.task.catagories.length - 1)
         .split(', ');
     for (int i = 0; i < _rawCatagoryItems.length; i++) {
       if (_rawCatagoryItems[i] == 'false') {
@@ -170,11 +170,11 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
     }
 
     String _rawList =
-        widget.habit.achieve.substring(1, widget.habit.achieve.length - 1);
+        widget.task.achieve.substring(1, widget.task.achieve.length - 1);
     _achievelists = _rawList.split(', ');
     if (_achievelists[0] == '') _achievelists = [];
-    List<String> durTimer = widget.habit.timer.split(':');
-    List<String> durCompleteTimer = widget.habit.completeTimer.split(':');
+    List<String> durTimer = widget.task.timer.split(':');
+    List<String> durCompleteTimer = widget.task.completeTimer.split(':');
     List<String> durTimerSecond = durTimer[2].split('.');
     List<String> durCompleteTimerSecond = durCompleteTimer[2].split('.');
     _timer = Duration(
@@ -188,8 +188,8 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         int.parse(
           durTimerSecond[0],
         );
-    _percent = widget.habit.percent;
-    _iconIndex = widget.habit.icon;
+    _percent = widget.task.percent;
+    _iconIndex = widget.task.icon;
     if (_timer == Duration(hours: 0, minutes: 0, seconds: 0)) {
       _timerState = TimerState.DONE;
     }
@@ -238,17 +238,17 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                     seconds: int.parse(durTimerSecond[0]),
                   );
                   Duration _completeTimer = _oldTimer - _timer;
-                  _habitBloc.add(
-                    UpdateHabitEvent(
-                      Habit(
+                  _taskBloc.add(
+                    UpdateTaskEvent(
+                      Task(
                         achieve: _achievelists.toString(),
-                        color: widget.habit.color,
+                        color: widget.task.color,
                         catagories: _catagoryItems.toString(),
                         completeTimer: _completeTimer.toString(),
-                        habitName: widget.habit.habitName,
-                        id: widget.habit.id,
+                        taskName: widget.task.taskName,
+                        id: widget.task.id,
                         icon: _iconIndex,
-                        timer: widget.habit.timer,
+                        timer: widget.task.timer,
                         isDoneAchieve: _isDoneAchieve.toString(),
                         percent: _percent,
                       ),
@@ -290,13 +290,13 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         setState(() {
           _timerState = TimerState.DONE;
         });
-        await saveHabitDone();
-        int doTask = await onDoingHabit();
-        int delTask = await readHabitGiveUp();
-        int doneTask = await readHabitDone();
-        _doDelDoneHabitBloc.add(
-          UpdateDoDelDoneHabitEvent(
-            DoDelDoneHabit(
+        await saveTaskDone();
+        int doTask = await onDoingTask();
+        int delTask = await readTaskGiveUp();
+        int doneTask = await readTaskDone();
+        _doDelDoneTaskBloc.add(
+          UpdateDoDelDoneTaskEvent(
+            DoDelDoneTask(
               id: 1,
               doTask: doTask,
               delTask: delTask,
@@ -314,8 +314,8 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         fontSize: 40,
       ),
     );
-    String _superRawIsDoneAchieve = widget.habit.isDoneAchieve
-        .substring(1, widget.habit.isDoneAchieve.length - 1);
+    String _superRawIsDoneAchieve = widget.task.isDoneAchieve
+        .substring(1, widget.task.isDoneAchieve.length - 1);
     var _rawIsDoneAchieve = _superRawIsDoneAchieve.split(', ');
     if (_rawIsDoneAchieve[0] == '') {
       _isDoneAchieve = [];
@@ -339,8 +339,8 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
   @override
   Widget build(BuildContext context) {
     if (_isInit == false) {
-      _habitBloc = findBloc<HabitBloc>();
-      _doDelDoneHabitBloc = findBloc<DoDelDoneHabitBloc>();
+      _taskBloc = findBloc<TaskBloc>();
+      _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
       _starBloc = findBloc<StarBloc>();
       _isInit = true;
     }
@@ -376,7 +376,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         children: <Widget>[
           SizedBox(height: 15),
           Text(
-            '${widget.habit.habitName}',
+            '${widget.task.taskName}',
             style: TextStyle(
               fontFamily: 'Alata',
               fontSize: MediaQuery.of(context).size.width / 25,
@@ -398,9 +398,9 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                     shadowWidth: 0,
                   ),
                   customColors: CustomSliderColors(
-                    dotColor: Color(int.parse(colors[widget.habit.color])),
+                    dotColor: Color(int.parse(colors[widget.task.color])),
                     progressBarColor:
-                        Color(int.parse(colors[widget.habit.color])),
+                        Color(int.parse(colors[widget.task.color])),
                     trackColor: Colors.white,
                   ),
                   size: (MediaQuery.of(context).size.height - 24) / 3.5,
@@ -473,7 +473,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
         ),
       ),
       centerTitle: true,
-      backgroundColor: Color(int.parse(colors[widget.habit.color])),
+      backgroundColor: Color(int.parse(colors[widget.task.color])),
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
@@ -491,8 +491,8 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
             : IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () async {
-                  _habitBloc.add(
-                    DeleteHabitEvent(widget.habit),
+                  _taskBloc.add(
+                    DeleteTaskEvent(widget.task),
                   );
                   Navigator.pop(context);
                 },
@@ -531,7 +531,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                         color: _catagoryItems[index] == false
                             ? Color(
                                 int.parse(
-                                  colors[widget.habit.color],
+                                  colors[widget.task.color],
                                 ),
                               )
                             : Colors.white,
@@ -539,7 +539,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                       color: _catagoryItems[index]
                           ? Color(
                               int.parse(
-                                colors[widget.habit.color],
+                                colors[widget.task.color],
                               ),
                             )
                           : Colors.white,
@@ -557,7 +557,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                             color: _catagoryItems[index] == false
                                 ? Color(
                                     int.parse(
-                                      colors[widget.habit.color],
+                                      colors[widget.task.color],
                                     ),
                                   )
                                 : Colors.white,
@@ -568,7 +568,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                               color: _catagoryItems[index] == false
                                   ? Color(
                                       int.parse(
-                                        colors[widget.habit.color],
+                                        colors[widget.task.color],
                                       ),
                                     )
                                   : Colors.white,
@@ -597,7 +597,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: Color(int.parse(colors[widget.habit.color])),
+                    color: Color(int.parse(colors[widget.task.color])),
                     width: 1,
                   ),
                 ),
@@ -631,7 +631,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                 },
                 child: Material(
                   elevation: 1,
-                  color: Color(int.parse(colors[widget.habit.color])),
+                  color: Color(int.parse(colors[widget.task.color])),
                   borderRadius: BorderRadiusDirectional.circular(10),
                   child: Container(
                     height: 50,
@@ -651,7 +651,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
     );
   }
 
-  _buildDeleteCheckDialog(BuildContext context) async {
+  _buildDeleteCheckDialog(BuildContext context) {
     showDialog(
       context: context,
       child: Padding(
@@ -703,7 +703,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Color(int.parse(colors[widget.habit.color])),
+                            color: Color(int.parse(colors[widget.task.color])),
                           ),
                           child: Center(
                             child: Text(
@@ -721,14 +721,13 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          await saveHabitGiveUp();
-                          _habitBloc.add(DeleteHabitEvent(widget.habit));
-                          int doTask = await onDoingHabit();
-                          int delTask = await readHabitGiveUp();
-                          int doneTask = await readHabitDone();
-                          _doDelDoneHabitBloc.add(
-                            UpdateDoDelDoneHabitEvent(
-                              DoDelDoneHabit(
+                          await saveTaskGiveUp();
+                          int doTask = await onDoingTask();
+                          int delTask = await readTaskGiveUp();
+                          int doneTask = await readTaskDone();
+                          _doDelDoneTaskBloc.add(
+                            UpdateDoDelDoneTaskEvent(
+                              DoDelDoneTask(
                                 id: 1,
                                 doTask: doTask,
                                 delTask: delTask,
@@ -736,6 +735,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                               ),
                             ),
                           );
+                          _taskBloc.add(DeleteTaskEvent(widget.task));
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
@@ -744,7 +744,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Color(int.parse(colors[widget.habit.color])),
+                            color: Color(int.parse(colors[widget.task.color])),
                           ),
                           child: Center(
                             child: Text(
@@ -784,10 +784,10 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                 bottomLeft: Radius.circular(15),
                 bottomRight: Radius.circular(15),
               ),
-              color: Color(int.parse(colors[widget.habit.color])),
+              color: Color(int.parse(colors[widget.task.color])),
               elevation: 5,
               shadowColor:
-                  Color(int.parse(colors[widget.habit.color])).withOpacity(0.3),
+                  Color(int.parse(colors[widget.task.color])).withOpacity(0.3),
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.all(18.0),
@@ -913,7 +913,7 @@ class _HabitScreenState extends State<HabitScreen> with BlocCreator {
                                 color: Colors.white,
                               ),
                             ),
-                            color: Color(int.parse(colors[widget.habit.color])),
+                            color: Color(int.parse(colors[widget.task.color])),
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gottask/models/habit.dart';
 import 'package:gottask/models/pokemon_state.dart';
-import 'package:gottask/models/today_task.dart';
+import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 
 class FirebaseRepository {
@@ -14,19 +14,23 @@ class FirebaseRepository {
   ///
 
   /// [Database uploadAll methods]
-  Future<void> uploadAllHabitToFirebase(List<Habit> habitList) =>
-      _firebaseMethods.uploadAllHabitToFirebase(habitList);
+  Future<void> uploadAllTaskToFirebase(List<Task> taskList) =>
+      _firebaseMethods.uploadAllTaskToFirebase(taskList);
   Future<void> uploadAllPokemonStateToFirebase(
           List<PokemonState> pokemonStateList) =>
       _firebaseMethods.uploadAllPokemonStateToFirebase(pokemonStateList);
-  Future<void> uploadAllTodoToFirebase(List<TodayTask> todoList) =>
+  Future<void> uploadAllTodoToFirebase(List<Todo> todoList) =>
       _firebaseMethods.uploadAllTodoToFirebase(todoList);
 
   /// [Upload single table]
-  Future<void> updateTodoToFirebase(TodayTask todo) =>
+  Future<void> updateTodoToFirebase(Todo todo) =>
       _firebaseMethods.updateTodoToFirebase(todo);
-  Future<void> updateHabitToFirebase(Habit habit) =>
-      _firebaseMethods.updateHabitToFirebase(habit);
+  Future<void> updateTaskToFirebase(Task task) =>
+      _firebaseMethods.updateTaskToFirebase(task);
   Future<void> updatePokemonStateToFirebase(PokemonState pokemonState) =>
       _firebaseMethods.updatePokemonStateToFirebase(pokemonState);
+
+  /// [Delete]
+  Future<void> deleteTaskOnFirebase(Task task) =>
+      _firebaseMethods.deleteTaskOnFirebase(task);
 }

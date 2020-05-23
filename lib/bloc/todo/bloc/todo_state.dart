@@ -7,7 +7,7 @@ class TodoInitial extends TodoState {}
 
 
 class TodoLoaded extends TodoState {
-  final List<TodayTask> todo;
+  final List<Todo> todo;
 
   TodoLoaded({this.todo});
 }

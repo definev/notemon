@@ -1,14 +1,14 @@
-import 'package:gottask/database/habitDatabase.dart';
+import 'package:gottask/database/task_database.dart';
 import 'package:gottask/models/habit.dart';
 import 'package:sqflite/sqflite.dart';
 
-class HabitTable {
-  static const TABLE_NAME = 'habitdb';
+class TaskTable {
+  static const TABLE_NAME = 'Taskdb';
 
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
       id INTEGER PRIMARY KEY,
-      habitName TEXT,
+      TaskName TEXT,
       icon INTEGER,
       color INTEGER,
       catagories TEXT,
@@ -24,43 +24,42 @@ class HabitTable {
       DROP TABLE IF EXISTS $TABLE_NAME
   ''';
 
-  static Future<int> insertHabit(Habit habit) {
-    Database database = HabitDatabase.instance.database;
+  static Future<int> insertTask(Task task) {
+    final Database database = TaskDatabase.instance.database;
     return database.insert(
       TABLE_NAME,
-      habit.toMap(),
+      task.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  static Future<int> deleteHabit(Habit habit) {
-    Database database = HabitDatabase.instance.database;
+  static Future<int> deleteTask(Task task) {
+    final Database database = TaskDatabase.instance.database;
     return database.delete(
       TABLE_NAME,
       where: "id = ?",
-      whereArgs: [habit.id],
+      whereArgs: [task.id],
     );
   }
 
-  static Future<int> updateHabit(Habit habit) {
-    final Database db = HabitDatabase.instance.database;
-    print('update ${habit.toMap().toString()}');
+  static Future<int> updateTask(Task task) {
+    final Database db = TaskDatabase.instance.database;
     return db.update(
       TABLE_NAME,
-      habit.toMap(),
+      task.toMap(),
       where: 'id = ?',
-      whereArgs: [habit.id],
+      whereArgs: [task.id],
     );
   }
 
-  static Future<Habit> selectHabit(int index) async {
-    final Database db = HabitDatabase.instance.database;
+  static Future<Task> selectTask(int index) async {
+    final Database db = TaskDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       TABLE_NAME,
       columns: [
         'id',
         'icon',
-        'habitName',
+        'TaskName',
         'timer',
         'completeTimer',
         'percent',
@@ -71,9 +70,9 @@ class HabitTable {
       where: 'id = ?',
       whereArgs: [index],
     );
-    return Habit(
+    return Task(
       id: map[1]['id'],
-      habitName: map[1]['habitName'],
+      taskName: map[1]['TaskName'],
       color: map[1]['color'],
       icon: map[1]['icon'],
       catagories: map[1]['catagories'],
@@ -85,14 +84,14 @@ class HabitTable {
     );
   }
 
-  static Future<List<Habit>> selectAllHabit() async {
-    final Database db = HabitDatabase.instance.database;
+  static Future<List<Task>> selectAllTask() async {
+    final Database db = TaskDatabase.instance.database;
     final List<Map<String, dynamic>> maps = await db.query('$TABLE_NAME');
     if (maps.length == 0) return [];
     return List.generate(maps.length, (index) {
-      return Habit(
+      return Task(
         id: maps[index]['id'],
-        habitName: maps[index]['habitName'],
+        taskName: maps[index]['TaskName'],
         color: maps[index]['color'],
         catagories: maps[index]['catagories'],
         icon: maps[index]['icon'],

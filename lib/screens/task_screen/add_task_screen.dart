@@ -3,20 +3,20 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/do_del_done_habit/bloc/do_del_done_habit_bloc.dart';
-import 'package:gottask/bloc/habit/bloc/habit_bloc.dart';
+import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
+import 'package:gottask/bloc/task/bloc/task_bloc.dart';
+import 'package:gottask/models/do_del_done_task.dart';
+import 'package:gottask/models/habit.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/models/do_del_done_habit.dart';
-import 'package:gottask/models/habit.dart';
 import 'package:icons_helper/icons_helper.dart';
 
-class AddHabitScreen extends StatefulWidget {
+class AddTaskScreen extends StatefulWidget {
   @override
-  _AddHabitScreenState createState() => _AddHabitScreenState();
+  _AddTaskScreenState createState() => _AddTaskScreenState();
 }
 
-class _AddHabitScreenState extends State<AddHabitScreen> with BlocCreator {
+class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
   int _iconIndex = 0;
   int indexColor = 0;
   List<bool> _catagoryItems = List.generate(9, (index) => false);
@@ -26,16 +26,15 @@ class _AddHabitScreenState extends State<AddHabitScreen> with BlocCreator {
   final StreamController<List<String>> _achieveController =
       StreamController<List<String>>();
 
-  HabitBloc _habitBloc;
-  DoDelDoneHabitBloc _doDelDoneHabitBloc;
+  TaskBloc _taskBloc;
+  DoDelDoneTaskBloc _doDelDoneTaskBloc;
 
   final TextEditingController _achieveTextController = TextEditingController();
-  final TextEditingController _habitNameTextController =
-      TextEditingController();
+  final TextEditingController _taskNameTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    _habitBloc = findBloc<HabitBloc>();
-    _doDelDoneHabitBloc = findBloc<DoDelDoneHabitBloc>();
+    _taskBloc = findBloc<TaskBloc>();
+    _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -92,24 +91,24 @@ class _AddHabitScreenState extends State<AddHabitScreen> with BlocCreator {
             ),
           ),
           onTap: () async {
-            if (_habitNameTextController.text == null ||
-                _habitNameTextController.text == '' ||
+            if (_taskNameTextController.text == null ||
+                _taskNameTextController.text == '' ||
                 timer == const Duration(hours: 0, minutes: 0)) {
               _buildWarningDialog(context);
             } else {
-              int id = await saveHabitID();
+              int id = await saveTaskID();
               for (int i = 0; i < _achieveLists.length; i++) {
                 _achieveLists[i] = _achieveLists[i]
                     .replaceAll(RegExp(r','), 'String.fromCharCode(44)');
               }
-              _habitBloc.add(
-                AddHabitEvent(
-                  Habit(
+              _taskBloc.add(
+                AddTaskEvent(
+                  Task(
                     id: id,
                     color: indexColor,
                     catagories: _catagoryItems.toString(),
                     icon: _iconIndex,
-                    habitName: _habitNameTextController.text,
+                    taskName: _taskNameTextController.text,
                     percent: 0,
                     timer: timer.toString(),
                     completeTimer:
@@ -119,12 +118,12 @@ class _AddHabitScreenState extends State<AddHabitScreen> with BlocCreator {
                   ),
                 ),
               );
-              int doTask = await onDoingHabit();
-              int delTask = await readHabitGiveUp();
-              int doneTask = await readHabitDone();
-              _doDelDoneHabitBloc.add(
-                UpdateDoDelDoneHabitEvent(
-                  DoDelDoneHabit(
+              int doTask = await onDoingTask();
+              int delTask = await readTaskGiveUp();
+              int doneTask = await readTaskDone();
+              _doDelDoneTaskBloc.add(
+                UpdateDoDelDoneTaskEvent(
+                  DoDelDoneTask(
                     id: 1,
                     doTask: doTask,
                     delTask: delTask,
@@ -314,7 +313,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> with BlocCreator {
             ),
             border: InputBorder.none,
           ),
-          controller: _habitNameTextController,
+          controller: _taskNameTextController,
         ),
       ),
     );
@@ -618,6 +617,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> with BlocCreator {
     super.dispose();
     _achieveController.close();
     _achieveTextController.dispose();
-    _habitNameTextController.dispose();
+    _taskNameTextController.dispose();
   }
 }

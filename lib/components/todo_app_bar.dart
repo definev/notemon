@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/screens/todo_screen/add_today_task_screen.dart';
 
 class TodoAppBar extends StatefulWidget {
   final VoidCallback onHomePressed;
@@ -23,9 +23,7 @@ class _TodoAppBarState extends State<TodoAppBar> {
     void _modalBottomSheetMenu() {
       showModalBottomSheet(
           context: context,
-          builder: (_) {
-            return AddTodayTaskScreen();
-          });
+          builder: (_) => AddTodoScreen());
     }
 
     return BottomAppBar(

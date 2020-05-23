@@ -8,19 +8,19 @@ enum DoState {
   REMOVE,
 }
 
-class DetailHabitScreen extends StatefulWidget {
+class DetailTaskScreen extends StatefulWidget {
   @override
-  _DetailHabitScreenState createState() => _DetailHabitScreenState();
+  _DetailTaskScreenState createState() => _DetailTaskScreenState();
 }
 
-class _DetailHabitScreenState extends State<DetailHabitScreen> {
+class _DetailTaskScreenState extends State<DetailTaskScreen> {
   String catagory;
   DoState state;
-  // HabitBloc _habitBloc;
+  // TaskBloc _TaskBloc;
 
   @override
   Widget build(BuildContext context) {
-    // _habitBloc = Provider.of<HabitBloc>(context);
+    // _TaskBloc = Provider.of<TaskBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -40,15 +40,15 @@ class _DetailHabitScreenState extends State<DetailHabitScreen> {
           ),
         ],
       ),
-      // body: StreamBuilder<List<Habit>>(
-      //   stream: _habitBloc.listHabitStream,
+      // body: StreamBuilder<List<Task>>(
+      //   stream: _TaskBloc.listTaskStream,
       //   builder: (_, snapshot) {
       //     if (snapshot.hasData) {
       //       return Column(
       //         children: List.generate(
-      //           _habitBloc.habitList.length,
-      //           (index) => HabitTile(
-      //             habit: _habitBloc.habitList[index],
+      //           _TaskBloc.TaskList.length,
+      //           (index) => TaskTile(
+      //             Task: _TaskBloc.TaskList[index],
       //           ),
       //         ),
       //       );

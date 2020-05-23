@@ -2,36 +2,37 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gottask/models/habit.dart';
 import 'package:gottask/models/pokemon_state.dart';
-import 'package:gottask/models/today_task.dart';
 import 'dart:async';
+
+import 'package:gottask/models/todo.dart';
 
 class FirebaseMethods {
   FirebaseAuth _auth = FirebaseAuth.instance;
   Firestore _firestore = Firestore.instance;
 
-  Future<void> updateHabitToFirebase(Habit habit) async {
+  Future<void> updateTaskToFirebase(Task task) async {
     FirebaseUser _user = await _auth.currentUser();
     await _firestore
         .collection('databases')
         .document(_user.uid)
-        .collection('habits')
-        .document(habit.id.toString())
+        .collection('tasks')
+        .document(task.id.toString())
         .setData(
-          habit.toMap(),
+          task.toMap(),
           merge: true,
         );
   }
 
-  Future<void> uploadAllHabitToFirebase(List<Habit> habitList) async {
+  Future<void> uploadAllTaskToFirebase(List<Task> taskList) async {
     FirebaseUser _user = await _auth.currentUser();
-    habitList.forEach((habit) async {
+    taskList.forEach((task) async {
       await _firestore
           .collection('databases')
           .document(_user.uid)
-          .collection('habits')
-          .document(habit.id.toString())
+          .collection('tasks')
+          .document(task.id.toString())
           .setData(
-            habit.toMap(),
+            task.toMap(),
             merge: true,
           );
     });
@@ -66,7 +67,7 @@ class FirebaseMethods {
     });
   }
 
-  Future<void> updateTodoToFirebase(TodayTask todo) async {
+  Future<void> updateTodoToFirebase(Todo todo) async {
     FirebaseUser _user = await _auth.currentUser();
     await _firestore
         .collection('databases')
@@ -79,7 +80,7 @@ class FirebaseMethods {
         );
   }
 
-  Future<void> uploadAllTodoToFirebase(List<TodayTask> todoList) async {
+  Future<void> uploadAllTodoToFirebase(List<Todo> todoList) async {
     FirebaseUser _user = await _auth.currentUser();
     todoList.forEach((todo) async {
       await _firestore
@@ -94,17 +95,36 @@ class FirebaseMethods {
     });
   }
 
-  Future<List<TodayTask>> getAllTodoOnCloud() async {
+  Future<void> deleteTodoOnFirebase(Todo todo) async {
     FirebaseUser _user = await _auth.currentUser();
-    List<TodayTask> todoList = [];
-    QuerySnapshot _snapshot = await _firestore
+    await _firestore
         .collection('databases')
         .document(_user.uid)
         .collection('todos')
-        .getDocuments();
-    _snapshot.documents.forEach((doc) {
-      // doc.data
-    });
-    
+        .document(todo.id.toString())
+        .delete();
   }
+
+  Future<void> deleteTaskOnFirebase(Task task) async {
+    FirebaseUser _user = await _auth.currentUser();
+    await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('tasks')
+        .document(task.id.toString())
+        .delete();
+  }
+
+  // Future<List<Todo>> getAllTodoOnCloud() async {
+  //   FirebaseUser _user = await _auth.currentUser();
+  //   List<Todo> todoList = [];
+  //   QuerySnapshot _snapshot = await _firestore
+  //       .collection('databases')
+  //       .document(_user.uid)
+  //       .collection('todos')
+  //       .getDocuments();
+  //   _snapshot.documents.forEach((doc) {
+  //     // doc.data
+  //   });
+  // }
 }

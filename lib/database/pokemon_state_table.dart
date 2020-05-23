@@ -1,4 +1,4 @@
-import 'package:gottask/database/pokemonStateDatabase.dart';
+import 'package:gottask/database/pokemon_state_database.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:sqflite/sqflite.dart';
 

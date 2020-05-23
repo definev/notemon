@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:gottask/utils/utils.dart';
 import 'package:gottask/models/habit.dart';
-import 'package:gottask/screens/habit_screen/habit_screen.dart';
+import 'package:gottask/screens/task_screen/task_export.dart';
+import 'package:gottask/utils/utils.dart';
 import 'package:icons_helper/icons_helper.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-class HabitTile extends StatefulWidget {
-  final Habit habit;
+class TaskTile extends StatefulWidget {
+  final Task task;
 
-  const HabitTile({Key key, this.habit}) : super(key: key);
+  const TaskTile({Key key, this.task}) : super(key: key);
 
   @override
-  _HabitTileState createState() => _HabitTileState();
+  _TaskTileState createState() => _TaskTileState();
 }
 
-class _HabitTileState extends State<HabitTile> {
+class _TaskTileState extends State<TaskTile> {
   int maxTimer;
   int starValue;
 
@@ -22,7 +22,7 @@ class _HabitTileState extends State<HabitTile> {
   void initState() {
     super.initState();
 
-    var _rawTimer = widget.habit.timer.split(':');
+    var _rawTimer = widget.task.timer.split(':');
     var _rawSecond = _rawTimer[2].split('.');
     maxTimer = int.parse(_rawTimer[0]) * 3600 +
         int.parse(_rawTimer[1]) * 60 +
@@ -36,7 +36,7 @@ class _HabitTileState extends State<HabitTile> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => HabitScreen(habit: widget.habit),
+              builder: (_) => TaskScreen(task: widget.task),
             ),
           );
         },
@@ -48,7 +48,7 @@ class _HabitTileState extends State<HabitTile> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             color: Color(
-              int.parse(colors[widget.habit.color]),
+              int.parse(colors[widget.task.color]),
             ),
           ),
           child: Column(
@@ -65,7 +65,7 @@ class _HabitTileState extends State<HabitTile> {
                       padding: const EdgeInsets.all(10),
                       child: Icon(
                         getIconUsingPrefix(
-                          name: icons[widget.habit.icon],
+                          name: icons[widget.task.icon],
                         ),
                         size: 20,
                         color: Colors.white,
@@ -91,7 +91,7 @@ class _HabitTileState extends State<HabitTile> {
                 ],
               ),
               Text(
-                widget.habit.habitName,
+                widget.task.taskName,
                 style: TextStyle(
                   fontFamily: 'Alata',
                   fontSize: 25,
@@ -107,11 +107,11 @@ class _HabitTileState extends State<HabitTile> {
                     lineHeight: 4.5,
                     progressColor: Colors.white,
                     backgroundColor: Colors.black54,
-                    percent: widget.habit.percent.toDouble() / maxTimer,
+                    percent: widget.task.percent.toDouble() / maxTimer,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    durationFormat(widget.habit.completeTimer),
+                    durationFormat(widget.task.completeTimer),
                     style: TextStyle(
                       fontFamily: 'Alata',
                       fontSize: 15,

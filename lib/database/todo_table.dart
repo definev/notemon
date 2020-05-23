@@ -1,9 +1,9 @@
-import 'package:gottask/database/todayTaskDatabase.dart';
-import 'package:gottask/models/today_task.dart';
+import 'package:gottask/database/todo_database.dart';
+import 'package:gottask/models/todo.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TodayTaskTable {
-  static const TABLE_NAME = 'todaytaskdb';
+class TodoTable {
+  static const TABLE_NAME = 'Tododb';
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
       id INTEGER PRIMARY KEY,
@@ -19,19 +19,18 @@ class TodayTaskTable {
       DROP TABLE IF EXISTS $TABLE_NAME
   ''';
 
-  static Future<int> insertTodo(TodayTask todayTask) {
-    final Database db = TodayTaskDatabase.instance.database;
-    print('insert ${todayTask.toMap().toString()}');
+  static Future<int> insertTodo(Todo todo) {
+    final Database db = TodoDatabase.instance.database;
 
     return db.insert(
       TABLE_NAME,
-      todayTask.toMap(),
+      todo.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
   static Future<int> deleteTodo(int index) {
-    final Database db = TodayTaskDatabase.instance.database;
+    final Database db = TodoDatabase.instance.database;
     print('delete!');
     return db.delete(
       TABLE_NAME,
@@ -40,19 +39,18 @@ class TodayTaskTable {
     );
   }
 
-  static Future<int> updateTodo(TodayTask todayTask) {
-    final Database db = TodayTaskDatabase.instance.database;
-    print('update checked/edit ${todayTask.toMap().toString()}');
+  static Future<int> updateTodo(Todo todo) {
+    final Database db = TodoDatabase.instance.database;
     return db.update(
       TABLE_NAME,
-      todayTask.toMap(),
+      todo.toMap(),
       where: 'id = ?',
-      whereArgs: [todayTask.id],
+      whereArgs: [todo.id],
     );
   }
 
-  static Future<TodayTask> selectTodo(int index) async {
-    final Database db = TodayTaskDatabase.instance.database;
+  static Future<Todo> selectTodo(int index) async {
+    final Database db = TodoDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       TABLE_NAME,
       columns: [
@@ -67,7 +65,7 @@ class TodayTaskTable {
       where: 'id = ?',
       whereArgs: [index],
     );
-    return TodayTask(
+    return Todo(
       id: map[1]['id'],
       content: map[1]['content'],
       images: map[1]['images'],
@@ -78,12 +76,12 @@ class TodayTaskTable {
     );
   }
 
-  static Future<List<TodayTask>> selectAllTodo() async {
-    final Database db = TodayTaskDatabase.instance.database;
+  static Future<List<Todo>> selectAllTodo() async {
+    final Database db = TodoDatabase.instance.database;
     final List<Map<String, dynamic>> maps = await db.query('$TABLE_NAME');
     if (maps.length == 0) return [];
     return List.generate(maps.length, (index) {
-      return TodayTask(
+      return Todo(
         id: maps[index]['id'],
         content: maps[index]['content'],
         images: maps[index]['images'],

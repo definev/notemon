@@ -1,23 +1,24 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-class DoDelDoneTodo {
+class DoDelDoneTask {
   final int id;
-  final int doTodo;
-  final int delTodo;
-  final int doneTodo;
 
-  DoDelDoneTodo({
+  final int doTask;
+  final int delTask;
+  final int doneTask;
+
+  DoDelDoneTask({
     @required this.id,
-    @required this.doTodo,
-    @required this.delTodo,
-    @required this.doneTodo,
+    @required this.doTask,
+    @required this.delTask,
+    @required this.doneTask,
   });
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'doTodo': doTodo,
-      'delTodo': delTodo,
-      'doneTodo': doneTodo,
+      'doTask': doTask,
+      'delTask': delTask,
+      'doneTask': doneTask,
     };
   }
 }

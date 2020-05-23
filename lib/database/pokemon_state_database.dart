@@ -1,5 +1,5 @@
+import 'package:gottask/database/pokemon_state_table.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/database/pokemonStateTable.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';

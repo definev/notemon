@@ -9,26 +9,26 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
+import 'package:gottask/models/do_del_done_todo.dart';
+import 'package:gottask/models/todo.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/models/do_del_done_task.dart';
-import 'package:gottask/models/today_task.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-class TodayTaskScreen extends StatefulWidget {
-  final TodayTask todayTask;
-  TodayTaskScreen({this.todayTask});
+class TodoScreen extends StatefulWidget {
+  final Todo todo;
+  TodoScreen({this.todo});
   @override
-  _TodayTaskScreenState createState() => _TodayTaskScreenState();
+  _TodoScreenState createState() => _TodoScreenState();
 }
 
-class _TodayTaskScreenState extends State<TodayTaskScreen>
+class _TodoScreenState extends State<TodoScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   AnimationController animationController;
   Animation animation;
   Animation opacityAnimation;
-  TextEditingController _todayTaskEditting = TextEditingController();
+  TextEditingController _todoEditting = TextEditingController();
   bool isExpandCamera = false;
   bool isExpandRecordAudio = false;
 
@@ -64,7 +64,7 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
       StreamController<String>.broadcast();
   DoDelDoneTodoBloc _doDelDoneTodoBloc;
   TodoBloc _todoBloc;
-  TodayTask _currentTask;
+  Todo _currentTask;
 
   Future _openGallery() async {
     File imageFile = await ImagePicker.pickImage(
@@ -245,8 +245,8 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
           ..addListener(() {
             setState(() {});
           });
-    String imagesDecode = widget.todayTask.images
-        .substring(1, widget.todayTask.images.length - 1);
+    String imagesDecode =
+        widget.todo.images.substring(1, widget.todo.images.length - 1);
     images = imagesDecode.split(', ');
     if (images[0] == '') {
       images.removeAt(0);
@@ -254,17 +254,17 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
     images.forEach((path) {
       imageFileList.add(File(path));
     });
-    _mainAudioPath = widget.todayTask.audioPath;
+    _mainAudioPath = widget.todo.audioPath;
     if (_mainAudioPath != '') {
       _haveRecord = true;
       _initPlayer();
     } else {
       _haveRecord = false;
     }
-    _content = widget.todayTask.content;
-    indexColor = widget.todayTask.color;
-    var _rawCatagoryItems = widget.todayTask.catagories
-        .substring(1, widget.todayTask.catagories.length - 1)
+    _content = widget.todo.content;
+    indexColor = widget.todo.color;
+    var _rawCatagoryItems = widget.todo.catagories
+        .substring(1, widget.todo.catagories.length - 1)
         .split(', ');
     for (int i = 0; i < _rawCatagoryItems.length; i++) {
       if (_rawCatagoryItems[i] == 'false') {
@@ -313,7 +313,7 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
       _todoBloc = findBloc<TodoBloc>();
       _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
       _isInitWidget = true;
-      _currentTask = widget.todayTask;
+      _currentTask = widget.todo;
       _isChecked = _currentTask.isDone;
     }
     return Scaffold(
@@ -349,7 +349,7 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
             onTap: () {
               setState(() => _isChecked = !_isChecked);
               _currentTask = _currentTask.copyWith(isDone: _isChecked);
-              _todoBloc.add(EditTodayTaskEvent(todayTask: _currentTask));
+              _todoBloc.add(EditTodoEvent(todo: _currentTask));
             },
             child: _isChecked
                 ? FittedBox(
@@ -392,7 +392,7 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
               color: Colors.white,
             ),
             onPressed: () async {
-              _todoBloc.add(DeleteTodayTaskEvent(todayTask: _currentTask));
+              _todoBloc.add(DeleteTodoEvent(todo: _currentTask));
               await saveDeleteTask();
               int doTodo = await onDoingTask();
               int delTodo = await readDeleteTask();
@@ -836,7 +836,7 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
           ),
         ),
         child: TextField(
-          controller: _todayTaskEditting,
+          controller: _todoEditting,
           onChanged: (value) {
             _content = value;
             _contentStreamController.sink.add(_content);
@@ -866,8 +866,8 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
               _audioPath = _isClickMicrophone ? _subAudioPath : _mainAudioPath;
             }
             _currentTask = _currentTask.copyWith(
-              content: _todayTaskEditting.text != ''
-                  ? _todayTaskEditting.text
+              content: _todoEditting.text != ''
+                  ? _todoEditting.text
                   : _currentTask.content,
               images: images.toString(),
               color: indexColor,
@@ -875,10 +875,10 @@ class _TodayTaskScreenState extends State<TodayTaskScreen>
               catagories: _catagoryItems.toString(),
             );
             _todoBloc.add(
-              EditTodayTaskEvent(
-                todayTask: _currentTask.copyWith(
-                  content: _todayTaskEditting.text != ''
-                      ? _todayTaskEditting.text
+              EditTodoEvent(
+                todo: _currentTask.copyWith(
+                  content: _todoEditting.text != ''
+                      ? _todoEditting.text
                       : _currentTask.content,
                   images: images.toString(),
                   color: indexColor,

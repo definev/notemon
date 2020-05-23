@@ -1,5 +1,5 @@
 import 'package:gottask/database/doDelDoneTodoDatabase.dart';
-import 'package:gottask/models/do_del_done_task.dart';
+import 'package:gottask/models/do_del_done_todo.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DoDelDoneTodoTable {
@@ -17,7 +17,7 @@ class DoDelDoneTodoTable {
       DROP TABLE IF EXISTS $TABLE_NAME
   ''';
 
-  Future<int> insertHabit(DoDelDoneTodo doDelDoneTodo) {
+  Future<int> insertTask(DoDelDoneTodo doDelDoneTodo) {
     Database database = DoDelDoneTodoDatabase.instance.database;
     return database.insert(
       TABLE_NAME,
@@ -41,7 +41,7 @@ class DoDelDoneTodoTable {
     final Database db = DoDelDoneTodoDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query('$TABLE_NAME');
     if (map.length == 0) {
-      await insertHabit(
+      await insertTask(
         DoDelDoneTodo(
           id: 1,
           delTodo: 0,

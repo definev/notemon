@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:gottask/database/doDelDoneTodoDatabase.dart';
 import 'package:gottask/database/doDelDoneTodoTable.dart';
-import 'package:gottask/models/do_del_done_task.dart';
+import 'package:gottask/models/do_del_done_todo.dart';
 import 'package:meta/meta.dart';
 
 part 'do_del_done_todo_event.dart';

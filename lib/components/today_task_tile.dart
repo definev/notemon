@@ -4,32 +4,32 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
 import 'package:gottask/bloc/star/bloc/star_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
+import 'package:gottask/models/do_del_done_todo.dart';
+import 'package:gottask/models/todo.dart';
+import 'package:gottask/screens/todo_screen/todo_screen.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/models/do_del_done_task.dart';
-import 'package:gottask/models/today_task.dart';
-import 'package:gottask/screens/todo_screen/today_task_screen.dart';
 
-class TodayTaskTile extends StatefulWidget {
-  final TodayTask task;
+class TodoTile extends StatefulWidget {
+  final Todo task;
   final int index;
-  const TodayTaskTile({
+  const TodoTile({
     Key key,
     this.task,
     @required this.index,
   }) : super(key: key);
 
   @override
-  _TodayTaskTileState createState() => _TodayTaskTileState();
+  _TodoTileState createState() => _TodoTileState();
 }
 
-class _TodayTaskTileState extends State<TodayTaskTile> with BlocCreator {
+class _TodoTileState extends State<TodoTile> with BlocCreator {
   bool _isChecked;
   bool _isDone = false;
   TodoBloc _todoBloc;
   DoDelDoneTodoBloc _doDelDoneTodoBloc;
   StarBloc _starBloc;
-  TodayTask _currentTask;
+  Todo _currentTask;
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _TodayTaskTileState extends State<TodayTaskTile> with BlocCreator {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        TodayTaskScreen(todayTask: _currentTask),
+                        TodoScreen(todo: _currentTask),
                   ),
                 );
             },
@@ -79,7 +79,7 @@ class _TodayTaskTileState extends State<TodayTaskTile> with BlocCreator {
                       setState(() => _isChecked = !_isChecked);
                       _currentTask = _currentTask.copyWith(isDone: _isChecked);
                       _todoBloc
-                          .add(EditTodayTaskEvent(todayTask: _currentTask));
+                          .add(EditTodoEvent(todo: _currentTask));
                     }
                   },
                   child: _isChecked
@@ -187,7 +187,7 @@ class _TodayTaskTileState extends State<TodayTaskTile> with BlocCreator {
                   _currentTask =
                       _currentTask.copyWith(isDone: !_currentTask.isDone);
                   _todoBloc.add(
-                    EditTodayTaskEvent(todayTask: _currentTask),
+                    EditTodoEvent(todo: _currentTask),
                   );
                 });
               } else if (_isChecked == true) {
@@ -209,7 +209,7 @@ class _TodayTaskTileState extends State<TodayTaskTile> with BlocCreator {
                       ),
                     ),
                   );
-                  _todoBloc.add(DeleteTodayTaskEvent(todayTask: widget.task));
+                  _todoBloc.add(DeleteTodoEvent(todo: widget.task));
                   _starBloc.add(AddStarEvent(point: 1));
                 });
               }
@@ -236,7 +236,7 @@ class _TodayTaskTileState extends State<TodayTaskTile> with BlocCreator {
                       ),
                     ),
                   );
-                  _todoBloc.add(DeleteTodayTaskEvent(todayTask: widget.task));
+                  _todoBloc.add(DeleteTodoEvent(todo: widget.task));
                   _starBloc.add(AddStarEvent(point: 1));
                 });
               },
