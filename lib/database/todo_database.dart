@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class TodoDatabase {
-  static const DB_NAME = 'Tododb.db';
+  static const DB_NAME = 'tododb.db';
   static const DB_VERSION = 1;
   static Database _database;
 

@@ -1,5 +1,4 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_up_screen.dart';
@@ -59,7 +58,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     topLeft: Radius.circular(30),
                                   )),
                               padding: EdgeInsets.only(
-                                left: 70,
+                                left: 150,
                                 bottom: 7,
                               ),
                               child: Center(
@@ -206,7 +205,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             Center(
                               child: Container(
                                 height: 80 - 12 * 1.9,
-                                width: 360,
+                                width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
                                   color: Color(0xFF485563),
                                   borderRadius: BorderRadius.horizontal(
@@ -243,12 +242,20 @@ class _SignInScreenState extends State<SignInScreen> {
                             hoverColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () async {
-                              FirebaseUser user =
-                                  await _authServices.googleSignIn();
-                              if (user != null) {
-                                await updateLoginState(true);
-                                Navigator.pushNamed(context, '/home');
-                              }
+                              await _authServices.googleSignIn().then(
+                                (value) async {
+                                  if (value == null) {
+                                    Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to sign in'),
+                                      ),
+                                    );
+                                  } else {
+                                    await updateLoginState(true);
+                                    Navigator.pushNamed(context, '/home');
+                                  }
+                                },
+                              );
                             },
                             child: Container(
                               decoration: BoxDecoration(

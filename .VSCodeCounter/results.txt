@@ -1,22 +1,22 @@
-Date : 2020-05-23 17:24:29
+Date : 2020-05-24 11:18:01
 Directory : f:\Flutter Project\Notemon\lib
-Total : 75 files,  10730 codes, 125 comments, 664 blanks, all 11519 lines
+Total : 76 files,  11288 codes, 153 comments, 693 blanks, all 12134 lines
 
 Languages
 +----------+------------+------------+------------+------------+------------+
 | language | files      | code       | comment    | blank      | total      |
 +----------+------------+------------+------------+------------+------------+
-| Dart     |         75 |     10,730 |        125 |        664 |     11,519 |
+| Dart     |         76 |     11,288 |        153 |        693 |     12,134 |
 +----------+------------+------------+------------+------------+------------+
 
 Directories
 +-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
 | path                                                                                    | files      | code       | comment    | blank      | total      |
 +-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
-| .                                                                                       |         75 |     10,730 |        125 |        664 |     11,519 |
-| bloc                                                                                    |         24 |        485 |          0 |        159 |        644 |
-| bloc\all_pokemon                                                                        |          3 |         57 |          0 |         18 |         75 |
-| bloc\all_pokemon\bloc                                                                   |          3 |         57 |          0 |         18 |         75 |
+| .                                                                                       |         76 |     11,288 |        153 |        693 |     12,134 |
+| bloc                                                                                    |         24 |        455 |          0 |        159 |        614 |
+| bloc\all_pokemon                                                                        |          3 |         50 |          0 |         18 |         68 |
+| bloc\all_pokemon\bloc                                                                   |          3 |         50 |          0 |         18 |         68 |
 | bloc\do_del_done_task                                                                   |          3 |         46 |          0 |         18 |         64 |
 | bloc\do_del_done_task\bloc                                                              |          3 |         46 |          0 |         18 |         64 |
 | bloc\do_del_done_todo                                                                   |          3 |         49 |          0 |         18 |         67 |
@@ -27,30 +27,30 @@ Directories
 | bloc\hand_side\bloc                                                                     |          3 |         45 |          0 |         19 |         64 |
 | bloc\star                                                                               |          3 |         57 |          0 |         18 |         75 |
 | bloc\star\bloc                                                                          |          3 |         57 |          0 |         18 |         75 |
-| bloc\task                                                                               |          3 |         86 |          0 |         24 |        110 |
-| bloc\task\bloc                                                                          |          3 |         86 |          0 |         24 |        110 |
-| bloc\todo                                                                               |          3 |         96 |          0 |         27 |        123 |
-| bloc\todo\bloc                                                                          |          3 |         96 |          0 |         27 |        123 |
+| bloc\task                                                                               |          3 |         71 |          0 |         24 |         95 |
+| bloc\task\bloc                                                                          |          3 |         71 |          0 |         24 |         95 |
+| bloc\todo                                                                               |          3 |         88 |          0 |         27 |        115 |
+| bloc\todo\bloc                                                                          |          3 |         88 |          0 |         27 |        115 |
 | components                                                                              |         10 |      1,025 |          0 |         70 |      1,095 |
-| database                                                                                |         10 |        496 |          0 |         64 |        560 |
-| models                                                                                  |          5 |        190 |          6 |         25 |        221 |
-| repository                                                                              |          4 |        179 |         20 |         32 |        231 |
-| screens                                                                                 |         14 |      6,621 |         39 |        233 |      6,893 |
+| database                                                                                |         10 |        500 |          0 |         64 |        564 |
+| models                                                                                  |          5 |        196 |          6 |         25 |        227 |
+| repository                                                                              |          4 |        190 |         32 |         34 |        256 |
+| screens                                                                                 |         14 |      7,141 |         42 |        245 |      7,428 |
 | screens\option_screen                                                                   |          2 |        399 |          0 |         18 |        417 |
 | screens\pokemon_screen                                                                  |          2 |      1,254 |          1 |         40 |      1,295 |
 | screens\sign_in_sign_up_screen                                                          |          2 |        600 |         16 |         15 |        631 |
 | screens\splash_screen                                                                   |          1 |        137 |          0 |          3 |        140 |
 | screens\task_screen                                                                     |          4 |      1,581 |         19 |         48 |      1,648 |
-| screens\todo_screen                                                                     |          2 |      2,011 |          3 |         83 |      2,097 |
-| utils                                                                                   |          5 |      1,623 |         60 |         71 |      1,754 |
+| screens\todo_screen                                                                     |          2 |      2,012 |          3 |         83 |      2,098 |
+| utils                                                                                   |          6 |      1,665 |         73 |         86 |      1,824 |
 +-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
 
 Files
 +-----------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
 | filename                                                                                | language | code       | comment    | blank      | total      |
 +-----------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
-| f:\Flutter Project\Notemon\lib\app.dart                                                 | Dart     |         96 |          0 |          7 |        103 |
-| f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_bloc.dart              | Dart     |         40 |          0 |          8 |         48 |
+| f:\Flutter Project\Notemon\lib\app.dart                                                 | Dart     |         97 |          0 |          7 |        104 |
+| f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_bloc.dart              | Dart     |         33 |          0 |          8 |         41 |
 | f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_event.dart             | Dart     |          8 |          0 |          4 |         12 |
 | f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_state.dart             | Dart     |          9 |          0 |          6 |         15 |
 | f:\Flutter Project\Notemon\lib\bloc\do_del_done_task\bloc\do_del_done_task_bloc.dart    | Dart     |         32 |          0 |          8 |         40 |
@@ -68,10 +68,10 @@ Files
 | f:\Flutter Project\Notemon\lib\bloc\star\bloc\star_bloc.dart                            | Dart     |         37 |          0 |          8 |         45 |
 | f:\Flutter Project\Notemon\lib\bloc\star\bloc\star_event.dart                           | Dart     |         12 |          0 |          5 |         17 |
 | f:\Flutter Project\Notemon\lib\bloc\star\bloc\star_state.dart                           | Dart     |          8 |          0 |          5 |         13 |
-| f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_bloc.dart                            | Dart     |         62 |          0 |         10 |         72 |
+| f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_bloc.dart                            | Dart     |         47 |          0 |         10 |         57 |
 | f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_event.dart                           | Dart     |         16 |          0 |          9 |         25 |
 | f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_state.dart                           | Dart     |          8 |          0 |          5 |         13 |
-| f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_bloc.dart                            | Dart     |         68 |          0 |         10 |         78 |
+| f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_bloc.dart                            | Dart     |         60 |          0 |         10 |         70 |
 | f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_event.dart                           | Dart     |         20 |          0 |         11 |         31 |
 | f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_state.dart                           | Dart     |          8 |          0 |          6 |         14 |
 | f:\Flutter Project\Notemon\lib\components\clip_digit.dart                               | Dart     |         40 |          0 |          5 |         45 |
@@ -88,24 +88,24 @@ Files
 | f:\Flutter Project\Notemon\lib\database\doDelDoneHabitTable.dart                        | Dart     |         61 |          0 |          6 |         67 |
 | f:\Flutter Project\Notemon\lib\database\doDelDoneTodoDatabase.dart                      | Dart     |         26 |          0 |          6 |         32 |
 | f:\Flutter Project\Notemon\lib\database\doDelDoneTodoTable.dart                         | Dart     |         61 |          0 |          6 |         67 |
-| f:\Flutter Project\Notemon\lib\database\pokemonStateDatabase.dart                       | Dart     |         38 |          0 |          6 |         44 |
-| f:\Flutter Project\Notemon\lib\database\pokemonStateTable.dart                          | Dart     |         47 |          0 |          7 |         54 |
+| f:\Flutter Project\Notemon\lib\database\pokemon_state_database.dart                     | Dart     |         38 |          0 |          6 |         44 |
+| f:\Flutter Project\Notemon\lib\database\pokemon_state_table.dart                        | Dart     |         47 |          0 |          7 |         54 |
 | f:\Flutter Project\Notemon\lib\database\task_database.dart                              | Dart     |         25 |          0 |          5 |         30 |
 | f:\Flutter Project\Notemon\lib\database\task_table.dart                                 | Dart     |         99 |          0 |          8 |        107 |
 | f:\Flutter Project\Notemon\lib\database\todo_database.dart                              | Dart     |         25 |          0 |          6 |         31 |
-| f:\Flutter Project\Notemon\lib\database\todo_table.dart                                 | Dart     |         88 |          0 |          8 |         96 |
+| f:\Flutter Project\Notemon\lib\database\todo_table.dart                                 | Dart     |         92 |          0 |          8 |        100 |
 | f:\Flutter Project\Notemon\lib\helper.dart                                              | Dart     |          5 |          0 |          1 |          6 |
-| f:\Flutter Project\Notemon\lib\main.dart                                                | Dart     |         10 |          0 |          2 |         12 |
+| f:\Flutter Project\Notemon\lib\main.dart                                                | Dart     |         14 |          0 |          2 |         16 |
 | f:\Flutter Project\Notemon\lib\models\do_del_done_task.dart                             | Dart     |         21 |          0 |          4 |         25 |
 | f:\Flutter Project\Notemon\lib\models\do_del_done_todo.dart                             | Dart     |         21 |          0 |          3 |         24 |
-| f:\Flutter Project\Notemon\lib\models\habit.dart                                        | Dart     |         76 |          3 |          9 |         88 |
 | f:\Flutter Project\Notemon\lib\models\pokemon_state.dart                                | Dart     |         14 |          0 |          1 |         15 |
-| f:\Flutter Project\Notemon\lib\models\todo.dart                                         | Dart     |         58 |          3 |          8 |         69 |
+| f:\Flutter Project\Notemon\lib\models\task.dart                                         | Dart     |         76 |          3 |          9 |         88 |
+| f:\Flutter Project\Notemon\lib\models\todo.dart                                         | Dart     |         64 |          3 |          8 |         75 |
 | f:\Flutter Project\Notemon\lib\repository\auth_services.dart                            | Dart     |         53 |         15 |         15 |         83 |
-| f:\Flutter Project\Notemon\lib\repository\firebase_methods.dart                         | Dart     |        100 |          1 |         11 |        112 |
-| f:\Flutter Project\Notemon\lib\repository\firebase_repository.dart                      | Dart     |         23 |          4 |          6 |         33 |
+| f:\Flutter Project\Notemon\lib\repository\firebase_methods.dart                         | Dart     |        107 |         12 |         12 |        131 |
+| f:\Flutter Project\Notemon\lib\repository\firebase_repository.dart                      | Dart     |         27 |          5 |          7 |         39 |
 | f:\Flutter Project\Notemon\lib\repository\repository.dart                               | Dart     |          3 |          0 |          0 |          3 |
-| f:\Flutter Project\Notemon\lib\screens\home_screen.dart                                 | Dart     |        639 |          0 |         26 |        665 |
+| f:\Flutter Project\Notemon\lib\screens\home_screen.dart                                 | Dart     |      1,158 |          3 |         38 |      1,199 |
 | f:\Flutter Project\Notemon\lib\screens\option_screen\about_me_screen.dart               | Dart     |        253 |          0 |          7 |        260 |
 | f:\Flutter Project\Notemon\lib\screens\option_screen\setting_screen.dart                | Dart     |        146 |          0 |         11 |        157 |
 | f:\Flutter Project\Notemon\lib\screens\pokemon_screen\all_pokemon_screen.dart           | Dart     |        896 |          1 |         35 |        932 |
@@ -117,12 +117,13 @@ Files
 | f:\Flutter Project\Notemon\lib\screens\task_screen\detail_task_screen.dart              | Dart     |         39 |         17 |          5 |         61 |
 | f:\Flutter Project\Notemon\lib\screens\task_screen\task_export.dart                     | Dart     |          3 |          0 |          0 |          3 |
 | f:\Flutter Project\Notemon\lib\screens\task_screen\task_screen.dart                     | Dart     |        930 |          2 |         29 |        961 |
-| f:\Flutter Project\Notemon\lib\screens\todo_screen\add_todo_screen.dart                 | Dart     |        941 |          0 |         44 |        985 |
+| f:\Flutter Project\Notemon\lib\screens\todo_screen\add_todo_screen.dart                 | Dart     |        942 |          0 |         44 |        986 |
 | f:\Flutter Project\Notemon\lib\screens\todo_screen\todo_screen.dart                     | Dart     |      1,070 |          3 |         39 |      1,112 |
-| f:\Flutter Project\Notemon\lib\utils\constant.dart                                      | Dart     |      1,367 |         60 |         30 |      1,457 |
+| f:\Flutter Project\Notemon\lib\utils\connection.dart                                    | Dart     |         41 |         13 |         15 |         69 |
+| f:\Flutter Project\Notemon\lib\utils\constant.dart                                      | Dart     |      1,368 |         60 |         30 |      1,458 |
 | f:\Flutter Project\Notemon\lib\utils\extendsion.dart                                    | Dart     |         16 |          0 |          2 |         18 |
 | f:\Flutter Project\Notemon\lib\utils\shared.dart                                        | Dart     |        222 |          0 |         36 |        258 |
 | f:\Flutter Project\Notemon\lib\utils\style.dart                                         | Dart     |         14 |          0 |          3 |         17 |
 | f:\Flutter Project\Notemon\lib\utils\utils.dart                                         | Dart     |          4 |          0 |          0 |          4 |
-| Total                                                                                   |          |     10,730 |        125 |        664 |     11,519 |
+| Total                                                                                   |          |     11,288 |        153 |        693 |     12,134 |
 +-----------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

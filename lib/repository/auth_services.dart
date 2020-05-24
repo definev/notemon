@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
@@ -31,31 +34,70 @@ class AuthServices {
   }
 
   Future<FirebaseUser> googleSignIn() async {
-    try {
-      // Request for google sign in
-      GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+    if (!kIsWeb) {
+      try {
+        final result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          try {
+            // Request for google sign in
+            GoogleSignInAccount googleSignInAccount =
+                await _googleSignIn.signIn();
 
-      // Check authentical account
-      GoogleSignInAuthentication authentication =
-          await googleSignInAccount.authentication;
+            // Check authentical account
+            GoogleSignInAuthentication authentication =
+                await googleSignInAccount.authentication;
 
-      // Get credential for FirebaseAuth lib
-      AuthCredential credential = GoogleAuthProvider.getCredential(
-        idToken: authentication.idToken,
-        accessToken: authentication.accessToken,
-      );
+            // Get credential for FirebaseAuth lib
+            AuthCredential credential = GoogleAuthProvider.getCredential(
+              idToken: authentication.idToken,
+              accessToken: authentication.accessToken,
+            );
 
-      // Result sign in
-      AuthResult _authResult =
-          await _firebaseAuth.signInWithCredential(credential);
+            // Result sign in
+            AuthResult _authResult =
+                await _firebaseAuth.signInWithCredential(credential);
 
-      // Return current user
-      FirebaseUser _user = _authResult.user;
-      updateUserData(_user);
-      return _user;
-    } catch (e) {
-      print(e);
-      return null;
+            // Return current user
+            FirebaseUser _user = _authResult.user;
+            updateUserData(_user);
+            return _user;
+          } catch (e) {
+            print(e);
+            return null;
+          }
+        } else {
+          return null;
+        }
+      } on SocketException catch (_) {
+        return null;
+      }
+    } else {
+      try {
+        // Request for google sign in
+        GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+
+        // Check authentical account
+        GoogleSignInAuthentication authentication =
+            await googleSignInAccount.authentication;
+
+        // Get credential for FirebaseAuth lib
+        AuthCredential credential = GoogleAuthProvider.getCredential(
+          idToken: authentication.idToken,
+          accessToken: authentication.accessToken,
+        );
+
+        // Result sign in
+        AuthResult _authResult =
+            await _firebaseAuth.signInWithCredential(credential);
+
+        // Return current user
+        FirebaseUser _user = _authResult.user;
+        updateUserData(_user);
+        return _user;
+      } catch (e) {
+        print(e);
+        return null;
+      }
     }
   }
 

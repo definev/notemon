@@ -13,7 +13,7 @@ import 'package:gottask/bloc/star/bloc/star_bloc.dart';
 import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/components/countdown_clock.dart';
 import 'package:gottask/models/do_del_done_task.dart';
-import 'package:gottask/models/habit.dart';
+import 'package:gottask/models/task.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:icons_helper/icons_helper.dart';

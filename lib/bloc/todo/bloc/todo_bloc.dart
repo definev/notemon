@@ -5,8 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:gottask/database/todo_database.dart';
 import 'package:gottask/database/todo_table.dart';
 import 'package:gottask/models/todo.dart';
-import 'package:gottask/repository/repository.dart';
-import 'package:gottask/utils/utils.dart';
 import 'package:meta/meta.dart';
 
 part 'todo_event.dart';
@@ -14,7 +12,6 @@ part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   List<Todo> todoList = [];
-  FirebaseRepository _repository = FirebaseRepository();
 
   @override
   TodoState get initialState => TodoInitial();
@@ -22,17 +19,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Future<void> _initTodayBloc() async {
     await TodoDatabase.instance.init();
     todoList = await TodoTable.selectAllTodo();
-    if (await checkConnection() == true) {
-      await _repository.uploadAllTodoToFirebase(todoList);
-    }
   }
 
   Future<void> _addEvent(Todo todo) async {
     await TodoTable.insertTodo(todo);
     todoList = await TodoTable.selectAllTodo();
-    if (await checkConnection() == true) {
-      await _repository.updateTodoToFirebase(todo);
-    }
   }
 
   Future<void> _deleteEvent(Todo todo) async {
@@ -50,17 +41,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     }
     await TodoTable.deleteTodo(todo.id);
     todoList = await TodoTable.selectAllTodo();
-    if (await checkConnection() == true) {
-      await _repository.updateTodoToFirebase(todo);
-    }
   }
 
   Future<void> _editEvent(Todo todo) async {
     await TodoTable.updateTodo(todo);
     todoList = await TodoTable.selectAllTodo();
-    if (await checkConnection() == true) {
-      await _repository.updateTodoToFirebase(todo);
-    }
   }
 
   @override

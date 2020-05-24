@@ -9,6 +9,7 @@ class TodoTable {
       id INTEGER PRIMARY KEY,
       content TEXT,
       images TEXT,
+      imageURLs TEXT,
       isDone INTEGER,
       color INTEGER,
       audioPath TEXT,
@@ -49,6 +50,30 @@ class TodoTable {
     );
   }
 
+  static Future<int> updateOrInsertNewTodo(Todo todo) async {
+    final Database db = TodoDatabase.instance.database;
+    final List<Map<String, dynamic>> map = await db.query(
+      TABLE_NAME,
+      columns: [
+        'id',
+        'content',
+        'images',
+        'imageURLs',
+        'isDone',
+        'color',
+        'audioPath',
+        'catagories',
+      ],
+      where: 'id = ?',
+      whereArgs: [todo.id],
+    );
+    if (map.isNotEmpty) {
+      return updateTodo(todo);
+    } else {
+      return insertTodo(todo);
+    }
+  }
+
   static Future<Todo> selectTodo(int index) async {
     final Database db = TodoDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query(
@@ -57,6 +82,7 @@ class TodoTable {
         'id',
         'content',
         'images',
+        'imageURLs',
         'isDone',
         'color',
         'audioPath',
@@ -69,6 +95,7 @@ class TodoTable {
       id: map[1]['id'],
       content: map[1]['content'],
       images: map[1]['images'],
+      imageURLs: map[1]['imageURLs'],
       isDone: map[1]['isDone'] == 1 ? true : false,
       color: map[1]['color'],
       audioPath: map[1]['audioPath'],
@@ -85,6 +112,7 @@ class TodoTable {
         id: maps[index]['id'],
         content: maps[index]['content'],
         images: maps[index]['images'],
+        imageURLs: maps[index]['imageURLs'],
         isDone: maps[index]['isDone'] == 1 ? true : false,
         color: maps[index]['color'],
         audioPath: maps[index]['audioPath'],

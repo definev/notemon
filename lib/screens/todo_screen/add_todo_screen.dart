@@ -862,6 +862,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   id: id,
                   isDone: false,
                   images: images.toString(),
+                  imageURLs: null,
                   color: indexColor,
                   audioPath: _haveRecord ? _audioPath : '',
                   catagories: _catagoryItems.toString(),

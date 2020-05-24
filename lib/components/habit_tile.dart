@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gottask/models/habit.dart';
+import 'package:gottask/models/task.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:icons_helper/icons_helper.dart';

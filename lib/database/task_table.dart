@@ -1,5 +1,5 @@
 import 'package:gottask/database/task_database.dart';
-import 'package:gottask/models/habit.dart';
+import 'package:gottask/models/task.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TaskTable {

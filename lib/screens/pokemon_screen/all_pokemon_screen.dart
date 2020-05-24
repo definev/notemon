@@ -12,6 +12,7 @@ import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
 import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
 import 'package:gottask/bloc/hand_side/bloc/hand_side_bloc.dart';
 import 'package:gottask/bloc/star/bloc/star_bloc.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:gottask/models/pokemon_state.dart';
@@ -21,8 +22,9 @@ import 'package:swipedetector/swipedetector.dart';
 
 class AllPokemonScreen extends StatefulWidget {
   final int currentPokemon;
+  final FirebaseRepository repository;
 
-  AllPokemonScreen({this.currentPokemon});
+  AllPokemonScreen({this.currentPokemon, @required this.repository});
   @override
   _AllPokemonScreenState createState() => _AllPokemonScreenState();
 }
@@ -787,8 +789,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       if (!isLeft)
                         Material(
                           child: Text(
-                            _allPokemonBloc.pokemonStateList
-                                .collectedPokemon(),
+                            _allPokemonBloc.pokemonStateList.collectedPokemon(),
                             style: TextStyle(
                               fontFamily: 'Alata',
                               fontSize: 14,
@@ -814,8 +815,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       if (isLeft)
                         Material(
                           child: Text(
-                            _allPokemonBloc.pokemonStateList
-                                .collectedPokemon(),
+                            _allPokemonBloc.pokemonStateList.collectedPokemon(),
                             style: TextStyle(
                               fontFamily: 'Alata',
                               fontSize: 14,
@@ -898,9 +898,9 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
       child: _favouritePokemonBloc.favouritePokemon != _currentPokemon
           ? GestureDetector(
               onTap: () {
-                _favouritePokemonBloc.add(
-                  UpdateFavouritePokemonEvent(_currentPokemon),
-                );
+                _favouritePokemonBloc
+                    .add(UpdateFavouritePokemonEvent(_currentPokemon));
+                widget.repository.updateFavouritePokemon(_currentPokemon);
                 setState(() {
                   _favouritePokemonBloc.favouritePokemon = _currentPokemon;
                 });
@@ -913,9 +913,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
             )
           : GestureDetector(
               onTap: () {
-                _favouritePokemonBloc.add(
-                  UpdateFavouritePokemonEvent(-1),
-                );
+                _favouritePokemonBloc.add(UpdateFavouritePokemonEvent(-1));
+                widget.repository.updateFavouritePokemon(-1);
                 setState(() {
                   _favouritePokemonBloc.favouritePokemon = -1;
                 });

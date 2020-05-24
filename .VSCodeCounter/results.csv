@@ -1,6 +1,6 @@
 "filename", "language", "Dart", "comment", "blank", "total"
-"f:\Flutter Project\Notemon\lib\app.dart", "Dart", 96, 0, 7, 103
-"f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_bloc.dart", "Dart", 40, 0, 8, 48
+"f:\Flutter Project\Notemon\lib\app.dart", "Dart", 97, 0, 7, 104
+"f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_bloc.dart", "Dart", 33, 0, 8, 41
 "f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_event.dart", "Dart", 8, 0, 4, 12
 "f:\Flutter Project\Notemon\lib\bloc\all_pokemon\bloc\all_pokemon_state.dart", "Dart", 9, 0, 6, 15
 "f:\Flutter Project\Notemon\lib\bloc\do_del_done_task\bloc\do_del_done_task_bloc.dart", "Dart", 32, 0, 8, 40
@@ -18,10 +18,10 @@
 "f:\Flutter Project\Notemon\lib\bloc\star\bloc\star_bloc.dart", "Dart", 37, 0, 8, 45
 "f:\Flutter Project\Notemon\lib\bloc\star\bloc\star_event.dart", "Dart", 12, 0, 5, 17
 "f:\Flutter Project\Notemon\lib\bloc\star\bloc\star_state.dart", "Dart", 8, 0, 5, 13
-"f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_bloc.dart", "Dart", 62, 0, 10, 72
+"f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_bloc.dart", "Dart", 47, 0, 10, 57
 "f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_event.dart", "Dart", 16, 0, 9, 25
 "f:\Flutter Project\Notemon\lib\bloc\task\bloc\task_state.dart", "Dart", 8, 0, 5, 13
-"f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_bloc.dart", "Dart", 68, 0, 10, 78
+"f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_bloc.dart", "Dart", 60, 0, 10, 70
 "f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_event.dart", "Dart", 20, 0, 11, 31
 "f:\Flutter Project\Notemon\lib\bloc\todo\bloc\todo_state.dart", "Dart", 8, 0, 6, 14
 "f:\Flutter Project\Notemon\lib\components\clip_digit.dart", "Dart", 40, 0, 5, 45
@@ -38,24 +38,24 @@
 "f:\Flutter Project\Notemon\lib\database\doDelDoneHabitTable.dart", "Dart", 61, 0, 6, 67
 "f:\Flutter Project\Notemon\lib\database\doDelDoneTodoDatabase.dart", "Dart", 26, 0, 6, 32
 "f:\Flutter Project\Notemon\lib\database\doDelDoneTodoTable.dart", "Dart", 61, 0, 6, 67
-"f:\Flutter Project\Notemon\lib\database\pokemonStateDatabase.dart", "Dart", 38, 0, 6, 44
-"f:\Flutter Project\Notemon\lib\database\pokemonStateTable.dart", "Dart", 47, 0, 7, 54
+"f:\Flutter Project\Notemon\lib\database\pokemon_state_database.dart", "Dart", 38, 0, 6, 44
+"f:\Flutter Project\Notemon\lib\database\pokemon_state_table.dart", "Dart", 47, 0, 7, 54
 "f:\Flutter Project\Notemon\lib\database\task_database.dart", "Dart", 25, 0, 5, 30
 "f:\Flutter Project\Notemon\lib\database\task_table.dart", "Dart", 99, 0, 8, 107
 "f:\Flutter Project\Notemon\lib\database\todo_database.dart", "Dart", 25, 0, 6, 31
-"f:\Flutter Project\Notemon\lib\database\todo_table.dart", "Dart", 88, 0, 8, 96
+"f:\Flutter Project\Notemon\lib\database\todo_table.dart", "Dart", 92, 0, 8, 100
 "f:\Flutter Project\Notemon\lib\helper.dart", "Dart", 5, 0, 1, 6
-"f:\Flutter Project\Notemon\lib\main.dart", "Dart", 10, 0, 2, 12
+"f:\Flutter Project\Notemon\lib\main.dart", "Dart", 14, 0, 2, 16
 "f:\Flutter Project\Notemon\lib\models\do_del_done_task.dart", "Dart", 21, 0, 4, 25
 "f:\Flutter Project\Notemon\lib\models\do_del_done_todo.dart", "Dart", 21, 0, 3, 24
-"f:\Flutter Project\Notemon\lib\models\habit.dart", "Dart", 76, 3, 9, 88
 "f:\Flutter Project\Notemon\lib\models\pokemon_state.dart", "Dart", 14, 0, 1, 15
-"f:\Flutter Project\Notemon\lib\models\todo.dart", "Dart", 58, 3, 8, 69
+"f:\Flutter Project\Notemon\lib\models\task.dart", "Dart", 76, 3, 9, 88
+"f:\Flutter Project\Notemon\lib\models\todo.dart", "Dart", 64, 3, 8, 75
 "f:\Flutter Project\Notemon\lib\repository\auth_services.dart", "Dart", 53, 15, 15, 83
-"f:\Flutter Project\Notemon\lib\repository\firebase_methods.dart", "Dart", 100, 1, 11, 112
-"f:\Flutter Project\Notemon\lib\repository\firebase_repository.dart", "Dart", 23, 4, 6, 33
+"f:\Flutter Project\Notemon\lib\repository\firebase_methods.dart", "Dart", 107, 12, 12, 131
+"f:\Flutter Project\Notemon\lib\repository\firebase_repository.dart", "Dart", 27, 5, 7, 39
 "f:\Flutter Project\Notemon\lib\repository\repository.dart", "Dart", 3, 0, 0, 3
-"f:\Flutter Project\Notemon\lib\screens\home_screen.dart", "Dart", 639, 0, 26, 665
+"f:\Flutter Project\Notemon\lib\screens\home_screen.dart", "Dart", 1158, 3, 38, 1199
 "f:\Flutter Project\Notemon\lib\screens\option_screen\about_me_screen.dart", "Dart", 253, 0, 7, 260
 "f:\Flutter Project\Notemon\lib\screens\option_screen\setting_screen.dart", "Dart", 146, 0, 11, 157
 "f:\Flutter Project\Notemon\lib\screens\pokemon_screen\all_pokemon_screen.dart", "Dart", 896, 1, 35, 932
@@ -67,11 +67,12 @@
 "f:\Flutter Project\Notemon\lib\screens\task_screen\detail_task_screen.dart", "Dart", 39, 17, 5, 61
 "f:\Flutter Project\Notemon\lib\screens\task_screen\task_export.dart", "Dart", 3, 0, 0, 3
 "f:\Flutter Project\Notemon\lib\screens\task_screen\task_screen.dart", "Dart", 930, 2, 29, 961
-"f:\Flutter Project\Notemon\lib\screens\todo_screen\add_todo_screen.dart", "Dart", 941, 0, 44, 985
+"f:\Flutter Project\Notemon\lib\screens\todo_screen\add_todo_screen.dart", "Dart", 942, 0, 44, 986
 "f:\Flutter Project\Notemon\lib\screens\todo_screen\todo_screen.dart", "Dart", 1070, 3, 39, 1112
-"f:\Flutter Project\Notemon\lib\utils\constant.dart", "Dart", 1367, 60, 30, 1457
+"f:\Flutter Project\Notemon\lib\utils\connection.dart", "Dart", 41, 13, 15, 69
+"f:\Flutter Project\Notemon\lib\utils\constant.dart", "Dart", 1368, 60, 30, 1458
 "f:\Flutter Project\Notemon\lib\utils\extendsion.dart", "Dart", 16, 0, 2, 18
 "f:\Flutter Project\Notemon\lib\utils\shared.dart", "Dart", 222, 0, 36, 258
 "f:\Flutter Project\Notemon\lib\utils\style.dart", "Dart", 14, 0, 3, 17
 "f:\Flutter Project\Notemon\lib\utils\utils.dart", "Dart", 4, 0, 0, 4
-"Total", "-", 10730, 125, 664, 11519
+"Total", "-", 11288, 153, 693, 12134

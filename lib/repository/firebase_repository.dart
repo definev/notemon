@@ -1,17 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gottask/models/habit.dart';
+import 'package:gottask/models/task.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 
 class FirebaseRepository {
-  final FirebaseMethods _firebaseMethods = FirebaseMethods();
+  static final FirebaseMethods _firebaseMethods = FirebaseMethods();
   final AuthServices _authServices = AuthServices();
+  FirebaseUser _user;
+
+  FirebaseUser get user => _user;
+
+  /// [init]
+  Future<void> initUser() async {
+    _user = await FirebaseAuth.instance.currentUser();
+  }
 
   /// [Auth services]
   Future<FirebaseUser> googleSignIn() => _authServices.googleSignIn();
-
-  ///
 
   /// [Database uploadAll methods]
   Future<void> uploadAllTaskToFirebase(List<Task> taskList) =>
@@ -33,4 +39,10 @@ class FirebaseRepository {
   /// [Delete]
   Future<void> deleteTaskOnFirebase(Task task) =>
       _firebaseMethods.deleteTaskOnFirebase(task);
+  Future<void> deleteTodoOnFirebase(Todo todo) =>
+      _firebaseMethods.deleteTodoOnFirebase(todo);
+
+  /// [Favourite pokemon]
+  Future<void> updateFavouritePokemon(int pokemon) =>
+      _firebaseMethods.updateFavouritePokemon(pokemon);
 }
