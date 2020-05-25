@@ -28,12 +28,11 @@ class FavouritePokemonBloc
     FavouritePokemonEvent event,
   ) async* {
     if (event is InitFavouritePokemonEvent) {
-      int pokemon = await _initFavouritePokemonBloc();
-      yield FavouritePokemonLoaded(pokemon);
+      await _initFavouritePokemonBloc();
     }
     if (event is UpdateFavouritePokemonEvent) {
-      _updateEvent(event.newPokemon);
-      yield FavouritePokemonLoaded(event.newPokemon);
+      await _updateEvent(event.newPokemon);
     }
+    yield FavouritePokemonLoaded(favouritePokemon);
   }
 }

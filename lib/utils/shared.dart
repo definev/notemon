@@ -58,6 +58,13 @@ Future<int> updateHandSide(HandSide handSide) async {
   return prefs.getInt(key);
 }
 
+Future<int> setStar(int star) async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = "my_star_key";
+  prefs.setInt(key, star);
+  return star;
+}
+
 Future<int> currentStar() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_star_key";

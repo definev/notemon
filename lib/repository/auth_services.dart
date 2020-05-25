@@ -17,7 +17,12 @@ class AuthServices {
   Firestore _firestore = Firestore.instance;
 
   // Sign in with google
-  GoogleSignIn _googleSignIn = GoogleSignIn();
+  GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
 
   ///
   /// [sign in] and [sign out] method
@@ -37,29 +42,37 @@ class AuthServices {
     if (!kIsWeb) {
       try {
         final result = await InternetAddress.lookup('google.com');
+        FirebaseUser _user;
+
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
           try {
             // Request for google sign in
-            GoogleSignInAccount googleSignInAccount =
-                await _googleSignIn.signIn();
+            _googleSignIn.signIn().then(
+              (value) async {
+                // Check authentical account
+                GoogleSignInAuthentication authentication =
+                    await value.authentication;
 
-            // Check authentical account
-            GoogleSignInAuthentication authentication =
-                await googleSignInAccount.authentication;
+                // Get credential for FirebaseAuth lib
+                AuthCredential credential = GoogleAuthProvider.getCredential(
+                  idToken: authentication.idToken,
+                  accessToken: authentication.accessToken,
+                );
 
-            // Get credential for FirebaseAuth lib
-            AuthCredential credential = GoogleAuthProvider.getCredential(
-              idToken: authentication.idToken,
-              accessToken: authentication.accessToken,
+                // Result sign in
+                AuthResult _authResult =
+                    await _firebaseAuth.signInWithCredential(credential);
+
+                // Return current user
+                updateUserData(_user);
+                _user = _authResult.user;
+                return value;
+              },
+              onError: () {
+                _user = null;
+                return null;
+              },
             );
-
-            // Result sign in
-            AuthResult _authResult =
-                await _firebaseAuth.signInWithCredential(credential);
-
-            // Return current user
-            FirebaseUser _user = _authResult.user;
-            updateUserData(_user);
             return _user;
           } catch (e) {
             print(e);

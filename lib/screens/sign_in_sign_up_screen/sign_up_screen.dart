@@ -51,16 +51,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     bottomLeft: Radius.circular(30),
                                     topLeft: Radius.circular(30),
                                   )),
-                              padding: EdgeInsets.only(
-                                left: 70,
-                                bottom: 7,
-                              ),
+                              margin: const EdgeInsets.only(left: 10),
+                              padding: const EdgeInsets.only(left: 50),
                               child: Center(
                                 child: SizedBox(
                                   width:
-                                      MediaQuery.of(context).size.width - 210,
+                                      MediaQuery.of(context).size.width - 200,
                                   child: Text(
                                     'Notemon',
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 25,
                                       fontFamily: "Tomorrow",

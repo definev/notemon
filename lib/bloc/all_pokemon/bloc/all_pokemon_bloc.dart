@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:gottask/database/pokemon_state_database.dart';
 import 'package:gottask/database/pokemon_state_table.dart';
 import 'package:gottask/models/pokemon_state.dart';
+import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/utils.dart';
 import 'package:meta/meta.dart';
 
 part 'all_pokemon_event.dart';
@@ -12,6 +14,7 @@ part 'all_pokemon_state.dart';
 
 class AllPokemonBloc extends Bloc<AllPokemonEvent, AllPokemonState> {
   List<PokemonState> pokemonStateList;
+  FirebaseRepository _repository = FirebaseRepository();
 
   @override
   AllPokemonState get initialState => AllPokemonInitial();
@@ -24,6 +27,9 @@ class AllPokemonBloc extends Bloc<AllPokemonEvent, AllPokemonState> {
   Future<void> _updateEvent(PokemonState pokemonState) async {
     await PokemonStateTable.updatePokemonState(pokemonState);
     pokemonStateList = await PokemonStateTable.selectAllPokemonState();
+    if (await checkConnection()) {
+      _repository.updatePokemonStateToFirebase(pokemonState);
+    }
   }
 
   @override
@@ -32,7 +38,8 @@ class AllPokemonBloc extends Bloc<AllPokemonEvent, AllPokemonState> {
   ) async* {
     if (event is UpdatePokemonStateEvent) {
       await _updateEvent(event.pokemonState);
-    } else if (event is InitAllPokemonEvent) {
+    }
+    if (event is InitAllPokemonEvent) {
       await _initAllPokemonBloc();
     }
     yield AllPokemonLoaded(pokemonStateList);

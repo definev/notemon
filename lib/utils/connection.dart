@@ -3,6 +3,22 @@ import 'dart:async'; //For StreamController / Stream
 
 import 'package:connectivity/connectivity.dart';
 
+Future<bool> checkConnection() async {
+  bool connection = false;
+
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      connection = true;
+    } else {
+      connection = false;
+    }
+  } on SocketException catch (_) {
+    connection = false;
+  }
+  return connection;
+}
+
 class ConnectionStatusSingleton {
   //This creates the single instance by calling the `_internal` constructor specified below
   static final ConnectionStatusSingleton _singleton =

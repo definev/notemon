@@ -1,9 +1,14 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
+import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
+import 'package:gottask/bloc/star/bloc/star_bloc.dart';
+import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_up_screen.dart';
 import 'package:gottask/utils/constant.dart';
 import 'package:gottask/utils/utils.dart';
+import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -12,6 +17,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
+  FirebaseRepository _repository = FirebaseRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
         children: [
           Container(
             width: MediaQuery.of(context).size.width / 4,
-            decoration: BoxDecoration(
-              color: Color(0xFFF9FBFC),
-              // gradient: LinearGradient(
-              //   colors: [
-              //     Color(0xFFFEDCBA),
-              //     Colors.white24,
-              //   ],
-              //   begin: Alignment.centerLeft,
-              //   end: Alignment.centerRight,
-              // ),
-            ),
+            color: Color(0xFFF9FBFC),
           ),
           Padding(
             padding:
@@ -57,34 +53,28 @@ class _SignInScreenState extends State<SignInScreen> {
                                     bottomLeft: Radius.circular(30),
                                     topLeft: Radius.circular(30),
                                   )),
-                              padding: EdgeInsets.only(
-                                left: 150,
-                                bottom: 7,
-                              ),
+                              padding: const EdgeInsets.only(left: 50),
+                              margin: const EdgeInsets.only(left: 10),
                               child: Center(
-                                child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width - 210,
-                                  child: TypewriterAnimatedTextKit(
-                                    onTap: () {
-                                      print("Tap Event");
-                                    },
-                                    text: [
-                                      "Notemon",
-                                      "Easy to use.",
-                                      "Help you focus.",
-                                      "Notemon",
-                                    ],
-                                    textStyle: TextStyle(
-                                      fontSize: 25,
-                                      fontFamily: "Tomorrow",
-                                      color: Colors.white,
-                                    ),
-                                    textAlign: TextAlign.start,
-                                    alignment: Alignment.centerLeft,
-                                    speed: Duration(milliseconds: 250),
-                                    totalRepeatCount: 1,
+                                child: TypewriterAnimatedTextKit(
+                                  onTap: () {
+                                    print("Tap Event");
+                                  },
+                                  text: [
+                                    "Notemon",
+                                    "Easy to use.",
+                                    "Help you focus.",
+                                    "Notemon",
+                                  ],
+                                  textStyle: TextStyle(
+                                    fontSize: 25,
+                                    fontFamily: "Tomorrow",
+                                    color: Colors.white,
                                   ),
+                                  textAlign: TextAlign.center,
+                                  alignment: Alignment.center,
+                                  speed: Duration(milliseconds: 250),
+                                  totalRepeatCount: 1,
                                 ),
                               ),
                             ),
@@ -238,45 +228,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               color: Colors.black54,
                             ),
                           ),
-                          InkWell(
-                            hoverColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            onTap: () async {
-                              await _authServices.googleSignIn().then(
-                                (value) async {
-                                  if (value == null) {
-                                    Scaffold.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Failed to sign in'),
-                                      ),
-                                    );
-                                  } else {
-                                    await updateLoginState(true);
-                                    Navigator.pushNamed(context, '/home');
-                                  }
-                                },
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 10,
-                                    spreadRadius: -8.5,
-                                    color: TodoColors.spaceGrey,
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(200),
-                                child: Image.asset(
-                                  'assets/icon/google.jpg',
-                                  height: 55,
-                                ),
-                              ),
-                            ),
-                          ),
+                          _googleSignIn(),
                         ],
                       ),
                       SizedBox(height: 20),
@@ -307,6 +259,65 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Builder _googleSignIn() {
+    return Builder(
+      builder: (context) => InkWell(
+        hoverColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onTap: () async {
+          if (await checkConnection()) {
+            await _authServices.googleSignIn().then(
+              (firebaseUser) async {
+                if (firebaseUser == null) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to sign in'),
+                    ),
+                  );
+                } else {
+                  await updateLoginState(true);
+                  await _repository.initUser();
+                  await _repository.getAllTaskAndLoadToDb(
+                    Provider.of<TaskBloc>(context),
+                  );
+                  await _repository.getAllPokemonStateAndLoadToDb(
+                    Provider.of<AllPokemonBloc>(context),
+                  );
+                  await _repository.getFavouritePokemonStateAndLoadToDb(
+                    Provider.of<FavouritePokemonBloc>(context),
+                  );
+                  await _repository.getStarpoint(
+                    Provider.of<StarBloc>(context),
+                  );
+                  Navigator.pushNamed(context, '/home');
+                }
+              },
+            );
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(200),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 10,
+                spreadRadius: -8.5,
+                color: TodoColors.spaceGrey,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(200),
+            child: Image.asset(
+              'assets/icon/google.jpg',
+              height: 55,
+            ),
+          ),
+        ),
       ),
     );
   }

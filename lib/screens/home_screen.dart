@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -18,9 +17,11 @@ import 'package:gottask/bloc/star/bloc/star_bloc.dart';
 import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/components/habit_tile.dart';
-import 'package:gottask/components/today_task_tile.dart';
+import 'package:gottask/components/todo_tile.dart';
 import 'package:gottask/helper.dart';
 import 'package:gottask/models/favourite_pokemon.dart';
+import 'package:gottask/models/pokemon_state.dart';
+import 'package:gottask/models/starpoint.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
@@ -28,7 +29,6 @@ import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
 import 'package:gottask/utils/connection.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -38,7 +38,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   bool _isInit = false;
-  bool isOffline = true;
   ConnectionStatusSingleton connectionStatus;
   StreamController<bool> _connectionChangeStream;
 
@@ -54,6 +53,26 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _modalBottomSheetMenu() {
     showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
+  }
+
+  _updateDatabase() {
+    if (_todoBloc.todoList != null) {
+      _repository?.uploadAllTodoToFirebase(_todoBloc.todoList);
+    }
+    if (_taskBloc.taskList != null) {
+      _repository?.uploadAllTaskToFirebase(_taskBloc.taskList);
+    }
+    if (_starBloc.currentStarPoint != null) {
+      _repository?.updateStarpoint(_starBloc.currentStarPoint);
+    }
+    if (_favouritePokemonBloc.favouritePokemon != null) {
+      _repository
+          ?.updateFavouritePokemon(_favouritePokemonBloc.favouritePokemon);
+    }
+    if (_allPokemonBloc.pokemonStateList != null) {
+      _repository
+          ?.uploadAllPokemonStateToFirebase(_allPokemonBloc.pokemonStateList);
+    }
   }
 
   @override
@@ -92,7 +111,6 @@ class _HomeScreenState extends State<HomeScreen>
       _favouritePokemonBloc.add(InitFavouritePokemonEvent());
       _isInit = true;
     }
-    print("IsOffline: $isOffline");
     if (_repository.user == null) {
       return SafeArea(
         child: Container(
@@ -113,41 +131,9 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
     }
-    if (kIsWeb) {
-      return SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              stops: const [0.25, 0.463, 0.2, 0.7, 0.9],
-              colors: [
-                TodoColors.scaffoldWhite,
-                TodoColors.scaffoldWhite,
-                TodoColors.scaffoldWhite,
-                TodoColors.scaffoldWhite,
-                Color(0xFFFEDCBA),
-              ],
-            ),
-          ),
-          child: Scaffold(
-            resizeToAvoidBottomPadding: false,
-            backgroundColor: Colors.transparent,
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _buildOnlineHeader(),
-                _buildOnlinePetCollection(),
-                _buildOnlineTaskTitle(),
-                _buildOnlineTask(),
-                _buildOnlineTodoHeader(),
-                _buildOnlineTodo(),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
+
+    if (connectionStatus.hasConnection == true) _updateDatabase();
+
     return SafeArea(
       child: Container(
         decoration: BoxDecoration(
@@ -230,7 +216,37 @@ class _HomeScreenState extends State<HomeScreen>
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.data == null) {
-                          return Container();
+                          return GestureDetector(
+                            onTap: () async {
+                              await compareTime();
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      BlocProvider<HandSideBloc>.value(
+                                    value: HandSideBloc(),
+                                    child: AllPokemonScreen(
+                                        repository: _repository,
+                                        currentPokemon: 0),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Material(
+                              borderRadius: BorderRadius.circular(30),
+                              color: Colors.white,
+                              elevation: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  MaterialCommunityIcons.pokeball,
+                                  size: 30,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                            ),
+                          );
                         }
 
                         if (snapshot.data.documents.isEmpty) {
@@ -239,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen>
                         }
 
                         FavouritePokemon _favouritePokemon =
-                            FavouritePokemon.fromJson(
+                            FavouritePokemon.fromMap(
                                 snapshot.data.documents[0].data);
 
                         if (_favouritePokemon.pokemon != -1) {
@@ -267,7 +283,8 @@ class _HomeScreenState extends State<HomeScreen>
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.asset(
-                                  pokemonImages[_favouritePokemon.pokemon],
+                                  pokedex[_favouritePokemon.pokemon]
+                                      ["imageURL"],
                                   height: 30,
                                 ),
                               ),
@@ -314,21 +331,38 @@ class _HomeScreenState extends State<HomeScreen>
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              BlocBuilder<StarBloc, StarState>(
-                                bloc: _starBloc,
-                                builder:
-                                    (BuildContext context, StarState state) {
-                                  if (state is StarLoaded) {
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: _repository.firestoreInstance
+                                    .collection('databases')
+                                    .document(_repository.user.uid)
+                                    .collection('starPoint')
+                                    .document('star')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.data == null) {
                                     return Text(
-                                      '${state.currentStar} ',
+                                      '0 ',
                                       style: TextStyle(
                                         fontFamily: 'Alata',
                                         fontSize: 16,
                                       ),
                                     );
                                   }
+                                  if (snapshot.data.data == null) {
+                                    _repository.updateStarpoint(0);
+                                    return Text(
+                                      '0 ',
+                                      style: TextStyle(
+                                        fontFamily: 'Alata',
+                                        fontSize: 16,
+                                      ),
+                                    );
+                                  }
+                                  Starpoint _starPoint =
+                                      Starpoint.fromMap(snapshot.data.data);
+
                                   return Text(
-                                    '0 ',
+                                    '${_starPoint.star} ',
                                     style: TextStyle(
                                       fontFamily: 'Alata',
                                       fontSize: 16,
@@ -378,124 +412,146 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildOnlinePetCollection() => Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 5,
+  Widget _buildOnlinePetCollection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 5,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 10,
+              color: Colors.amber.withOpacity(0.08),
+            ),
+          ],
         ),
         child: Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 10,
-                color: Colors.amber.withOpacity(0.08),
-              ),
-            ],
-          ),
-          child: Consumer<AllPokemonBloc>(
-            builder: (context, bloc, child) => Container(
-              height: 85,
-              width: MediaQuery.of(context).size.width - 20,
-              padding: const EdgeInsets.all(5),
-              child: BlocBuilder<AllPokemonBloc, AllPokemonState>(
-                bloc: _allPokemonBloc,
-                builder: (context, state) {
-                  if (state is AllPokemonLoaded) {
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      addRepaintBoundaries: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: state.pokemonStateList.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () async {
-                            await compareTime();
+          height: 85,
+          width: MediaQuery.of(context).size.width - 20,
+          padding: const EdgeInsets.all(2),
+          child: StreamBuilder<QuerySnapshot>(
+            stream: Firestore.instance
+                .collection('databases')
+                .document(_repository.user.uid)
+                .collection('pokemonStates')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return Center(
+                  child: Text('Waiting ...'),
+                );
+              }
+              if (snapshot.data.documents.isEmpty) {
+                List<PokemonState> _pokemonStates = [];
+                pokedex.forEach((poke) {
+                  _pokemonStates.add(
+                    PokemonState(
+                      name: poke['name'],
+                      state: 0,
+                    ),
+                  );
+                });
+                _repository.uploadAllPokemonStateToFirebase(_pokemonStates);
+                return Center(
+                  child: Text('Waiting ...'),
+                );
+              }
+              List<PokemonState> _pokemonStateList = [];
+              snapshot.data.documents.forEach((map) =>
+                  _pokemonStateList.add(PokemonState.fromMap(map.data)));
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    BlocProvider<HandSideBloc>.value(
-                                  value: HandSideBloc(),
-                                  child: AllPokemonScreen(
-                                    repository: _repository,
-                                    currentPokemon: index,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: 56,
-                            height: 70,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.deepPurple,
-                                  width: 1.5,
-                                ),
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 0.5,
-                                    spreadRadius: 0.5,
-                                    color: Colors.black12,
-                                  ),
-                                ]),
-                            margin: index < pokemonImages.length - 1
-                                ? const EdgeInsets.only(
-                                    right: 8,
-                                    bottom: 3,
-                                    top: 3,
-                                  )
-                                : const EdgeInsets.only(
-                                    right: 3,
-                                    bottom: 3,
-                                    top: 3,
-                                  ),
-                            padding: const EdgeInsets.all(5),
-                            child: Center(
-                              child: Stack(
-                                children: <Widget>[
-                                  Image.asset(
-                                    pokemonImages[index],
-                                    height: 70,
-                                    width: 70,
-                                    color: colorStateOfPokemon(
-                                      state.pokemonStateList[index].state,
-                                    ),
-                                    colorBlendMode: colorBlendStateOfPokemon(
-                                      state.pokemonStateList[index].state,
-                                    ),
-                                  ),
-                                  if (state.pokemonStateList[index].state == 0)
-                                    Align(
-                                      alignment: FractionalOffset.center,
-                                      child: Icon(
-                                        AntDesign.question,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                ],
-                              ),
+              return ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                addRepaintBoundaries: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: _pokemonStateList.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () async {
+                      await compareTime();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider<HandSideBloc>.value(
+                            value: HandSideBloc(),
+                            child: AllPokemonScreen(
+                              repository: _repository,
+                              currentPokemon: index,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
-                  return Center(
-                    child: Text('Waiting ...'),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 56.2,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.deepPurple,
+                            width: 1.5,
+                          ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 0.5,
+                              spreadRadius: 0.5,
+                              color: Colors.black12,
+                            ),
+                          ]),
+                      margin: index < pokedex.length - 1
+                          ? const EdgeInsets.only(
+                              right: 6.2,
+                              bottom: 3,
+                              top: 3,
+                            )
+                          : const EdgeInsets.only(
+                              right: 3,
+                              bottom: 3,
+                              top: 3,
+                            ),
+                      padding: const EdgeInsets.all(5),
+                      child: Center(
+                        child: Stack(
+                          children: <Widget>[
+                            Center(
+                              child: Image.asset(
+                                pokedex[index]["imageURL"],
+                                height: 60,
+                                width: 60,
+                                color: colorStateOfPokemon(
+                                  _pokemonStateList[index].state,
+                                ),
+                                colorBlendMode: colorBlendStateOfPokemon(
+                                  _pokemonStateList[index].state,
+                                ),
+                              ),
+                            ),
+                            if (_pokemonStateList[index].state == 0)
+                              Center(
+                                child: Icon(
+                                  AntDesign.question,
+                                  color: Colors.white,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   );
                 },
-              ),
-            ),
+              );
+            },
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Padding _buildOnlineTodoHeader() => Padding(
         padding: const EdgeInsets.only(
@@ -771,7 +827,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Image.asset(
-                                      pokemonImages[state.pokemon],
+                                      pokedex[state.pokemon]["imageURL"],
                                       height: 30,
                                     ),
                                   ),
@@ -882,7 +938,6 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
       );
-
   Widget _buildOfflinePetCollection() => Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 14,
@@ -900,75 +955,73 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ],
           ),
-          child: Consumer<AllPokemonBloc>(
-            builder: (context, bloc, child) => Container(
-              height: 85,
-              width: MediaQuery.of(context).size.width - 20,
-              padding: const EdgeInsets.all(5),
-              child: BlocBuilder<AllPokemonBloc, AllPokemonState>(
-                bloc: _allPokemonBloc,
-                builder: (context, state) {
-                  if (state is AllPokemonLoaded) {
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      addRepaintBoundaries: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: state.pokemonStateList.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () async {
-                            await compareTime();
+          child: Container(
+            height: 85,
+            width: MediaQuery.of(context).size.width - 20,
+            padding: const EdgeInsets.all(2),
+            child: BlocBuilder<AllPokemonBloc, AllPokemonState>(
+              bloc: _allPokemonBloc,
+              builder: (context, state) {
+                if (state is AllPokemonLoaded) {
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    addRepaintBoundaries: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: state.pokemonStateList.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () async {
+                          await compareTime();
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    BlocProvider<HandSideBloc>.value(
-                                  value: HandSideBloc(),
-                                  child: AllPokemonScreen(
-                                    repository: _repository,
-                                    currentPokemon: index,
-                                  ),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider<HandSideBloc>.value(
+                                value: HandSideBloc(),
+                                child: AllPokemonScreen(
+                                  repository: _repository,
+                                  currentPokemon: index,
                                 ),
                               ),
-                            );
-                          },
-                          child: Container(
-                            width: 56,
-                            height: 70,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.deepPurple,
-                                  width: 1.5,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 56.2,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.deepPurple,
+                                width: 1.5,
+                              ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 0.5,
+                                  spreadRadius: 0.5,
+                                  color: Colors.black12,
                                 ),
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 0.5,
-                                    spreadRadius: 0.5,
-                                    color: Colors.black12,
-                                  ),
-                                ]),
-                            margin: index < pokemonImages.length - 1
-                                ? const EdgeInsets.only(
-                                    right: 8,
-                                    bottom: 3,
-                                    top: 3,
-                                  )
-                                : const EdgeInsets.only(
-                                    right: 3,
-                                    bottom: 3,
-                                    top: 3,
-                                  ),
-                            padding: const EdgeInsets.all(5),
-                            child: Center(
-                              child: Stack(
-                                children: <Widget>[
-                                  Image.asset(
-                                    pokemonImages[index],
-                                    height: 70,
-                                    width: 70,
+                              ]),
+                          margin: index < pokedex.length - 1
+                              ? const EdgeInsets.only(
+                                  right: 6.2,
+                                  bottom: 3,
+                                  top: 3,
+                                )
+                              : const EdgeInsets.only(
+                                  right: 3,
+                                  bottom: 3,
+                                  top: 3,
+                                ),
+                          padding: const EdgeInsets.all(5),
+                          child: Center(
+                            child: Stack(
+                              children: <Widget>[
+                                Center(
+                                  child: Image.asset(
+                                    pokedex[index]["imageURL"],
+                                    height: 60,
+                                    width: 60,
                                     color: colorStateOfPokemon(
                                       state.pokemonStateList[index].state,
                                     ),
@@ -976,27 +1029,26 @@ class _HomeScreenState extends State<HomeScreen>
                                       state.pokemonStateList[index].state,
                                     ),
                                   ),
-                                  if (state.pokemonStateList[index].state == 0)
-                                    Align(
-                                      alignment: FractionalOffset.center,
-                                      child: Icon(
-                                        AntDesign.question,
-                                        color: Colors.white,
-                                      ),
+                                ),
+                                if (state.pokemonStateList[index].state == 0)
+                                  Center(
+                                    child: Icon(
+                                      AntDesign.question,
+                                      color: Colors.white,
                                     ),
-                                ],
-                              ),
+                                  ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
-                  return Center(
-                    child: Text('Waiting ...'),
+                        ),
+                      );
+                    },
                   );
-                },
-              ),
+                }
+                return Center(
+                  child: Text('Waiting ...'),
+                );
+              },
             ),
           ),
         ),

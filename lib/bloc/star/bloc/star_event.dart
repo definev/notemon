@@ -5,6 +5,11 @@ abstract class StarEvent {}
 
 class InitStarBloc extends StarEvent {}
 
+class SetStarEvent extends StarEvent {
+  final int point;
+  SetStarEvent({this.point});
+}
+
 class AddStarEvent extends StarEvent {
   final int point;
   AddStarEvent({this.point});

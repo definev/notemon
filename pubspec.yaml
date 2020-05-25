@@ -90,3 +90,10 @@ flutter:
           weight: 300
         - asset: assets/fonts/Tomorrow/Tomorrow-Thin.ttf
           weight: 200
+    - family: Source_Sans_Pro
+      fonts:
+        - asset: assets/fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf
+        - asset: assets/fonts/Source_Sans_Pro/SourceSansPro-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Source_Sans_Pro/SourceSansPro-ExtraLight.ttf
+          weight: 200

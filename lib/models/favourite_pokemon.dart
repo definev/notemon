@@ -3,11 +3,11 @@ class FavouritePokemon {
 
   FavouritePokemon({this.pokemon});
 
-  FavouritePokemon.fromJson(Map<String, dynamic> json) {
+  FavouritePokemon.fromMap(Map<String, dynamic> json) {
     pokemon = json['pokemon'];
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['pokemon'] = this.pokemon;
     return data;

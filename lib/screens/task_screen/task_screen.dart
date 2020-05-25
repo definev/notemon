@@ -65,15 +65,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     return InterstitialAd(
       adUnitId: interstitialId,
       targetingInfo: targetingInfo,
-      listener: (MobileAdEvent event) {
-        // print("InterstitialAd event is $event");
-        if (event == MobileAdEvent.failedToLoad) {
-          Navigator.pop(context);
-        }
-        if (event == MobileAdEvent.closed) {
-          Navigator.pop(context);
-        }
-      },
     );
   }
 
@@ -116,9 +107,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           ..load()
           ..show();
       }
-    } on SocketException catch (_) {
-      return true;
-    }
+    } on SocketException catch (_) {}
+    Navigator.pop(context);
+    return true;
   }
 
   IconData _getTimerState() {

@@ -65,8 +65,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        TodoScreen(todo: _currentTask),
+                    builder: (context) => TodoScreen(todo: _currentTask),
                   ),
                 );
             },
@@ -78,8 +77,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                     if (_isDone != true) {
                       setState(() => _isChecked = !_isChecked);
                       _currentTask = _currentTask.copyWith(isDone: _isChecked);
-                      _todoBloc
-                          .add(EditTodoEvent(todo: _currentTask));
+                      _todoBloc.add(EditTodoEvent(todo: _currentTask));
                     }
                   },
                   child: _isChecked

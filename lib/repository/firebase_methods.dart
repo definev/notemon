@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
+import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
+import 'package:gottask/bloc/star/bloc/star_bloc.dart';
+import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/database/todo_table.dart';
+import 'package:gottask/models/favourite_pokemon.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'dart:async';
@@ -12,6 +17,8 @@ class FirebaseMethods {
   Firestore _firestore = Firestore.instance;
 
   /// Method of [Todo]
+  Future<void> getAllTodoAndLoadToDb() async {}
+
   Future<void> updateTodoToFirebase(Todo todo) async {
     final FirebaseUser _user = await _auth.currentUser();
     await TodoTable.updateOrInsertNewTodo(todo);
@@ -53,6 +60,22 @@ class FirebaseMethods {
   }
 
   /// Method of [Task]
+  Future<void> getAllTaskAndLoadToDb(TaskBloc taskBloc) async {
+    final FirebaseUser _user = await _auth.currentUser();
+
+    QuerySnapshot _taskSnapshots = await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('tasks')
+        .getDocuments(source: Source.server);
+
+    taskBloc.add(InitTaskEvent());
+    _taskSnapshots.documents.forEach((map) {
+      Task task = Task.fromMap(map.data);
+      taskBloc.add(AddTaskEvent(task));
+    });
+  }
+
   Future<void> updateTaskToFirebase(Task task) async {
     final FirebaseUser _user = await _auth.currentUser();
 
@@ -93,8 +116,25 @@ class FirebaseMethods {
   }
 
   /// Method of [PokemonState]
+  Future<void> getAllPokemonStateAndLoadToDb(
+      AllPokemonBloc allPokemonBloc) async {
+    final FirebaseUser _user = await _auth.currentUser();
+
+    QuerySnapshot _pokemonStateSnapshots = await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('pokemonStates')
+        .getDocuments();
+    allPokemonBloc.add(InitAllPokemonEvent());
+    _pokemonStateSnapshots.documents.forEach((map) {
+      PokemonState pokemonState = PokemonState.fromMap(map.data);
+      allPokemonBloc.add(UpdatePokemonStateEvent(pokemonState: pokemonState));
+    });
+  }
+
   Future<void> updatePokemonStateToFirebase(PokemonState pokemonState) async {
     final FirebaseUser _user = await _auth.currentUser();
+
     await _firestore
         .collection('databases')
         .document(_user.uid)
@@ -123,6 +163,23 @@ class FirebaseMethods {
   }
 
   /// Method of [FavouritePokemon]
+  Future<void> getFavouritePokemonStateAndLoadToDb(
+      FavouritePokemonBloc favouritePokemonBloc) async {
+    final FirebaseUser _user = await _auth.currentUser();
+
+    QuerySnapshot _favouritePokemonSnapshots = await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('pokemonStates')
+        .getDocuments();
+    favouritePokemonBloc.add(InitFavouritePokemonEvent());
+    _favouritePokemonSnapshots.documents.forEach((map) {
+      FavouritePokemon favouritePokemon = FavouritePokemon.fromMap(map.data);
+      favouritePokemonBloc
+          .add(UpdateFavouritePokemonEvent(favouritePokemon.pokemon));
+    });
+  }
+
   Future<void> updateFavouritePokemon(int pokemon) async {
     final FirebaseUser _user = await _auth.currentUser();
     await _firestore
@@ -134,5 +191,33 @@ class FirebaseMethods {
       {'pokemon': pokemon},
       merge: true,
     );
+  }
+
+  /// Method of [Starpoint]
+  Future<void> getStarpoint(StarBloc starBloc) async {
+    final FirebaseUser _user = await _auth.currentUser();
+    DocumentSnapshot _starSnapshot = await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('starPoint')
+        .document('star')
+        .get();
+
+    starBloc.add(SetStarEvent(point: _starSnapshot.data['star']));
+  }
+
+  Future<void> updateStarpoint(int currentStar) async {
+    final FirebaseUser _user = await _auth.currentUser();
+    Map<String, int> _star = {"star": currentStar};
+
+    await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('starPoint')
+        .document('star')
+        .setData(
+          _star,
+          merge: true,
+        );
   }
 }

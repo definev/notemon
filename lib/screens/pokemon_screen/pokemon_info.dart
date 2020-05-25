@@ -323,10 +323,11 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 child: Text(
                   pokedex[widget.currentPokemon]['introduction'],
                   style: TextStyle(
-                    fontFamily: 'Monsterrat',
+                    fontFamily: 'Source_Sans_Pro',
                     color: Colors.black,
                     fontSize: 15,
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w400,
+                    // fontWeight: FontWeight.w400,
                     decoration: TextDecoration.none,
                   ),
                 ),
