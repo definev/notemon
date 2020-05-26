@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/utils/utils.dart';
 
@@ -14,4 +16,8 @@ extension PokemonExt on List<PokemonState> {
       return "0 / 50";
     }
   }
+}
+
+extension FileName on File {
+  String get name => path.split('/').last;
 }

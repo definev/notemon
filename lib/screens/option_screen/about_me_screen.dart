@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/screens/splash_screen/splash_screen.dart';
+import 'package:gottask/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutMeScreen extends StatefulWidget {
@@ -36,10 +37,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
       appBar: AppBar(
         title: Text(
           'About this app',
-          style: TextStyle(
-            fontFamily: 'Montserrat',
-            fontSize: 20,
-          ),
+          style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
         ),
         actions: <Widget>[
           IconButton(
@@ -74,20 +72,15 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                       ),
                       Text(
                         '''Gottash is my personal project. If you like it, rate it 5 stars ^.^, or if you are not satisfied with this app, please give me a comment. ''',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                        ),
+                        style:
+                            kNormalStyle.copyWith(fontWeight: FontWeight.w300),
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       Text(
                         'Contact me',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 20,
-                        ),
+                        style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
                       ),
                       SizedBox(
                         height: 5,
@@ -153,9 +146,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                             Center(
                                               child: Text(
                                                 'big.plus.uwu@gmail.com',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                ),
+                                                style: kNormalStyle,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             )
@@ -206,9 +197,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                         Center(
                                           child: Text(
                                             'duongbnno1111@gmail.com',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                            ),
+                                            style: kNormalStyle,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         )
@@ -225,10 +214,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                       ),
                       Text(
                         'Lisence',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 20,
-                        ),
+                        style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
                       ),
                       SizedBox(
                         height: 5,
@@ -238,14 +224,9 @@ class _AboutMeScreenState extends State<AboutMeScreen>
 © 2020 Pokémon. © 1995–2020 Nintendo/Creatures Inc./GAME FREAK inc. Pokémon, Pokémon character names, Nintendo Switch, Nintendo 3DS, Nintendo DS, Wii, Wii U, and WiiWare are trademarks of Nintendo. The YouTube logo is a trademark of Google Inc. Other trademarks are the property of their respective owners.
 
 Distribution in any form and any channels now known or in the future of derivative works based on the copyrighted property trademarks, service marks, trade names and other proprietary property (Fan Art) of The Pokémon Company International, Inc., its affiliates and licensors (Pokémon) constitutes a royalty-free, non-exclusive, irrevocable, transferable, sub-licensable, worldwide license from the Fan Art's creator to Pokémon to use, transmit, copy, modify, and display Fan Art (and its derivatives) for any purpose. No further consideration or compensation of any kind will be given for any Fan Art. Fan Art creator gives up any claims that the use of the Fan Art violates any of their rights, including moral rights, privacy rights, proprietary rights publicity rights, rights to credit for material or ideas or any other right, including the right to approve the way such material is used. In no uncertain terms, does Pokémon's use of Fan Art constitute a grant to Fan Art's creator to use the Pokémon intellectual property or Fan Art beyond a personal, noncommercial home use.''',
-                        style: TextStyle(
-                          fontFamily: 'Alata',
-                          fontSize: 9,
-                        ),
+                        style: kTinySmallStyle.copyWith(fontSize: 9),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ),

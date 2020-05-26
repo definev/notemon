@@ -119,9 +119,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                   child: Text(
                     widget.task.content,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 15,
+                    style: kNormalSmallStyle.copyWith(
                       decoration: _isChecked
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
@@ -168,11 +166,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                     ),
                     Text(
                       _isChecked == false ? 'Check' : 'Done',
-                      style: TextStyle(
-                        fontFamily: 'Alata',
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
+                      style: kTinySmallStyle.copyWith(
+                          color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),
@@ -258,11 +253,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                       ),
                       Text(
                         'Delete',
-                        style: TextStyle(
-                          fontFamily: 'Alata',
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
+                        style: kTinySmallStyle.copyWith(
+                            color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),

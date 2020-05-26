@@ -16,6 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class AddTodoScreen extends StatefulWidget {
   @override
@@ -99,9 +100,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
           final dir = Directory('$_audioPath');
           dir.deleteSync(recursive: true);
         }
-        _audioPath = appDocDirectory.path +
-            '/audio_' +
-            '${DateTime.now().millisecondsSinceEpoch.toString()}.wav';
+        String randomName = Uuid().v4();
+        _audioPath = appDocDirectory.path + '/audio_$randomName.wav';
         _recorder =
             FlutterAudioRecorder(_audioPath, audioFormat: AudioFormat.WAV);
 
@@ -270,6 +270,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     if (isCreate == false) {
       _deleteFile();
     }
+    imageFileList.forEach((imageFile) => print(imageFile.name));
   }
 
   Widget _buildTitle(String title) {
@@ -277,11 +278,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
       padding: const EdgeInsets.only(left: 10, top: 5),
       child: Text(
         title,
-        style: TextStyle(
-          fontFamily: 'Alata',
-          color: Colors.grey,
-          fontSize: 16,
-        ),
+        style: kNormalStyle.copyWith(color: Colors.grey),
       ),
     );
   }
@@ -318,11 +315,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                         padding: const EdgeInsets.only(left: 10, top: 5),
                         child: Text(
                           'Color',
-                          style: TextStyle(
-                            fontFamily: 'Alata',
-                            color: Colors.grey,
-                            fontSize: 16,
-                          ),
+                          style: kNormalStyle.copyWith(color: Colors.grey),
                         ),
                       ),
                       _buildColorPicker(),
@@ -441,11 +434,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                         duration: animationController.duration,
                         child: Text(
                           'Empty',
-                          style: TextStyle(
-                            fontFamily: 'Alata',
-                            fontSize: 20,
-                            color: Colors.grey,
-                          ),
+                          style: kTitleStyle.copyWith(color: Colors.grey),
                         ),
                       )
                 : isExpandCamera == true
@@ -587,11 +576,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   )
                 : Text(
                     'Empty',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 20,
-                      color: Colors.grey,
-                    ),
+                    style: kTitleStyle.copyWith(color: Colors.grey),
                   ),
           ],
         ),
@@ -839,11 +824,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'To-do name',
-            labelStyle: TextStyle(
-              fontFamily: 'Alata',
-              color: Colors.grey,
-              fontSize: 16,
-            ),
+            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
           ),
@@ -901,11 +882,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 ),
                 Text(
                   ' Add to-do',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  style: kNormalStyle.copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -941,13 +918,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 ),
                 Text(
                   'Do not go out if recording not done.',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    fontSize: 20,
-                    decorationStyle: TextDecorationStyle.double,
-                    color: Colors.black,
-                    decoration: TextDecoration.none,
-                  ),
+                  style: kTitleStyle,
                 ),
                 Padding(
                   padding:

@@ -52,26 +52,26 @@ class _MyAppState extends State<MyApp> {
       child: _isStart != null
           ? MultiProvider(
               providers: [
-                BlocProvider<TodoBloc>.value(
-                  value: TodoBloc(),
+                BlocProvider<TodoBloc>(
+                  create: (context) => TodoBloc(),
                 ),
-                BlocProvider<TaskBloc>.value(
-                  value: TaskBloc(),
+                BlocProvider<TaskBloc>(
+                  create: (context) => TaskBloc(),
                 ),
-                BlocProvider<DoDelDoneTaskBloc>.value(
-                  value: DoDelDoneTaskBloc(),
+                BlocProvider<DoDelDoneTaskBloc>(
+                  create: (context) => DoDelDoneTaskBloc(),
                 ),
-                BlocProvider<DoDelDoneTodoBloc>.value(
-                  value: DoDelDoneTodoBloc(),
+                BlocProvider<DoDelDoneTodoBloc>(
+                  create: (context) => DoDelDoneTodoBloc(),
                 ),
-                BlocProvider<AllPokemonBloc>.value(
-                  value: AllPokemonBloc(),
+                BlocProvider<AllPokemonBloc>(
+                  create: (context) => AllPokemonBloc(),
                 ),
-                BlocProvider<StarBloc>.value(
-                  value: StarBloc(),
+                BlocProvider<StarBloc>(
+                  create: (context) => StarBloc(),
                 ),
-                BlocProvider<FavouritePokemonBloc>.value(
-                  value: FavouritePokemonBloc(),
+                BlocProvider<FavouritePokemonBloc>(
+                  create: (context) => FavouritePokemonBloc(),
                 ),
               ],
               child: MaterialApp(

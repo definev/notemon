@@ -342,20 +342,14 @@ class _HomeScreenState extends State<HomeScreen>
                                   if (snapshot.data == null) {
                                     return Text(
                                       '0 ',
-                                      style: TextStyle(
-                                        fontFamily: 'Alata',
-                                        fontSize: 16,
-                                      ),
+                                      style: kNormalStyle,
                                     );
                                   }
                                   if (snapshot.data.data == null) {
                                     _repository.updateStarpoint(0);
                                     return Text(
                                       '0 ',
-                                      style: TextStyle(
-                                        fontFamily: 'Alata',
-                                        fontSize: 16,
-                                      ),
+                                      style: kNormalStyle,
                                     );
                                   }
                                   Starpoint _starPoint =
@@ -363,10 +357,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                                   return Text(
                                     '${_starPoint.star} ',
-                                    style: TextStyle(
-                                      fontFamily: 'Alata',
-                                      fontSize: 16,
-                                    ),
+                                    style: kNormalStyle,
                                   );
                                 },
                               ),
@@ -387,17 +378,12 @@ class _HomeScreenState extends State<HomeScreen>
                 children: <Widget>[
                   Text(
                     getTimeNow(),
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 25,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xFF061058),
-                    ),
+                    style:
+                        kBigTitleStyle.copyWith(color: const Color(0xFF061058)),
                   ),
                   Text(
                     '${DateFormat.yMMMEd().format(DateTime.now())}',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
+                    style: kNormalStyle.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -564,7 +550,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             const Text(
               'To-do list',
-              style: TextStyle(fontFamily: 'Alata', fontSize: 20),
+              style: kTitleStyle,
             ),
             Container(
               width: 25,
@@ -594,10 +580,7 @@ class _HomeScreenState extends State<HomeScreen>
                 return const Center(
                   child: Text(
                     'Empty to-do',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 16,
-                    ),
+                    style: kNormalStyle,
                   ),
                 );
               } else {
@@ -616,10 +599,7 @@ class _HomeScreenState extends State<HomeScreen>
             return const Center(
               child: Text(
                 'Empty to-do',
-                style: TextStyle(
-                  fontFamily: 'Alata',
-                  fontSize: 16,
-                ),
+                style: kNormalStyle,
               ),
             );
           },
@@ -638,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             const Text(
               'Task list',
-              style: TextStyle(fontFamily: 'Alata', fontSize: 20),
+              style: kTitleStyle,
             ),
             const SizedBox(width: 10),
             Row(
@@ -705,7 +685,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: const Center(
                 child: Text(
                   'Empty task',
-                  style: TextStyle(fontFamily: 'Alata', fontSize: 16),
+                  style: kNormalStyle,
                 ),
               ),
             );
@@ -771,7 +751,7 @@ class _HomeScreenState extends State<HomeScreen>
           child: const Center(
             child: Text(
               'Empty task',
-              style: TextStyle(fontFamily: 'Alata', fontSize: 16),
+              style: kNormalStyle,
             ),
           ),
         );
@@ -881,20 +861,12 @@ class _HomeScreenState extends State<HomeScreen>
                                   builder:
                                       (BuildContext context, StarState state) {
                                     if (state is StarLoaded) {
-                                      return Text(
-                                        '${state.currentStar} ',
-                                        style: TextStyle(
-                                          fontFamily: 'Alata',
-                                          fontSize: 16,
-                                        ),
-                                      );
+                                      return Text('${state.currentStar} ',
+                                          style: kNormalStyle);
                                     }
                                     return Text(
                                       '0 ',
-                                      style: TextStyle(
-                                        fontFamily: 'Alata',
-                                        fontSize: 16,
-                                      ),
+                                      style: kNormalStyle,
                                     );
                                   },
                                 ),
@@ -915,17 +887,12 @@ class _HomeScreenState extends State<HomeScreen>
                   children: <Widget>[
                     Text(
                       getTimeNow(),
-                      style: TextStyle(
-                        fontFamily: 'Alata',
-                        fontSize: 25,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF061058),
-                      ),
+                      style: kBigTitleStyle.copyWith(
+                          color: const Color(0xFF061058)),
                     ),
                     Text(
                       '${DateFormat.yMMMEd().format(DateTime.now())}',
-                      style: TextStyle(
-                        fontFamily: 'Alata',
+                      style: kNormalStyle.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -1065,7 +1032,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             const Text(
               'To-do list',
-              style: TextStyle(fontFamily: 'Alata', fontSize: 20),
+              style: kTitleStyle,
             ),
             Container(
               width: 25,
@@ -1095,10 +1062,7 @@ class _HomeScreenState extends State<HomeScreen>
                 return const Center(
                   child: Text(
                     'Empty to-do',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 16,
-                    ),
+                    style: kNormalStyle,
                   ),
                 );
               } else {
@@ -1117,10 +1081,7 @@ class _HomeScreenState extends State<HomeScreen>
             return const Center(
               child: Text(
                 'Empty to-do',
-                style: TextStyle(
-                  fontFamily: 'Alata',
-                  fontSize: 16,
-                ),
+                style: kNormalStyle,
               ),
             );
           },
@@ -1139,7 +1100,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             const Text(
               'Task list',
-              style: TextStyle(fontFamily: 'Alata', fontSize: 20),
+              style: kTitleStyle,
             ),
             const SizedBox(width: 10),
             Row(
@@ -1206,7 +1167,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: const Center(
                 child: Text(
                   'Empty task',
-                  style: TextStyle(fontFamily: 'Alata', fontSize: 16),
+                  style: kNormalStyle,
                 ),
               ),
             );
@@ -1272,7 +1233,7 @@ class _HomeScreenState extends State<HomeScreen>
           child: const Center(
             child: Text(
               'Empty task',
-              style: TextStyle(fontFamily: 'Alata', fontSize: 16),
+              style: kNormalStyle,
             ),
           ),
         );

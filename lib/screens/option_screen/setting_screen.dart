@@ -96,9 +96,7 @@ class _SettingScreenState extends State<SettingScreen>
                   children: <Widget>[
                     Text(
                       'Handside control ',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
+                      style: kTitleStyle,
                     ),
                     ToggleButtons(
                       isSelected:
@@ -139,11 +137,7 @@ class _SettingScreenState extends State<SettingScreen>
                   padding: EdgeInsets.all(10),
                   child: Text(
                     'Sign out',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      color: Colors.red,
-                      fontSize: 18,
-                    ),
+                    style: kMediumStyle.copyWith(color: Colors.red),
                   ),
                 ),
               ),

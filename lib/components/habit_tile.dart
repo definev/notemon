@@ -76,11 +76,8 @@ class _TaskTileState extends State<TaskTile> {
                     children: <Widget>[
                       Text(
                         '$starValue ',
-                        style: TextStyle(
-                          fontFamily: 'Alata',
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
+                        style: kNormalSuperSmallStyle.copyWith(
+                            color: Colors.white),
                       ),
                       Image.asset(
                         'assets/png/star.png',
@@ -92,11 +89,7 @@ class _TaskTileState extends State<TaskTile> {
               ),
               Text(
                 widget.task.taskName,
-                style: TextStyle(
-                  fontFamily: 'Alata',
-                  fontSize: 25,
-                  color: Colors.white,
-                ),
+                style: kBigTitleStyle.copyWith(color: Colors.white),
                 overflow: TextOverflow.ellipsis,
               ),
               Column(
@@ -112,11 +105,8 @@ class _TaskTileState extends State<TaskTile> {
                   const SizedBox(height: 16),
                   Text(
                     durationFormat(widget.task.completeTimer),
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 15,
-                      color: Colors.white.withOpacity(0.7),
-                    ),
+                    style: kNormalSmallStyle.copyWith(
+                        color: Colors.white.withOpacity(0.7)),
                   ),
                 ],
               ),

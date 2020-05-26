@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gottask/utils/utils.dart';
 
 class AuthServices {
   ///
@@ -40,50 +39,37 @@ class AuthServices {
 
   Future<FirebaseUser> googleSignIn() async {
     if (!kIsWeb) {
-      try {
-        final result = await InternetAddress.lookup('google.com');
+      bool hasConnect = await checkConnection();
+      if (hasConnect) {
         FirebaseUser _user;
+        try {
+          // Request for google sign in
+          GoogleSignInAccount _googleSignInAccount =
+              await _googleSignIn.signIn();
+          // Check authentical account
+          GoogleSignInAuthentication authentication =
+              await _googleSignInAccount.authentication;
 
-        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          try {
-            // Request for google sign in
-            _googleSignIn.signIn().then(
-              (value) async {
-                // Check authentical account
-                GoogleSignInAuthentication authentication =
-                    await value.authentication;
+          // Get credential for FirebaseAuth lib
+          AuthCredential credential = GoogleAuthProvider.getCredential(
+            idToken: authentication.idToken,
+            accessToken: authentication.accessToken,
+          );
 
-                // Get credential for FirebaseAuth lib
-                AuthCredential credential = GoogleAuthProvider.getCredential(
-                  idToken: authentication.idToken,
-                  accessToken: authentication.accessToken,
-                );
+          // Result sign in
+          AuthResult _authResult =
+              await _firebaseAuth.signInWithCredential(credential);
 
-                // Result sign in
-                AuthResult _authResult =
-                    await _firebaseAuth.signInWithCredential(credential);
-
-                // Return current user
-                updateUserData(_user);
-                _user = _authResult.user;
-                return value;
-              },
-              onError: () {
-                _user = null;
-                return null;
-              },
-            );
-            return _user;
-          } catch (e) {
-            print(e);
-            return null;
-          }
-        } else {
+          // Return current user
+          updateUserData(_user);
+          _user = _authResult.user;
+          return _user;
+        } catch (e) {
+          print(e);
           return null;
         }
-      } on SocketException catch (_) {
-        return null;
       }
+      return null;
     } else {
       try {
         // Request for google sign in

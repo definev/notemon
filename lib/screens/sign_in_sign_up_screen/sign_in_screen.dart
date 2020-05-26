@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
 import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
@@ -66,8 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     "Help you focus.",
                                     "Notemon",
                                   ],
-                                  textStyle: TextStyle(
-                                    fontSize: 25,
+                                  textStyle: kBigTitleStyle.copyWith(
                                     fontFamily: "Tomorrow",
                                     color: Colors.white,
                                   ),
@@ -123,21 +123,12 @@ class _SignInScreenState extends State<SignInScreen> {
                             Expanded(
                               child: TextField(
                                 cursorColor: TodoColors.deepPurple,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'Alata',
-                                ),
+                                style: kMediumStyle,
                                 decoration: InputDecoration(
                                   labelText: 'Email',
-                                  labelStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  labelStyle: kMediumStyle,
                                   hintText: 'Your email',
-                                  hintStyle: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  hintStyle: kTinySmallStyle,
                                 ),
                               ),
                             ),
@@ -155,21 +146,12 @@ class _SignInScreenState extends State<SignInScreen> {
                             Expanded(
                               child: TextField(
                                 cursorColor: TodoColors.deepPurple,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'Alata',
-                                ),
+                                style: kMediumStyle,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  labelStyle: kMediumStyle,
                                   hintText: 'Your password',
-                                  hintStyle: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  hintStyle: kTinySmallStyle,
                                 ),
                               ),
                             ),
@@ -205,11 +187,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Center(
                                   child: Text(
                                     'Login',
-                                    style: TextStyle(
-                                      fontFamily: 'Alata',
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                    ),
+                                    style: kMediumStyle.copyWith(
+                                        color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -228,7 +207,81 @@ class _SignInScreenState extends State<SignInScreen> {
                               color: Colors.black54,
                             ),
                           ),
-                          _googleSignIn(),
+                          Builder(
+                            builder: (context) => InkWell(
+                              hoverColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () async {
+                                if (await checkConnection()) {
+                                  FirebaseUser user =
+                                      await _authServices.googleSignIn();
+
+                                  if (user == null) {
+                                    Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to sign in'),
+                                      ),
+                                    );
+                                  } else {
+                                    updateLoginState(true);
+                                    await _repository.initUser();
+                                    await _repository.getAllTaskAndLoadToDb(
+                                      Provider.of<TaskBloc>(
+                                        context,
+                                        listen: false,
+                                      ),
+                                    );
+                                    await _repository
+                                        .getAllPokemonStateAndLoadToDb(
+                                      Provider.of<AllPokemonBloc>(
+                                        context,
+                                        listen: false,
+                                      ),
+                                    );
+                                    await _repository
+                                        .getFavouritePokemonStateAndLoadToDb(
+                                      Provider.of<FavouritePokemonBloc>(
+                                        context,
+                                        listen: false,
+                                      ),
+                                    );
+                                    await _repository.getStarpoint(
+                                      Provider.of<StarBloc>(
+                                        context,
+                                        listen: false,
+                                      ),
+                                    );
+                                    Navigator.pushNamed(context, '/home');
+                                  }
+                                } else {
+                                  Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('No internet connection.'),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 10,
+                                      spreadRadius: -8.5,
+                                      color: TodoColors.spaceGrey,
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(200),
+                                  child: Image.asset(
+                                    'assets/icon/google.jpg',
+                                    height: 55,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 20),
@@ -243,10 +296,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                         child: Text(
                           'Sign up new account',
-                          style: TextStyle(
-                            fontFamily: 'Alata',
+                          style: kTitleStyle.copyWith(
                             color: TodoColors.spaceGrey,
-                            fontSize: 20,
                             decoration: TextDecoration.underline,
                           ),
                         ),
@@ -259,65 +310,6 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Builder _googleSignIn() {
-    return Builder(
-      builder: (context) => InkWell(
-        hoverColor: Colors.transparent,
-        splashColor: Colors.transparent,
-        onTap: () async {
-          if (await checkConnection()) {
-            await _authServices.googleSignIn().then(
-              (firebaseUser) async {
-                if (firebaseUser == null) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to sign in'),
-                    ),
-                  );
-                } else {
-                  await updateLoginState(true);
-                  await _repository.initUser();
-                  await _repository.getAllTaskAndLoadToDb(
-                    Provider.of<TaskBloc>(context),
-                  );
-                  await _repository.getAllPokemonStateAndLoadToDb(
-                    Provider.of<AllPokemonBloc>(context),
-                  );
-                  await _repository.getFavouritePokemonStateAndLoadToDb(
-                    Provider.of<FavouritePokemonBloc>(context),
-                  );
-                  await _repository.getStarpoint(
-                    Provider.of<StarBloc>(context),
-                  );
-                  Navigator.pushNamed(context, '/home');
-                }
-              },
-            );
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(200),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 10,
-                spreadRadius: -8.5,
-                color: TodoColors.spaceGrey,
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(200),
-            child: Image.asset(
-              'assets/icon/google.jpg',
-              height: 55,
-            ),
-          ),
-        ),
       ),
     );
   }

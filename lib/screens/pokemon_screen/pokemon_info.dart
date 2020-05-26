@@ -75,12 +75,8 @@ class _PokemonInfoState extends State<PokemonInfo> {
                     alignment: FractionalOffset.centerRight,
                     child: Text(
                       ' ${pokedex[widget.currentPokemon][type]}',
-                      style: TextStyle(
-                        fontFamily: 'Alata',
-                        color: tagColor['Water'],
-                        fontSize: 14,
-                        decoration: TextDecoration.none,
-                      ),
+                      style: kNormalSuperSmallStyle.copyWith(
+                          color: tagColor['Water']),
                     ),
                   ),
                 ),
@@ -187,12 +183,9 @@ class _PokemonInfoState extends State<PokemonInfo> {
           padding: const EdgeInsets.only(left: 15),
           child: Text(
             'Type',
-            style: TextStyle(
-              fontFamily: 'Alata',
+            style: kTitleStyle.copyWith(
               color: Colors.black,
-              fontSize: 20,
               fontWeight: FontWeight.w500,
-              decoration: TextDecoration.none,
             ),
           ),
         ),
@@ -222,12 +215,9 @@ class _PokemonInfoState extends State<PokemonInfo> {
           padding: const EdgeInsets.only(left: 15),
           child: Text(
             'Weaknesses',
-            style: TextStyle(
-              fontFamily: 'Alata',
+            style: kTitleStyle.copyWith(
               color: Colors.black,
-              fontSize: 20,
               fontWeight: FontWeight.w500,
-              decoration: TextDecoration.none,
             ),
           ),
         ),
@@ -245,7 +235,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 width: MediaQuery.of(context).size.width * 2 / 3 / 2,
                 style: TextStyle(
                   fontSize: MediaQuery.of(context).size.width / 25,
-                  fontFamily: 'Alata',
+                  fontFamily: 'Alata',  
                   color: Colors.white,
                   decoration: TextDecoration.none,
                 ),
@@ -257,12 +247,9 @@ class _PokemonInfoState extends State<PokemonInfo> {
           padding: const EdgeInsets.only(left: 15),
           child: Text(
             'Strength index',
-            style: TextStyle(
-              fontFamily: 'Alata',
+            style: kTitleStyle.copyWith(
               color: Colors.black,
-              fontSize: 20,
               fontWeight: FontWeight.w500,
-              decoration: TextDecoration.none,
             ),
           ),
         ),
@@ -304,12 +291,9 @@ class _PokemonInfoState extends State<PokemonInfo> {
           ),
           child: Text(
             'Introduction',
-            style: TextStyle(
-              fontFamily: 'Alata',
+            style: kTitleStyle.copyWith(
               color: Colors.black,
-              fontSize: 20,
               fontWeight: FontWeight.w500,
-              decoration: TextDecoration.none,
             ),
           ),
         ),
@@ -322,13 +306,9 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 ),
                 child: Text(
                   pokedex[widget.currentPokemon]['introduction'],
-                  style: TextStyle(
+                  style: kNormalSmallStyle.copyWith(
                     fontFamily: 'Source_Sans_Pro',
-                    color: Colors.black,
-                    fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    // fontWeight: FontWeight.w400,
-                    decoration: TextDecoration.none,
                   ),
                 ),
               )

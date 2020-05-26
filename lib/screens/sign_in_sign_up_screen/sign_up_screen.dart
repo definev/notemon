@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gottask/utils/constant.dart';
+import 'package:gottask/utils/utils.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -60,8 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   child: Text(
                                     'Notemon',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 25,
+                                    style: kBigTitleStyle.copyWith(
                                       fontFamily: "Tomorrow",
                                       color: Colors.white,
                                     ),
@@ -114,21 +114,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: TextField(
                                 cursorColor: TodoColors.deepPurple,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'Alata',
-                                ),
+                                style: kMediumStyle,
                                 decoration: InputDecoration(
                                   labelText: 'Email',
-                                  labelStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  labelStyle: kMediumStyle,
                                   hintText: 'Your email',
-                                  hintStyle: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  hintStyle: kTinySmallStyle,
                                 ),
                               ),
                             ),
@@ -146,21 +137,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: TextField(
                                 cursorColor: TodoColors.deepPurple,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'Alata',
-                                ),
+                                style: kMediumStyle,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  labelStyle: kMediumStyle,
                                   hintText: 'Your password',
-                                  hintStyle: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  hintStyle: kTinySmallStyle,
                                 ),
                               ),
                             ),
@@ -178,21 +160,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: TextField(
                                 cursorColor: TodoColors.deepPurple,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'Alata',
-                                ),
+                                style: kMediumStyle,
                                 decoration: InputDecoration(
                                   labelText: 'Rewrite password',
-                                  labelStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  labelStyle: kMediumStyle,
                                   hintText: 'Rewrite your password',
-                                  hintStyle: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Alata',
-                                  ),
+                                  hintStyle: kTinySmallStyle,
                                 ),
                               ),
                             ),
@@ -225,11 +198,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: Center(
                               child: Text(
                                 'Sign up and login',
-                                style: TextStyle(
-                                  fontFamily: 'Alata',
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
+                                style:
+                                    kMediumStyle.copyWith(color: Colors.white),
                               ),
                             ),
                           ),

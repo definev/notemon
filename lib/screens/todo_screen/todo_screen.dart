@@ -15,6 +15,7 @@ import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class TodoScreen extends StatefulWidget {
   final Todo todo;
@@ -121,9 +122,8 @@ class _TodoScreenState extends State<TodoScreen>
           final dir = File(_subAudioPath);
           dir.deleteSync(recursive: true);
         }
-        _subAudioPath = appDocDirectory.path +
-            '/audio_' +
-            '${DateTime.now().millisecondsSinceEpoch.toString()}.wav';
+        String randomName = Uuid().v4();
+        _subAudioPath = appDocDirectory.path + '/audio_' + '$randomName.wav';
         _recorder =
             FlutterAudioRecorder(_subAudioPath, audioFormat: AudioFormat.WAV);
 
@@ -224,9 +224,6 @@ class _TodoScreenState extends State<TodoScreen>
     });
   }
 
-  // Future _onChangeAudio(int milliseconds) {
-  //   audioPlayer.seek(Duration(milliseconds: milliseconds));
-  // }
   @deprecated
   @override
   void initState() {
@@ -297,11 +294,7 @@ class _TodoScreenState extends State<TodoScreen>
       padding: const EdgeInsets.only(left: 10, top: 5),
       child: Text(
         title,
-        style: TextStyle(
-          fontFamily: 'Alata',
-          color: Colors.grey,
-          fontSize: 16,
-        ),
+        style: kNormalStyle.copyWith(color: Colors.grey),
       ),
     );
   }
@@ -316,252 +309,252 @@ class _TodoScreenState extends State<TodoScreen>
       _currentTask = widget.todo;
       _isChecked = _currentTask.isDone;
     }
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      bottomNavigationBar: _buildAddTaskButton(context),
-      appBar: AppBar(
-        backgroundColor: Color(int.parse(colors[indexColor])),
-        centerTitle: true,
-        title: StreamBuilder(
-          initialData: _content,
-          stream: _contentStreamController.stream,
-          builder: (context, snapshot) => Text(
-            snapshot.data,
-            style: TextStyle(
-              fontFamily: 'Alata',
-              decoration:
-                  _isChecked ? TextDecoration.lineThrough : TextDecoration.none,
-            ),
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_isRecording == false) {
-              Navigator.pop(context);
-            } else {
-              showWarning(context);
-            }
-          },
-        ),
-        actions: <Widget>[
-          GestureDetector(
-            onTap: () {
-              setState(() => _isChecked = !_isChecked);
-              _currentTask = _currentTask.copyWith(isDone: _isChecked);
-              _todoBloc.add(EditTodoEvent(todo: _currentTask));
-            },
-            child: _isChecked
-                ? FittedBox(
-                    child: Container(
-                      height: 13,
-                      width: 13,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      margin: EdgeInsets.all(10.0),
-                      child: Center(
-                        child: Icon(
-                          Icons.check,
-                          size: 13,
-                          color: Color(int.parse(colors[_currentTask.color])),
-                        ),
-                      ),
-                    ),
-                  )
-                : FittedBox(
-                    child: Container(
-                      height: 13,
-                      width: 13,
-                      margin: EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(3),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                  ),
-          ),
-          IconButton(
-            color: Colors.white,
-            icon: Icon(
-              Icons.delete_outline,
-              color: Colors.white,
-            ),
-            onPressed: () async {
-              _todoBloc.add(DeleteTodoEvent(todo: _currentTask));
-              await saveDeleteTask();
-              int doTodo = await onDoingTask();
-              int delTodo = await readDeleteTask();
-              int doneTodo = await readDoneTask();
-              _doDelDoneTodoBloc.add(
-                UpdateDoDelDoneTodoEvent(
-                  DoDelDoneTodo(
-                    id: 1,
-                    doTodo: doTodo,
-                    delTodo: delTodo,
-                    doneTodo: doneTodo,
-                  ),
-                ),
-              );
-              Navigator.pop(context);
-            },
-          )
-        ],
+    return Theme(
+      data: Theme.of(context).copyWith(
+        accentColor: Color(int.parse(colors[indexColor])),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _buildTaskNameTextField(),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, top: 5),
-                  child: Text(
-                    'Color',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      color: Colors.grey,
-                      fontSize: 16,
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        bottomNavigationBar: _buildAddTaskButton(context),
+        appBar: AppBar(
+          backgroundColor: Color(int.parse(colors[indexColor])),
+          centerTitle: true,
+          title: StreamBuilder(
+            initialData: _content,
+            stream: _contentStreamController.stream,
+            builder: (context, snapshot) => Text(
+              snapshot.data,
+              style: TextStyle(
+                fontFamily: 'Alata',
+                decoration: _isChecked
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+              ),
+            ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (_isRecording == false) {
+                Navigator.pop(context);
+              } else {
+                showWarning(context);
+              }
+            },
+          ),
+          actions: <Widget>[
+            GestureDetector(
+              onTap: () {
+                setState(() => _isChecked = !_isChecked);
+                _currentTask = _currentTask.copyWith(isDone: _isChecked);
+                _todoBloc.add(EditTodoEvent(todo: _currentTask));
+              },
+              child: _isChecked
+                  ? FittedBox(
+                      child: Container(
+                        height: 13,
+                        width: 13,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        margin: EdgeInsets.all(10.0),
+                        child: Center(
+                          child: Icon(
+                            Icons.check,
+                            size: 13,
+                            color: Color(int.parse(colors[_currentTask.color])),
+                          ),
+                        ),
+                      ),
+                    )
+                  : FittedBox(
+                      child: Container(
+                        height: 13,
+                        width: 13,
+                        margin: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+            IconButton(
+              color: Colors.white,
+              icon: Icon(
+                Icons.delete_outline,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                _todoBloc.add(DeleteTodoEvent(todo: _currentTask));
+                await saveDeleteTask();
+                int doTodo = await onDoingTask();
+                int delTodo = await readDeleteTask();
+                int doneTodo = await readDoneTask();
+                _doDelDoneTodoBloc.add(
+                  UpdateDoDelDoneTodoEvent(
+                    DoDelDoneTodo(
+                      id: 1,
+                      doTodo: doTodo,
+                      delTodo: delTodo,
+                      doneTodo: doneTodo,
                     ),
                   ),
-                ),
-                SizedBox(height: 5),
-                _buildColorPicker(),
-                _buildTitle('Catagory'),
-                SizedBox(height: 5),
-                _buildCatagoriesPicker(),
-                _buildTitle('File'),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            if (isExpandCamera == false) {
-                              animationController.forward();
-                              setState(() => isExpandCamera = true);
-                            } else {
-                              animationController.reverse();
-                              setState(() => isExpandCamera = false);
-                            }
-                          },
-                          child: _cameraButton(),
-                        ),
-                        isExpandCamera == true
-                            ? GestureDetector(
-                                onTap: () async {
-                                  animationController.reverse();
-                                  await _openCamera();
-                                  setState(() {
-                                    isExpandCamera = false;
-                                  });
-                                },
-                                child: AnimatedOpacity(
-                                  duration: animationController.duration,
-                                  opacity: animation.value,
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(
-                                        color: Color(
-                                            int.parse(colors[indexColor])),
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(3),
-                                    ),
-                                    child: Icon(
-                                      SimpleLineIcons.camera,
-                                      color:
-                                          Color(int.parse(colors[indexColor])),
-                                      size: 50,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Container(height: 0, width: 0),
-                        isExpandCamera == true
-                            ? GestureDetector(
-                                onTap: () async {
-                                  animationController.reverse();
-                                  await _openGallery();
-                                  setState(() => isExpandCamera = false);
-                                },
-                                child: AnimatedOpacity(
-                                  duration: animationController.duration,
-                                  opacity: animation.value,
-                                  child: Container(
-                                    margin: const EdgeInsets.all(10),
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(
-                                        color: Color(
-                                            int.parse(colors[indexColor])),
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(3),
-                                    ),
-                                    child: Icon(
-                                      SimpleLineIcons.picture,
-                                      color:
-                                          Color(int.parse(colors[indexColor])),
-                                      size: 50,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Container(height: 0, width: 0),
-                        imageFileList.isEmpty
-                            ? isExpandCamera == true
-                                ? Container()
-                                : AnimatedOpacity(
-                                    opacity: opacityAnimation.value,
-                                    duration: animationController.duration,
-                                    child: Text(
-                                      'Empty',
-                                      style: TextStyle(
-                                        fontFamily: 'Alata',
-                                        fontSize: 20,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  )
-                            : isExpandCamera == true
-                                ? Container()
-                                : LimitedBox(
-                                    maxHeight: 100,
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width - 140,
-                                    child: StreamBuilder<List<File>>(
-                                      initialData: imageFileList,
-                                      builder: (context, snapshot) =>
-                                          _buildListImages(snapshot),
-                                    ),
-                                  ),
-                      ],
-                    ),
-                    _buildMicrophone(context),
-                  ],
-                ),
-              ],
-            ),
+                );
+                Navigator.pop(context);
+              },
+            )
           ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _buildTaskNameTextField(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 5),
+                    child: Text(
+                      'Color',
+                      style: kNormalStyle.copyWith(color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  _buildColorPicker(),
+                  _buildTitle('Catagory'),
+                  SizedBox(height: 5),
+                  _buildCatagoriesPicker(),
+                  _buildTitle('File'),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              if (isExpandCamera == false) {
+                                animationController.forward();
+                                setState(() => isExpandCamera = true);
+                              } else {
+                                animationController.reverse();
+                                setState(() => isExpandCamera = false);
+                              }
+                            },
+                            child: _cameraButton(),
+                          ),
+                          isExpandCamera == true
+                              ? GestureDetector(
+                                  onTap: () async {
+                                    animationController.reverse();
+                                    await _openCamera();
+                                    setState(() {
+                                      isExpandCamera = false;
+                                    });
+                                  },
+                                  child: AnimatedOpacity(
+                                    duration: animationController.duration,
+                                    opacity: animation.value,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Color(
+                                              int.parse(colors[indexColor])),
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      child: Icon(
+                                        SimpleLineIcons.camera,
+                                        color: Color(
+                                            int.parse(colors[indexColor])),
+                                        size: 50,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(height: 0, width: 0),
+                          isExpandCamera == true
+                              ? GestureDetector(
+                                  onTap: () async {
+                                    animationController.reverse();
+                                    await _openGallery();
+                                    setState(() => isExpandCamera = false);
+                                  },
+                                  child: AnimatedOpacity(
+                                    duration: animationController.duration,
+                                    opacity: animation.value,
+                                    child: Container(
+                                      margin: const EdgeInsets.all(10),
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Color(
+                                              int.parse(colors[indexColor])),
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      child: Icon(
+                                        SimpleLineIcons.picture,
+                                        color: Color(
+                                            int.parse(colors[indexColor])),
+                                        size: 50,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(height: 0, width: 0),
+                          imageFileList.isEmpty
+                              ? isExpandCamera == true
+                                  ? Container()
+                                  : AnimatedOpacity(
+                                      opacity: opacityAnimation.value,
+                                      duration: animationController.duration,
+                                      child: Text(
+                                        'Empty',
+                                        style: kTitleStyle.copyWith(
+                                            color: Colors.grey),
+                                      ),
+                                    )
+                              : isExpandCamera == true
+                                  ? Container()
+                                  : LimitedBox(
+                                      maxHeight: 100,
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width -
+                                              140,
+                                      child: StreamBuilder<List<File>>(
+                                        initialData: imageFileList,
+                                        builder: (context, snapshot) =>
+                                            _buildListImages(snapshot),
+                                      ),
+                                    ),
+                        ],
+                      ),
+                      _buildMicrophone(context),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -707,11 +700,7 @@ class _TodoScreenState extends State<TodoScreen>
               )
             : Text(
                 'Empty',
-                style: TextStyle(
-                  fontFamily: 'Alata',
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
+                style: kTitleStyle.copyWith(color: Colors.grey),
               ),
       ],
     );
@@ -844,11 +833,7 @@ class _TodoScreenState extends State<TodoScreen>
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'Rename to-do',
-            labelStyle: TextStyle(
-              fontFamily: 'Alata',
-              color: Colors.grey,
-              fontSize: 16,
-            ),
+            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
           ),
@@ -906,11 +891,7 @@ class _TodoScreenState extends State<TodoScreen>
                 ),
                 Text(
                   ' Edit to-do',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  style: kNormalStyle.copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -946,13 +927,7 @@ class _TodoScreenState extends State<TodoScreen>
                   ),
                   Text(
                     'Do not go out if recording not done.',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 20,
-                      decorationStyle: TextDecorationStyle.double,
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                    ),
+                    style: kTitleStyle,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -1088,9 +1063,7 @@ class _TodoScreenState extends State<TodoScreen>
               }
               return GestureDetector(
                 onTap: () {
-                  setState(() {
-                    indexColor = index;
-                  });
+                  setState(() => indexColor = index);
                 },
                 child: Container(
                   margin: const EdgeInsets.all(3),

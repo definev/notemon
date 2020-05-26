@@ -173,6 +173,7 @@ class FirebaseMethods {
         .collection('pokemonStates')
         .getDocuments();
     favouritePokemonBloc.add(InitFavouritePokemonEvent());
+    _favouritePokemonSnapshots.documents?.forEach((element) {});
     _favouritePokemonSnapshots.documents.forEach((map) {
       FavouritePokemon favouritePokemon = FavouritePokemon.fromMap(map.data);
       favouritePokemonBloc
@@ -203,7 +204,8 @@ class FirebaseMethods {
         .document('star')
         .get();
 
-    starBloc.add(SetStarEvent(point: _starSnapshot.data['star']));
+
+    starBloc.add(SetStarEvent(point: _starSnapshot.data['star'] ?? 0));
   }
 
   Future<void> updateStarpoint(int currentStar) async {

@@ -114,11 +114,8 @@ class _SplashScreenState extends State<SplashScreen>
                                   widget.isInit == null
                                       ? 'Let\'s go!'
                                       : 'Go back',
-                                  style: TextStyle(
-                                    fontFamily: 'Alata',
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
+                                  style: kNormalStyle.copyWith(
+                                      color: Colors.white),
                                 ),
                                 Icon(
                                   AntDesign.arrowright,

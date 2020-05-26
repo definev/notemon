@@ -597,11 +597,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(10),
                     labelText: 'Achieve goal',
-                    labelStyle: TextStyle(
-                      fontFamily: 'Alata',
-                      color: Colors.grey,
-                      fontSize: 16,
-                    ),
+                    labelStyle: kNormalStyle.copyWith(color: Colors.grey),
                     border: InputBorder.none,
                   ),
                   controller: _achieveTextController,
@@ -661,12 +657,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 SizedBox(height: 5),
                 Text(
                   'Warning:',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    fontSize: 20,
-                    color: Colors.yellow[900],
-                    decoration: TextDecoration.none,
-                  ),
+                  style: kTitleStyle.copyWith(color: Colors.yellow[900]),
                 ),
                 Text(
                   'Are you sure?',
@@ -699,10 +690,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           child: Center(
                             child: Text(
                               'Cancel',
-                              style:
-                                  TextStyle(fontFamily: 'Alata', fontSize: 16)
-                                      .copyWith(
-                                decorationStyle: TextDecorationStyle.double,
+                              style: kTitleStyle.copyWith(
+                                // decorationStyle: TextDecorationStyle.double,
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
                               ),
@@ -740,9 +729,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           child: Center(
                             child: Text(
                               'Give up',
-                              style:
-                                  TextStyle(fontFamily: 'Alata', fontSize: 16)
-                                      .copyWith(
+                              style: kTitleStyle.copyWith(
                                 decorationStyle: TextDecorationStyle.double,
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
@@ -786,9 +773,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     StringFormatter.format(
                         _achievelists[_achievelists.length - index - 1]),
                     overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: 16,
+                    style: kNormalStyle.copyWith(
                       decoration:
                           _isDoneAchieve[_achievelists.length - index - 1] ==
                                   false

@@ -80,11 +80,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                   ),
                   Text(
                     ' Add task',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                    style: kNormalStyle.copyWith(color: Colors.white),
                   ),
                 ],
               ),
@@ -146,11 +142,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Time',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    color: Colors.grey,
-                    fontSize: 16,
-                  ),
+                  style: kNormalStyle.copyWith(color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 5),
@@ -195,11 +187,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(10),
                               labelText: 'Achieve goal',
-                              labelStyle: TextStyle(
-                                fontFamily: 'Alata',
-                                color: Colors.grey,
-                                fontSize: 16,
-                              ),
+                              labelStyle:
+                                  kNormalStyle.copyWith(color: Colors.grey),
                               border: InputBorder.none,
                             ),
                             controller: _achieveTextController,
@@ -247,7 +236,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                       return const Center(
                         child: Text(
                           'Empty achieve.',
-                          style: TextStyle(fontFamily: 'Alata', fontSize: 16),
+                          style: kTitleStyle,
                         ),
                       );
                     }
@@ -255,7 +244,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                       return const Center(
                         child: Text(
                           'Empty achieve.',
-                          style: TextStyle(fontFamily: 'Alata', fontSize: 16),
+                          style: kTitleStyle,
                         ),
                       );
                     }
@@ -281,11 +270,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Text(
         title,
-        style: TextStyle(
-          fontFamily: 'Alata',
-          color: Colors.grey,
-          fontSize: 16,
-        ),
+        style: kNormalStyle.copyWith(color: Colors.grey),
       ),
     );
   }
@@ -306,11 +291,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'Task name',
-            labelStyle: TextStyle(
-              fontFamily: 'Alata',
-              color: Colors.grey,
-              fontSize: 16,
-            ),
+            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
             border: InputBorder.none,
           ),
           controller: _taskNameTextController,
@@ -486,13 +467,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 ),
                 Text(
                   'Please fill in the blank.',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    fontSize: 20,
-                    decorationStyle: TextDecorationStyle.double,
-                    color: Colors.black,
-                    decoration: TextDecoration.none,
-                  ),
+                  style: kTitleStyle,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -512,13 +487,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                       child: Center(
                         child: Text(
                           'Cancel',
-                          style: TextStyle(
-                            fontFamily: 'Alata',
-                            fontSize: 20,
-                            decorationStyle: TextDecorationStyle.double,
-                            color: Colors.white,
-                            decoration: TextDecoration.none,
-                          ),
+                          style: kTitleStyle.copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -547,10 +516,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
             children: <Widget>[
               Text(
                 StringFormatter.format(snapshot.data[index]),
-                style: const TextStyle(
-                  fontFamily: 'Alata',
-                  fontSize: 16,
-                ),
+                style: kNormalStyle,
               ),
               GestureDetector(
                 child: Icon(

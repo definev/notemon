@@ -68,13 +68,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                 const SizedBox(height: 20),
                 Text(
                   'Are you sure?',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    fontSize: 25,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w200,
-                    decoration: TextDecoration.none,
-                  ),
+                  style: kBigTitleStyle.copyWith(fontWeight: FontWeight.w200),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -103,13 +97,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           child: Center(
                             child: Text(
                               'Cancel',
-                              style: TextStyle(
-                                fontFamily: 'Alata',
-                                fontSize: 20,
-                                decorationStyle: TextDecorationStyle.double,
-                                color: Colors.white,
-                                decoration: TextDecoration.none,
-                              ),
+                              style: kTitleStyle.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -145,13 +133,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           child: Center(
                             child: Text(
                               'Buy',
-                              style: TextStyle(
-                                fontFamily: 'Alata',
-                                fontSize: 20,
-                                decorationStyle: TextDecorationStyle.double,
-                                color: Colors.white,
-                                decoration: TextDecoration.none,
-                              ),
+                              style: kTitleStyle.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -229,10 +211,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         blendMode: BlendMode.modulate,
                         child: Text(
                           'Ads',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
+                          style: kNormalSuperSmallStyle.copyWith(
+                              color: Colors.white),
                         ),
                       ),
                     ),
@@ -292,13 +272,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                 const SizedBox(height: 20),
                 Text(
                   'You will get $_amount stars!',
-                  style: TextStyle(
-                    fontFamily: 'Alata',
-                    fontSize: 25,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w200,
-                    decoration: TextDecoration.none,
-                  ),
+                  style: kBigTitleStyle.copyWith(fontWeight: FontWeight.w200),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -327,13 +301,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           child: Center(
                             child: Text(
                               'Cancel',
-                              style: TextStyle(
-                                fontFamily: 'Alata',
-                                fontSize: 20,
-                                decorationStyle: TextDecorationStyle.double,
-                                color: Colors.white,
-                                decoration: TextDecoration.none,
-                              ),
+                              style: kTitleStyle.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -365,13 +333,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           child: Center(
                             child: Text(
                               'Watch ads',
-                              style: TextStyle(
-                                fontFamily: 'Alata',
-                                fontSize: 20,
-                                decorationStyle: TextDecorationStyle.double,
-                                color: Colors.white,
-                                decoration: TextDecoration.none,
-                              ),
+                              style: kTitleStyle.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -634,7 +596,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
 
   Widget _buyButton() => GestureDetector(
         onTap: () async {
-          if (await currentStar() <= 60) {
+          if (await currentStar() >= 60) {
             _showBuyCheckDialog(context);
           }
         },
@@ -657,28 +619,22 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
             children: <Widget>[
               Text(
                 'Unlock',
-                style: TextStyle(
-                  fontFamily: 'Alata',
+                style: kNormalSmallStyle.copyWith(
                   color: _currentStarPoint >= 60
                       ? TodoColors.deepPurple
                       : Colors.grey,
-                  fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  decoration: TextDecoration.none,
                 ),
               ),
               Row(
                 children: [
                   Text(
                     '60 ',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
+                    style: kNormalSmallStyle.copyWith(
                       color: _currentStarPoint >= 60
                           ? TodoColors.deepPurple
                           : Colors.grey,
-                      fontSize: 15,
                       fontWeight: FontWeight.w300,
-                      decoration: TextDecoration.none,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -783,11 +739,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         Material(
                           child: Text(
                             _allPokemonBloc.pokemonStateList.collectedPokemon(),
-                            style: TextStyle(
-                              fontFamily: 'Alata',
-                              fontSize: 14,
-                              color: TodoColors.deepPurple,
-                            ),
+                            style: kNormalSuperSmallStyle.copyWith(
+                                color: TodoColors.deepPurple),
                           ),
                         ),
                       GestureDetector(
@@ -809,11 +762,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         Material(
                           child: Text(
                             _allPokemonBloc.pokemonStateList.collectedPokemon(),
-                            style: TextStyle(
-                              fontFamily: 'Alata',
-                              fontSize: 14,
-                              color: TodoColors.deepPurple,
-                            ),
+                            style: kNormalSuperSmallStyle.copyWith(
+                                color: TodoColors.deepPurple),
                           ),
                         ),
                     ],
@@ -840,10 +790,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           Material(
                             child: Text(
                               '$_currentStarPoint ',
-                              style: TextStyle(
-                                fontFamily: 'Alata',
-                                fontSize: 15,
-                              ),
+                              style: kNormalSmallStyle,
                             ),
                           ),
                           Image.asset(
