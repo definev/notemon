@@ -42,7 +42,7 @@ class ConnectionStatusSingleton {
   //And check the connection status out of the gate
   void initialize() {
     _connectivity.onConnectivityChanged.listen(_connectionChange);
-    checkConnection();
+    checkOutConnection();
   }
 
   Stream get connectionChange => connectionChangeController.stream;
@@ -56,11 +56,11 @@ class ConnectionStatusSingleton {
 
   //flutter_connectivity's listener
   void _connectionChange(ConnectivityResult result) {
-    checkConnection();
+    checkOutConnection();
   }
 
   //The test to actually see if there is a connection
-  Future<bool> checkConnection() async {
+  Future<bool> checkOutConnection() async {
     bool previousConnection = hasConnection;
 
     try {

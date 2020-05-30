@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -11,6 +13,7 @@ import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
 import 'package:gottask/models/do_del_done_todo.dart';
 import 'package:gottask/models/todo.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -57,14 +60,16 @@ class _TodoScreenState extends State<TodoScreen>
   Duration _duration = const Duration();
   Duration _position = const Duration();
 
-  List<File> imageFileList = [];
+  List<Uint8List> imageFileList = [];
   List<String> images = [];
   List<bool> _catagoryItems = List.generate(9, (index) => false);
   String _content;
   final StreamController<String> _contentStreamController =
       StreamController<String>.broadcast();
+
   DoDelDoneTodoBloc _doDelDoneTodoBloc;
   TodoBloc _todoBloc;
+  FirebaseRepository _repository;
   Todo _currentTask;
 
   Future _openGallery() async {
@@ -74,8 +79,8 @@ class _TodoScreenState extends State<TodoScreen>
       maxWidth: 100,
     );
     if (imageFile != null) {
-      images.add(imageFile.path);
-      imageFileList.add(imageFile);
+      images.add(base64Encode(imageFile.readAsBytesSync()));
+      imageFileList.add(imageFile.readAsBytesSync());
     }
   }
 
@@ -84,8 +89,8 @@ class _TodoScreenState extends State<TodoScreen>
       source: ImageSource.camera,
     );
     if (imageFile != null) {
-      images.add(imageFile.path);
-      imageFileList.add(imageFile);
+      images.add(base64Encode(imageFile.readAsBytesSync()));
+      imageFileList.add(imageFile.readAsBytesSync());
     }
   }
 
@@ -249,7 +254,7 @@ class _TodoScreenState extends State<TodoScreen>
       images.removeAt(0);
     }
     images.forEach((path) {
-      imageFileList.add(File(path));
+      imageFileList.add(base64Decode(path));
     });
     _mainAudioPath = widget.todo.audioPath;
     if (_mainAudioPath != '') {
@@ -305,14 +310,14 @@ class _TodoScreenState extends State<TodoScreen>
     if (_isInitWidget == false) {
       _todoBloc = findBloc<TodoBloc>();
       _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
+      _repository = findBloc<FirebaseRepository>();
       _isInitWidget = true;
       _currentTask = widget.todo;
       _isChecked = _currentTask.isDone;
     }
     return Theme(
-      data: Theme.of(context).copyWith(
-        accentColor: Color(int.parse(colors[indexColor])),
-      ),
+      data: Theme.of(context)
+          .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
       child: Scaffold(
         resizeToAvoidBottomPadding: false,
         bottomNavigationBar: _buildAddTaskButton(context),
@@ -344,10 +349,12 @@ class _TodoScreenState extends State<TodoScreen>
           ),
           actions: <Widget>[
             GestureDetector(
-              onTap: () {
+              onTap: () async {
                 setState(() => _isChecked = !_isChecked);
                 _currentTask = _currentTask.copyWith(isDone: _isChecked);
                 _todoBloc.add(EditTodoEvent(todo: _currentTask));
+                if (await checkConnection())
+                  _repository.updateTodoToFirebase(_currentTask);
               },
               child: _isChecked
                   ? FittedBox(
@@ -540,7 +547,7 @@ class _TodoScreenState extends State<TodoScreen>
                                       maxWidth:
                                           MediaQuery.of(context).size.width -
                                               140,
-                                      child: StreamBuilder<List<File>>(
+                                      child: StreamBuilder<List<Uint8List>>(
                                         initialData: imageFileList,
                                         builder: (context, snapshot) =>
                                             _buildListImages(snapshot),
@@ -706,7 +713,7 @@ class _TodoScreenState extends State<TodoScreen>
     );
   }
 
-  ListView _buildListImages(AsyncSnapshot<List<File>> snapshot) =>
+  ListView _buildListImages(AsyncSnapshot<List<Uint8List>> snapshot) =>
       ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: snapshot.data.length,
@@ -733,7 +740,7 @@ class _TodoScreenState extends State<TodoScreen>
                         ),
                       );
                     },
-                    child: Image.file(
+                    child: Image.memory(
                       snapshot.data[index],
                       fit: BoxFit.cover,
                     ),
@@ -841,7 +848,7 @@ class _TodoScreenState extends State<TodoScreen>
       );
 
   Widget _buildAddTaskButton(BuildContext context) => GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (_isRecording == false) {
             _isEdit = true;
             String _audioPath;
@@ -872,6 +879,18 @@ class _TodoScreenState extends State<TodoScreen>
                 ),
               ),
             );
+            if (await checkConnection()) {
+              _repository.updateTodoToFirebase(_currentTask.copyWith(
+                content: _todoEditting.text != ''
+                    ? _todoEditting.text
+                    : _currentTask.content,
+                images: images.toString(),
+                color: indexColor,
+                audioPath: _audioPath,
+                catagories: _catagoryItems.toString(),
+              ));
+            }
+
             Navigator.pop(context);
           } else {
             showWarning(context);

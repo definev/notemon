@@ -56,13 +56,6 @@ class FirebaseRepository {
     String fileName,
   ) =>
       _firestoreMethods.downloadAudioFile(ref, fileName);
-  Future<void> uploadImageFile(String fileName) =>
-      _firestoreMethods.uploadImageFile(user, fileName);
-  Future<void> downloadImageFile(
-    StorageReference ref,
-    String fileName,
-  ) =>
-      _firestoreMethods.downloadImageFile(ref, fileName);
 
   /// [PokemonState] methods
   Future<void> getAllPokemonStateAndLoadToDb(AllPokemonBloc allPokemonBloc) =>

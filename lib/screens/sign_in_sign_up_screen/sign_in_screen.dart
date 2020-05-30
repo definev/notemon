@@ -18,10 +18,11 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
-  FirebaseRepository _repository = FirebaseRepository();
+  FirebaseRepository _repository;
 
   @override
   Widget build(BuildContext context) {
+    _repository = Provider.of<FirebaseRepository>(context);
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       body: Stack(

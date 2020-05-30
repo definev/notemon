@@ -7,6 +7,7 @@ import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart'
 import 'package:gottask/bloc/star/bloc/star_bloc.dart';
 import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
+import 'package:gottask/repository/firebase_repository.dart';
 import 'package:gottask/screens/home_screen.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_in_screen.dart';
 import 'package:gottask/screens/splash_screen/splash_screen.dart';
@@ -72,6 +73,9 @@ class _MyAppState extends State<MyApp> {
                 ),
                 BlocProvider<FavouritePokemonBloc>(
                   create: (context) => FavouritePokemonBloc(),
+                ),
+                Provider<FirebaseRepository>(
+                  create: (context) => FirebaseRepository(),
                 ),
               ],
               child: MaterialApp(

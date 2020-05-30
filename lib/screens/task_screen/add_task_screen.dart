@@ -7,6 +7,7 @@ import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
 import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/models/do_del_done_task.dart';
 import 'package:gottask/models/task.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:icons_helper/icons_helper.dart';
@@ -28,6 +29,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
 
   TaskBloc _taskBloc;
   DoDelDoneTaskBloc _doDelDoneTaskBloc;
+  FirebaseRepository _repository;
 
   final TextEditingController _achieveTextController = TextEditingController();
   final TextEditingController _taskNameTextController = TextEditingController();
@@ -35,6 +37,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
   Widget build(BuildContext context) {
     _taskBloc = findBloc<TaskBloc>();
     _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
+    _repository = findBloc<FirebaseRepository>();
+
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -112,6 +116,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                     achieve: _achieveLists.toString(),
                     isDoneAchieve: _isDoneAchieveLists.toString(),
                   ),
+                ),
+              );
+              _repository.updateTaskToFirebase(
+                Task(
+                  id: id,
+                  color: indexColor,
+                  catagories: _catagoryItems.toString(),
+                  icon: _iconIndex,
+                  taskName: _taskNameTextController.text,
+                  percent: 0,
+                  timer: timer.toString(),
+                  completeTimer:
+                      const Duration(hours: 0, minutes: 0).toString(),
+                  achieve: _achieveLists.toString(),
+                  isDoneAchieve: _isDoneAchieveLists.toString(),
                 ),
               );
               int doTask = await onDoingTask();
@@ -236,7 +255,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                       return const Center(
                         child: Text(
                           'Empty achieve.',
-                          style: kTitleStyle,
+                          style: kNormalSmallStyle,
                         ),
                       );
                     }
@@ -244,7 +263,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                       return const Center(
                         child: Text(
                           'Empty achieve.',
-                          style: kTitleStyle,
+                          style: kNormalSmallStyle,
                         ),
                       );
                     }

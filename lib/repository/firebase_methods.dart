@@ -67,7 +67,7 @@ class FirebaseMethods {
         .collection('databases')
         .document(_user.uid)
         .collection('tasks')
-        .getDocuments(source: Source.server);
+        .getDocuments();
 
     taskBloc.add(InitTaskEvent());
     _taskSnapshots.documents.forEach((map) {
@@ -204,8 +204,8 @@ class FirebaseMethods {
         .document('star')
         .get();
 
-
-    starBloc.add(SetStarEvent(point: _starSnapshot.data['star'] ?? 0));
+    if (_starSnapshot.data != null)
+      starBloc.add(SetStarEvent(point: _starSnapshot.data['star'] ?? 0));
   }
 
   Future<void> updateStarpoint(int currentStar) async {

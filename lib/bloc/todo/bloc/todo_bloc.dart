@@ -27,14 +27,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Future<void> _deleteEvent(Todo todo) async {
-    List<String> imageLinks =
-        todo.images.substring(1, todo.images.length - 1).split(', ');
-    if (imageLinks[0] != '') {
-      imageLinks.forEach((path) {
-        var dir = File(path);
-        dir.deleteSync(recursive: true);
-      });
-    }
     if (todo.audioPath != '') {
       var audioFile = File(todo.audioPath);
       audioFile.deleteSync(recursive: true);

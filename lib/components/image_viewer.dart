@@ -1,13 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:moor/moor.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class ImageViewer extends StatefulWidget {
   final int imageLinkIndex;
-  final List<File> imageLinkList;
+  final List<Uint8List> imageLinkList;
   final Color color;
   const ImageViewer({this.imageLinkIndex, this.imageLinkList, this.color});
 
@@ -35,8 +34,9 @@ class _ImageViewerState extends State<ImageViewer> {
               PhotoViewGallery.builder(
                 itemCount: widget.imageLinkList.length,
                 builder: (context, index) => PhotoViewGalleryPageOptions(
-                  imageProvider: FileImage(widget.imageLinkList[index]),
+                  imageProvider: MemoryImage(widget.imageLinkList[index]),
                   initialScale: PhotoViewComputedScale.contained,
+                  minScale: PhotoViewComputedScale.contained,
                 ),
               ),
               Align(

@@ -6,6 +6,7 @@ import 'package:gottask/bloc/star/bloc/star_bloc.dart';
 import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/models/do_del_done_todo.dart';
 import 'package:gottask/models/todo.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/todo_screen/todo_screen.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
@@ -29,6 +30,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
   TodoBloc _todoBloc;
   DoDelDoneTodoBloc _doDelDoneTodoBloc;
   StarBloc _starBloc;
+  FirebaseRepository _repository;
   Todo _currentTask;
 
   @override
@@ -42,6 +44,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
     _todoBloc = findBloc<TodoBloc>();
     _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
     _starBloc = findBloc<StarBloc>();
+    _repository = findBloc<FirebaseRepository>();
     _currentTask = widget.task;
 
     return Padding(
@@ -73,11 +76,13 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (_isDone != true) {
                       setState(() => _isChecked = !_isChecked);
                       _currentTask = _currentTask.copyWith(isDone: _isChecked);
                       _todoBloc.add(EditTodoEvent(todo: _currentTask));
+                      if (await checkConnection())
+                        _repository.updateTodoToFirebase(_currentTask);
                     }
                   },
                   child: _isChecked
@@ -140,6 +145,43 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
         ),
         secondaryActions: <Widget>[
           SlideAction(
+            onTap: () async {
+              bool connection = await checkConnection();
+              if (_isChecked == false) {
+                Future.delayed(Duration(milliseconds: 300), () {
+                  setState(() => _isChecked = !_isChecked);
+                  _currentTask =
+                      _currentTask.copyWith(isDone: !_currentTask.isDone);
+                  _todoBloc.add(EditTodoEvent(todo: _currentTask));
+                  if (connection)
+                    _repository.updateTodoToFirebase(_currentTask);
+                });
+              } else if (_isChecked == true) {
+                _isDone = true;
+                Future.delayed(Duration(milliseconds: 350), () async {
+                  await saveDoneTask();
+
+                  int doTodo = await onDoingTask();
+                  int delTodo = await readDeleteTask();
+                  int doneTodo = await readDoneTask();
+                  print('');
+                  _doDelDoneTodoBloc.add(
+                    UpdateDoDelDoneTodoEvent(
+                      DoDelDoneTodo(
+                        id: 1,
+                        doTodo: doTodo,
+                        delTodo: delTodo,
+                        doneTodo: doneTodo,
+                      ),
+                    ),
+                  );
+                  _todoBloc.add(DeleteTodoEvent(todo: widget.task));
+                  if (connection)
+                    _repository.deleteTodoOnFirebase(_currentTask);
+                  _starBloc.add(AddStarEvent(point: 1));
+                });
+              }
+            },
             closeOnTap: true,
             decoration: BoxDecoration(
               color: _isChecked == false
@@ -173,45 +215,12 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 ),
               ],
             ),
-            onTap: () async {
-              if (_isChecked == false) {
-                Future.delayed(Duration(milliseconds: 300), () {
-                  setState(() => _isChecked = !_isChecked);
-                  _currentTask =
-                      _currentTask.copyWith(isDone: !_currentTask.isDone);
-                  _todoBloc.add(
-                    EditTodoEvent(todo: _currentTask),
-                  );
-                });
-              } else if (_isChecked == true) {
-                _isDone = true;
-                Future.delayed(Duration(milliseconds: 350), () async {
-                  await saveDoneTask();
-
-                  int doTodo = await onDoingTask();
-                  int delTodo = await readDeleteTask();
-                  int doneTodo = await readDoneTask();
-                  print('');
-                  _doDelDoneTodoBloc.add(
-                    UpdateDoDelDoneTodoEvent(
-                      DoDelDoneTodo(
-                        id: 1,
-                        doTodo: doTodo,
-                        delTodo: delTodo,
-                        doneTodo: doneTodo,
-                      ),
-                    ),
-                  );
-                  _todoBloc.add(DeleteTodoEvent(todo: widget.task));
-                  _starBloc.add(AddStarEvent(point: 1));
-                });
-              }
-            },
           ),
           if (_isChecked == false)
             SlideAction(
               onTap: () async {
                 _isDone = true;
+                bool connection = await checkConnection();
                 Future.delayed(Duration(milliseconds: 350), () async {
                   await saveDoneTask();
 
@@ -230,6 +239,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                     ),
                   );
                   _todoBloc.add(DeleteTodoEvent(todo: widget.task));
+                  if (connection)
+                    _repository.deleteTodoOnFirebase(_currentTask);
                   _starBloc.add(AddStarEvent(point: 1));
                 });
               },

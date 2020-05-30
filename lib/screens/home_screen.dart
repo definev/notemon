@@ -22,6 +22,8 @@ import 'package:gottask/helper.dart';
 import 'package:gottask/models/favourite_pokemon.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/models/starpoint.dart';
+import 'package:gottask/models/task.dart';
+import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
@@ -49,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
   StarBloc _starBloc;
   FavouritePokemonBloc _favouritePokemonBloc;
 
-  FirebaseRepository _repository = FirebaseRepository();
+  FirebaseRepository _repository;
 
   void _modalBottomSheetMenu() {
     showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
@@ -82,8 +84,6 @@ class _HomeScreenState extends State<HomeScreen>
     setLoadAdsInfirst(false);
     connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChangeController;
-
-    _repository.initUser().then((value) => setState(() {}));
   }
 
   @override
@@ -101,6 +101,8 @@ class _HomeScreenState extends State<HomeScreen>
       _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _starBloc = findBloc<StarBloc>();
+      _repository = findBloc<FirebaseRepository>();
+      _repository.initUser().then((value) => setState(() {}));
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
       _todoBloc.add(InitTodoEvent());
       _taskBloc.add(InitTaskEvent());
@@ -572,11 +574,18 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   Widget _buildOnlineTodo() => Expanded(
-        child: BlocBuilder<TodoBloc, TodoState>(
-          bloc: _todoBloc,
-          builder: (context, state) {
-            if (state is TodoLoaded) {
-              if (state.todo.isEmpty) {
+        child: StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance
+              .collection('databases')
+              .document(_repository.user.uid)
+              .collection('todos')
+              .snapshots(),
+          builder: (context, snapshots) {
+            if (snapshots.data != null) {
+              List<Todo> _todoList = [];
+              snapshots.data.documents
+                  .forEach((todo) => _todoList.add(Todo.fromMap(todo.data)));
+              if (_todoList.isEmpty) {
                 return const Center(
                   child: Text(
                     'Empty to-do',
@@ -587,15 +596,16 @@ class _HomeScreenState extends State<HomeScreen>
                 return ListView.builder(
                   physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.zero,
-                  itemCount: state.todo.length,
+                  itemCount: _todoList.length,
                   itemBuilder: (context, index) => TodoTile(
-                    task: state.todo[index],
+                    task: _todoList[index],
                     index: index,
                     key: UniqueKey(),
                   ),
                 );
               }
             }
+
             return const Center(
               child: Text(
                 'Empty to-do',
@@ -674,11 +684,27 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   Widget _buildOnlineTask() {
-    return BlocBuilder<TaskBloc, TaskState>(
-      bloc: _taskBloc,
-      builder: (context, state) {
-        if (state is TaskLoaded) {
-          if (state.task.isEmpty) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('databases')
+          .document(_repository.user.uid)
+          .collection('tasks')
+          .snapshots(),
+      builder: (context, snapshots) {
+        if (snapshots.data == null) {
+          _repository.uploadAllTaskToFirebase(_taskBloc.taskList);
+          return SizedBox(
+            height: kListViewHeight + 2,
+            width: double.infinity,
+            child: const Center(
+              child: Text(
+                'Empty task',
+                style: kNormalStyle,
+              ),
+            ),
+          );
+        } else {
+          if (snapshots.data.documents.isEmpty) {
             return SizedBox(
               height: kListViewHeight + 2,
               width: double.infinity,
@@ -690,6 +716,9 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             );
           } else {
+            List<Task> _taskList = [];
+            snapshots.data.documents
+                .forEach((maps) => _taskList.add(Task.fromMap(maps.data)));
             return Padding(
               padding: const EdgeInsets.only(left: 10),
               child: SizedBox(
@@ -697,10 +726,10 @@ class _HomeScreenState extends State<HomeScreen>
                 width: double.infinity,
                 child: ListView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: state.task.length + 1,
+                  itemCount: _taskList.length + 1,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    if (index == state.task.length) {
+                    if (index == _taskList.length) {
                       return Center(
                         child: GestureDetector(
                           onTap: () {
@@ -735,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                     return Center(
                       child: TaskTile(
-                        task: state.task[index],
+                        task: _taskList[index],
                         key: UniqueKey(),
                       ),
                     );
@@ -745,16 +774,6 @@ class _HomeScreenState extends State<HomeScreen>
             );
           }
         }
-        return SizedBox(
-          height: kListViewHeight + 2,
-          width: double.infinity,
-          child: const Center(
-            child: Text(
-              'Empty task',
-              style: kNormalStyle,
-            ),
-          ),
-        );
       },
     );
   }

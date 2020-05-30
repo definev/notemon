@@ -41,8 +41,8 @@ dependencies:
   firebase_auth: ^0.16.0
   google_sign_in: ^4.5.1
   animated_text_kit: ^2.0.1
-  moor: ^3.1.0
-  moor_flutter: any
+  # moor: ^3.1.0
+  # moor_flutter: any
   flutter_bloc: any
   connectivity: ^0.4.8+6
   uuid: ^2.0.4

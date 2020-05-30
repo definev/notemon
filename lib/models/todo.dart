@@ -11,7 +11,6 @@ class Todo {
   final bool isDone;
   final int color;
   final String images;
-  final String imageURLs;
   final String audioPath;
   final String catagories;
 
@@ -19,7 +18,6 @@ class Todo {
     @required this.id,
     @required this.content,
     @required this.images,
-    @required this.imageURLs,
     @required this.isDone,
     @required this.color,
     @required this.audioPath,
@@ -34,7 +32,6 @@ class Todo {
         id: json["id"],
         content: json["content"],
         images: json["images"],
-        imageURLs: json["imageURLs"],
         isDone: json["isDone"] == 1 ? true : false,
         color: json["color"],
         audioPath: json["audioPath"],
@@ -45,7 +42,6 @@ class Todo {
         "id": id,
         "content": content,
         "images": images,
-        "imageURLs": imageURLs,
         "isDone": isDone == true ? 1 : 0,
         "color": color,
         "audioPath": audioPath,
@@ -65,7 +61,6 @@ class Todo {
         id: id ?? this.id,
         content: content ?? this.content,
         images: images ?? this.images,
-        imageURLs: imageURLs ?? this.imageURLs,
         isDone: isDone ?? this.isDone,
         color: color ?? this.color,
         audioPath: audioPath ?? this.audioPath,

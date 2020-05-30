@@ -14,6 +14,7 @@ import 'package:gottask/bloc/task/bloc/task_bloc.dart';
 import 'package:gottask/components/countdown_clock.dart';
 import 'package:gottask/models/do_del_done_task.dart';
 import 'package:gottask/models/task.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:icons_helper/icons_helper.dart';
@@ -51,6 +52,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   TaskBloc _taskBloc;
   DoDelDoneTaskBloc _doDelDoneTaskBloc;
   StarBloc _starBloc;
+  FirebaseRepository _repository;
   TextEditingController _achieveTextController = TextEditingController();
 
   FocusNode myFocusNode;
@@ -86,20 +88,24 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     Duration _completeTimer = _oldTimer - _timer;
     _taskBloc.add(
       UpdateTaskEvent(
-        Task(
+        widget.task.copyWith(
           achieve: _achievelists.toString(),
-          color: widget.task.color,
           catagories: _catagoryItems.toString(),
           completeTimer: _completeTimer.toString(),
-          taskName: widget.task.taskName,
-          id: widget.task.id,
           icon: _iconIndex,
-          timer: widget.task.timer,
           isDoneAchieve: _isDoneAchieve.toString(),
           percent: _percent,
         ),
       ),
     );
+    _repository.updateTaskToFirebase(widget.task.copyWith(
+      achieve: _achievelists.toString(),
+      catagories: _catagoryItems.toString(),
+      completeTimer: _completeTimer.toString(),
+      icon: _iconIndex,
+      isDoneAchieve: _isDoneAchieve.toString(),
+      percent: _percent,
+    ));
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -231,20 +237,24 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   Duration _completeTimer = _oldTimer - _timer;
                   _taskBloc.add(
                     UpdateTaskEvent(
-                      Task(
+                      widget.task.copyWith(
                         achieve: _achievelists.toString(),
-                        color: widget.task.color,
                         catagories: _catagoryItems.toString(),
                         completeTimer: _completeTimer.toString(),
-                        taskName: widget.task.taskName,
-                        id: widget.task.id,
                         icon: _iconIndex,
-                        timer: widget.task.timer,
                         isDoneAchieve: _isDoneAchieve.toString(),
                         percent: _percent,
                       ),
                     ),
                   );
+                  _repository.updateTaskToFirebase(widget.task.copyWith(
+                    achieve: _achievelists.toString(),
+                    catagories: _catagoryItems.toString(),
+                    completeTimer: _completeTimer.toString(),
+                    icon: _iconIndex,
+                    isDoneAchieve: _isDoneAchieve.toString(),
+                    percent: _percent,
+                  ));
                 });
                 if (audioPlayer.state == AudioPlayerState.PLAYING) {
                   await audioPlayer.stop();
@@ -333,6 +343,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       _taskBloc = findBloc<TaskBloc>();
       _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
       _starBloc = findBloc<StarBloc>();
+      _repository = findBloc<FirebaseRepository>();
       _isInit = true;
     }
 
@@ -482,9 +493,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             : IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () async {
-                  _taskBloc.add(
-                    DeleteTaskEvent(widget.task),
-                  );
+                  _taskBloc.add(DeleteTaskEvent(widget.task));
+                  if (await checkConnection())
+                    _repository.deleteTaskOnFirebase(widget.task);
                   Navigator.pop(context);
                 },
               ),
@@ -716,6 +727,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                             ),
                           );
                           _taskBloc.add(DeleteTaskEvent(widget.task));
+                          if (await checkConnection())
+                            _repository.deleteTaskOnFirebase(widget.task);
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },

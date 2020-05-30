@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -10,6 +12,7 @@ import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
 import 'package:gottask/models/do_del_done_todo.dart';
 import 'package:gottask/models/todo.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,7 +42,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   bool _isInitWidget = false;
 
   PlayerState _playerState = PlayerState.READY;
-  List<File> imageFileList = [];
+  List<Uint8List> imageFileList = [];
   List<String> images = [];
   List<bool> _catagoryItems = List.generate(9, (index) => false);
 
@@ -55,6 +58,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
 
   TodoBloc _todoBloc;
   DoDelDoneTodoBloc _doDelDoneTodoBloc;
+  FirebaseRepository _repository;
 
   Future _openGallery() async {
     File imageFile = await ImagePicker.pickImage(
@@ -63,8 +67,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
       maxWidth: 100,
     );
     if (imageFile != null) {
-      images.add(imageFile.path);
-      imageFileList.add(imageFile);
+      images.add(base64Encode(imageFile.readAsBytesSync()));
+      imageFileList.add(imageFile.readAsBytesSync());
     }
   }
 
@@ -73,8 +77,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
       source: ImageSource.camera,
     );
     if (imageFile != null) {
-      images.add(imageFile.path);
-      imageFileList.add(imageFile);
+      images.add(base64Encode(imageFile.readAsBytesSync()));
+      imageFileList.add(imageFile.readAsBytesSync());
     }
   }
 
@@ -247,10 +251,10 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   }
 
   _deleteFile() {
-    images.forEach((path) {
-      final dir = Directory(path);
-      dir.deleteSync(recursive: true);
-    });
+    // images.forEach((path) {
+    //   final dir = Directory(path);
+    //   dir.deleteSync(recursive: true);
+    // });
     if (_haveRecord) {
       final dir = Directory(_audioPath);
       dir.deleteSync(recursive: true);
@@ -270,7 +274,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     if (isCreate == false) {
       _deleteFile();
     }
-    imageFileList.forEach((imageFile) => print(imageFile.name));
+    imageFileList.forEach((imageFile) => print(imageFile));
   }
 
   Widget _buildTitle(String title) {
@@ -289,6 +293,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     if (_isInitWidget == false) {
       _todoBloc = findBloc<TodoBloc>();
       _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
+      _repository = findBloc<FirebaseRepository>();
       _isInitWidget = true;
     }
 
@@ -442,7 +447,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                     : LimitedBox(
                         maxHeight: 100,
                         maxWidth: MediaQuery.of(context).size.width - 140,
-                        child: StreamBuilder<List<File>>(
+                        child: StreamBuilder<List<Uint8List>>(
                           initialData: imageFileList,
                           builder: (context, snapshot) =>
                               _buildListImages(snapshot),
@@ -702,7 +707,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         ),
       );
 
-  ListView _buildListImages(AsyncSnapshot<List<File>> snapshot) =>
+  ListView _buildListImages(AsyncSnapshot<List<Uint8List>> snapshot) =>
       ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: snapshot.data.length,
@@ -729,7 +734,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                         ),
                       );
                     },
-                    child: Image.file(
+                    child: Image.memory(
                       snapshot.data[index],
                       fit: BoxFit.cover,
                     ),
@@ -843,7 +848,6 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   id: id,
                   isDone: false,
                   images: images.toString(),
-                  imageURLs: null,
                   color: indexColor,
                   audioPath: _haveRecord ? _audioPath : '',
                   catagories: _catagoryItems.toString(),
@@ -864,6 +868,17 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 ),
               ),
             );
+            if (await checkConnection()) {
+              _repository.updateTodoToFirebase(Todo(
+                content: _todoEditting.text,
+                id: id,
+                isDone: false,
+                images: images.toString(),
+                color: indexColor,
+                audioPath: _haveRecord ? _audioPath : '',
+                catagories: _catagoryItems.toString(),
+              ));
+            }
             Navigator.pop(context);
           } else {
             await showWarning(context);
