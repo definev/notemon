@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
 import 'package:gottask/bloc/task/bloc/task_bloc.dart';
-import 'package:gottask/models/do_del_done_task.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
 import 'package:icons_helper/icons_helper.dart';
+import 'package:uuid/uuid.dart';
 
 class AddTaskScreen extends StatefulWidget {
   @override
@@ -28,7 +27,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
       StreamController<List<String>>();
 
   TaskBloc _taskBloc;
-  DoDelDoneTaskBloc _doDelDoneTaskBloc;
   FirebaseRepository _repository;
 
   final TextEditingController _achieveTextController = TextEditingController();
@@ -36,7 +34,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
   @override
   Widget build(BuildContext context) {
     _taskBloc = findBloc<TaskBloc>();
-    _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
     _repository = findBloc<FirebaseRepository>();
 
     return GestureDetector(
@@ -96,56 +93,25 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 timer == const Duration(hours: 0, minutes: 0)) {
               _buildWarningDialog(context);
             } else {
-              int id = await saveTaskID();
               for (int i = 0; i < _achieveLists.length; i++) {
                 _achieveLists[i] = _achieveLists[i]
                     .replaceAll(RegExp(r','), 'String.fromCharCode(44)');
               }
-              _taskBloc.add(
-                AddTaskEvent(
-                  Task(
-                    id: id,
-                    color: indexColor,
-                    catagories: _catagoryItems.toString(),
-                    icon: _iconIndex,
-                    taskName: _taskNameTextController.text,
-                    percent: 0,
-                    timer: timer.toString(),
-                    completeTimer:
-                        const Duration(hours: 0, minutes: 0).toString(),
-                    achieve: _achieveLists.toString(),
-                    isDoneAchieve: _isDoneAchieveLists.toString(),
-                  ),
-                ),
+              String id = Uuid().v1();
+              Task _task = Task(
+                id: id,
+                color: indexColor,
+                catagories: _catagoryItems.toString(),
+                icon: _iconIndex,
+                taskName: _taskNameTextController.text,
+                percent: 0,
+                timer: timer.toString(),
+                completeTimer: const Duration(hours: 0, minutes: 0).toString(),
+                achieve: _achieveLists.toString(),
+                isDoneAchieve: _isDoneAchieveLists.toString(),
               );
-              _repository.updateTaskToFirebase(
-                Task(
-                  id: id,
-                  color: indexColor,
-                  catagories: _catagoryItems.toString(),
-                  icon: _iconIndex,
-                  taskName: _taskNameTextController.text,
-                  percent: 0,
-                  timer: timer.toString(),
-                  completeTimer:
-                      const Duration(hours: 0, minutes: 0).toString(),
-                  achieve: _achieveLists.toString(),
-                  isDoneAchieve: _isDoneAchieveLists.toString(),
-                ),
-              );
-              int doTask = await onDoingTask();
-              int delTask = await readTaskGiveUp();
-              int doneTask = await readTaskDone();
-              _doDelDoneTaskBloc.add(
-                UpdateDoDelDoneTaskEvent(
-                  DoDelDoneTask(
-                    id: 1,
-                    doTask: doTask,
-                    delTask: delTask,
-                    doneTask: doneTask,
-                  ),
-                ),
-              );
+              _taskBloc.add(AddTaskEvent(_task));
+              _repository.updateTaskToFirebase(_task);
               Navigator.pop(context);
             }
           },

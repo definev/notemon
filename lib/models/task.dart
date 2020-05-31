@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 import 'dart:convert';
 
 class Task {
-  final int id;
+  final String id;
   final int icon;
   final String taskName;
   final String timer;
@@ -31,7 +31,7 @@ class Task {
   });
 
   Task copyWith({
-    int id,
+    String id,
     int icon,
     String taskName,
     String timer,

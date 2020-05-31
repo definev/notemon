@@ -7,10 +7,8 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
-import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
-import 'package:gottask/models/do_del_done_todo.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
@@ -47,7 +45,9 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   List<bool> _catagoryItems = List.generate(9, (index) => false);
 
   String _audioPath = '';
+  String _audioCode = '';
 
+  Directory appDocDirectory;
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
@@ -57,7 +57,6 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Duration _position = const Duration();
 
   TodoBloc _todoBloc;
-  DoDelDoneTodoBloc _doDelDoneTodoBloc;
   FirebaseRepository _repository;
 
   Future _openGallery() async {
@@ -91,23 +90,21 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             .checkPermissionStatus(PermissionGroup.camera);
         if (permission.value == 0) {}
       }
+      if (Platform.isIOS) {
+        appDocDirectory = await getApplicationDocumentsDirectory();
+      } else {
+        appDocDirectory = await getExternalStorageDirectory();
+      }
 
       if (await FlutterAudioRecorder.hasPermissions) {
-        Directory appDocDirectory;
-        if (Platform.isIOS) {
-          appDocDirectory = await getApplicationDocumentsDirectory();
-        } else {
-          appDocDirectory = await getExternalStorageDirectory();
-        }
-
         if (await _exist()) {
-          final dir = Directory('$_audioPath');
+          final dir = File(appDocDirectory.path + _audioPath);
           dir.deleteSync(recursive: true);
         }
         String randomName = Uuid().v4();
-        _audioPath = appDocDirectory.path + '/audio_$randomName.wav';
-        _recorder =
-            FlutterAudioRecorder(_audioPath, audioFormat: AudioFormat.WAV);
+        _audioPath = '/audio_$randomName.wav';
+        String _path = "${appDocDirectory.path}$_audioPath";
+        _recorder = FlutterAudioRecorder(_path, audioFormat: AudioFormat.WAV);
 
         await _recorder.initialized;
 
@@ -157,7 +154,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         await audioPlayer.stop();
       }
       if (await _exist() == true) {
-        final dir = Directory('$_audioPath');
+        final dir = File('${appDocDirectory.path}$_audioPath');
         dir.deleteSync(recursive: true);
       }
       _recorder.recording;
@@ -197,11 +194,14 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Future _stop() async {
     _isInit = true;
     var result = await _recorder.stop();
+    File _audioFile = File(result.path);
+    _audioCode = base64Encode(_audioFile.readAsBytesSync());
     initPlayer();
     setState(() {
       _current = result;
       _currentStatus = _current.status;
-      _audioPath = _current.path;
+      _audioPath = _current.path.substring(
+          _current.path.length - _audioPath.length, _current.path.length);
       _haveRecord = true;
       _isRecording = false;
       _playerState = PlayerState.READY;
@@ -216,7 +216,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     if (_playerState == PlayerState.PAUSE) {
       await audioPlayer.resume();
     } else if (_playerState == PlayerState.READY) {
-      await audioPlayer.play(_audioPath, isLocal: true);
+      String path = "${appDocDirectory.path}$_audioPath";
+      if (File(path).existsSync()) await audioPlayer.play(path, isLocal: true);
     }
     setState(() {
       _playerState = PlayerState.PLAY;
@@ -247,17 +248,15 @@ class _AddTodoScreenState extends State<AddTodoScreen>
           ..addListener(() {
             setState(() {});
           });
+
     _init();
   }
 
   _deleteFile() {
-    // images.forEach((path) {
-    //   final dir = Directory(path);
-    //   dir.deleteSync(recursive: true);
-    // });
     if (_haveRecord) {
-      final dir = Directory(_audioPath);
+      final dir = Directory("${appDocDirectory.path}$_audioPath");
       dir.deleteSync(recursive: true);
+      _audioCode = '';
     }
   }
 
@@ -292,7 +291,6 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Widget build(BuildContext context) {
     if (_isInitWidget == false) {
       _todoBloc = findBloc<TodoBloc>();
-      _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
       _repository = findBloc<FirebaseRepository>();
       _isInitWidget = true;
     }
@@ -552,10 +550,12 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                                   if (_playerState == PlayerState.PLAY ||
                                       _playerState == PlayerState.PAUSE) {
                                     audioPlayer.stop();
-                                    final dir = Directory('$_audioPath');
+                                    final dir = Directory(
+                                        "${appDocDirectory.path}$_audioPath");
                                     dir.deleteSync(recursive: true);
                                   }
                                   _audioPath = '';
+                                  _audioCode = '';
 
                                   setState(() {
                                     _duration = const Duration();
@@ -755,12 +755,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                         ),
                       ),
                       onTap: () {
-                        final dir = Directory(images[index]);
-                        dir.deleteSync(recursive: true);
                         images.removeAt(index);
-                        setState(() {
-                          snapshot.data.removeAt(index);
-                        });
+                        setState(() => snapshot.data.removeAt(index));
                       },
                     ),
                   ),
@@ -840,45 +836,23 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         onTap: () async {
           if (_isRecording == false) {
             isCreate = true;
-            int id = await saveTodoID();
-            _todoBloc.add(
-              AddTodoEvent(
-                todo: Todo(
-                  content: _todoEditting.text,
-                  id: id,
-                  isDone: false,
-                  images: images.toString(),
-                  color: indexColor,
-                  audioPath: _haveRecord ? _audioPath : '',
-                  catagories: _catagoryItems.toString(),
-                ),
-              ),
+            String id = Uuid().v1();
+            Todo _todo = Todo(
+              content: _todoEditting.text,
+              id: id,
+              state: "notDone",
+              images: images.toString(),
+              color: indexColor,
+              audioPath: _haveRecord ? _audioPath : '',
+              audioCode: _haveRecord ? _audioCode : '',
+              catagories: _catagoryItems.toString(),
             );
+            print(_todo.toMap());
+            _todoBloc.add(AddTodoEvent(todo: _todo));
 
-            int doTodo = await onDoingTask();
-            int delTodo = await readDeleteTask();
-            int doneTodo = await readDoneTask();
-            _doDelDoneTodoBloc.add(
-              UpdateDoDelDoneTodoEvent(
-                DoDelDoneTodo(
-                  id: 1,
-                  doTodo: doTodo,
-                  delTodo: delTodo,
-                  doneTodo: doneTodo,
-                ),
-              ),
-            );
-            if (await checkConnection()) {
-              _repository.updateTodoToFirebase(Todo(
-                content: _todoEditting.text,
-                id: id,
-                isDone: false,
-                images: images.toString(),
-                color: indexColor,
-                audioPath: _haveRecord ? _audioPath : '',
-                catagories: _catagoryItems.toString(),
-              ));
-            }
+            if (await checkConnection())
+              _repository.updateTodoToFirebase(_todo);
+
             Navigator.pop(context);
           } else {
             await showWarning(context);

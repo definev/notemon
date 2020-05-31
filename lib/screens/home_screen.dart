@@ -8,14 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
-import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
-import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
-import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
-import 'package:gottask/bloc/hand_side/bloc/hand_side_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
-import 'package:gottask/bloc/task/bloc/task_bloc.dart';
-import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/habit_tile.dart';
 import 'package:gottask/components/todo_tile.dart';
 import 'package:gottask/helper.dart';
@@ -45,8 +38,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   TodoBloc _todoBloc;
   TaskBloc _taskBloc;
-  DoDelDoneTaskBloc _doDelDoneTaskBloc;
-  DoDelDoneTodoBloc _doDelDoneTodoBloc;
   AllPokemonBloc _allPokemonBloc;
   StarBloc _starBloc;
   FavouritePokemonBloc _favouritePokemonBloc;
@@ -63,9 +54,11 @@ class _HomeScreenState extends State<HomeScreen>
     }
     if (_taskBloc.taskList != null) {
       _repository?.uploadAllTaskToFirebase(_taskBloc.taskList);
+      _repository.getAllTaskAndLoadToDb(_taskBloc);
     }
     if (_starBloc.currentStarPoint != null) {
       _repository?.updateStarpoint(_starBloc.currentStarPoint);
+      _repository.getAllTaskAndLoadToDb(_taskBloc);
     }
     if (_favouritePokemonBloc.favouritePokemon != null) {
       _repository
@@ -83,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen>
     FirebaseAdMob.instance.initialize(appId: appId);
     setLoadAdsInfirst(false);
     connectionStatus = ConnectionStatusSingleton.getInstance();
+    connectionStatus.initialize();
     _connectionChangeStream = connectionStatus.connectionChangeController;
   }
 
@@ -97,8 +91,6 @@ class _HomeScreenState extends State<HomeScreen>
     if (_isInit == false) {
       _todoBloc = findBloc<TodoBloc>();
       _taskBloc = findBloc<TaskBloc>();
-      _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
-      _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _starBloc = findBloc<StarBloc>();
       _repository = findBloc<FirebaseRepository>();
@@ -106,8 +98,6 @@ class _HomeScreenState extends State<HomeScreen>
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
       _todoBloc.add(InitTodoEvent());
       _taskBloc.add(InitTaskEvent());
-      _doDelDoneTaskBloc.add(InitDoDelDoneTaskEvent());
-      _doDelDoneTodoBloc.add(InitDoDelDoneTodoEvent());
       _allPokemonBloc.add(InitAllPokemonEvent());
       _starBloc.add(InitStarBloc());
       _favouritePokemonBloc.add(InitFavouritePokemonEvent());
@@ -134,8 +124,6 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    if (connectionStatus.hasConnection == true) _updateDatabase();
-
     return SafeArea(
       child: Container(
         decoration: BoxDecoration(
@@ -159,6 +147,8 @@ class _HomeScreenState extends State<HomeScreen>
             stream: _connectionChangeStream.stream,
             builder: (context, snapshot) {
               print(snapshot);
+              if (snapshot?.data == true) _updateDatabase();
+
               return IndexedStack(
                 children: [
                   Column(
@@ -599,7 +589,6 @@ class _HomeScreenState extends State<HomeScreen>
                   itemCount: _todoList.length,
                   itemBuilder: (context, index) => TodoTile(
                     task: _todoList[index],
-                    index: index,
                     key: UniqueKey(),
                   ),
                 );
@@ -1091,7 +1080,6 @@ class _HomeScreenState extends State<HomeScreen>
                   itemCount: state.todo.length,
                   itemBuilder: (context, index) => TodoTile(
                     task: state.todo[index],
-                    index: index,
                     key: UniqueKey(),
                   ),
                 );

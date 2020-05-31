@@ -29,7 +29,6 @@ class PokemonStateDatabase {
       version: DB_VERSION,
     );
     if (await isInitDatabase() == false) {
-      print('hihi');
       for (int i = 0; i < pokedex.length; i++) {
         PokemonStateTable.insertPokemonState(
           PokemonState(

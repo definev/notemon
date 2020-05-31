@@ -2,8 +2,10 @@ import 'dart:io'; //InternetAddress utility
 import 'dart:async'; //For StreamController / Stream
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
 
 Future<bool> checkConnection() async {
+  if (kIsWeb) return true;
   bool connection = false;
 
   try {
@@ -43,6 +45,7 @@ class ConnectionStatusSingleton {
   void initialize() {
     _connectivity.onConnectivityChanged.listen(_connectionChange);
     checkOutConnection();
+    connectionChangeController.add(hasConnection);
   }
 
   Stream get connectionChange => connectionChangeController.stream;

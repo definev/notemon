@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<bool> currentStartState() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_start_key";
-  final res = prefs.getBool(key) == null ? false : prefs.getBool(key);
+  final res = prefs.getBool(key) ?? false;
   return res;
 }
 
@@ -18,7 +18,7 @@ Future<bool> updateStartState() async {
 Future<bool> currentLoginState() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_login_key";
-  final res = prefs.getBool(key) == null ? false : prefs.getBool(key);
+  final res = prefs.getBool(key) ?? false;
   return res;
 }
 
@@ -32,7 +32,7 @@ Future<bool> updateLoginState(bool value) async {
 Future<int> currentFavouritePokemon() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_favourite_pokemon_key";
-  final res = prefs.getInt(key) == null ? -1 : prefs.getInt(key);
+  final res = prefs.getInt(key) ?? -1;
   return res;
 }
 
@@ -46,7 +46,7 @@ Future<int> updateFavouritePokemon(int newPokemon) async {
 Future<HandSide> currentHandSide() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_handside_key";
-  final res = prefs.getInt(key) == null ? 0 : prefs.getInt(key);
+  final res = prefs.getInt(key) ?? 0;
   if (res == 0) return HandSide.Left;
   return HandSide.Right;
 }
@@ -114,106 +114,6 @@ Future<int> readPetState() async {
   return value;
 }
 
-Future<int> saveTodoID() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Todo_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) + 1 : 1;
-  prefs.setInt(key, value);
-  return value;
-}
-
-Future<int> readTodoID() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Todo_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) : 0;
-  return value;
-}
-
-Future<int> saveTaskID() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Task_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) + 1 : 1;
-  prefs.setInt(key, value);
-  return value;
-}
-
-Future<int> readTaskID() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Task_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) : 0;
-  return value;
-}
-
-Future<int> saveDoneTask() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_done_task_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) + 1 : 1;
-  prefs.setInt(key, value);
-  return value;
-}
-
-Future<int> readDoneTask() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_done_task_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) : 0;
-  return value;
-}
-
-Future<int> saveDeleteTask() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_delete_task_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) + 1 : 1;
-  prefs.setInt(key, value);
-  return value;
-}
-
-Future<int> readDeleteTask() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_delete_task_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) : 0;
-  return value;
-}
-
-Future<int> onDoingTodo() async {
-  int value =
-      await readTodoID() - await readDeleteTask() - await readDoneTask();
-  return value;
-}
-
-Future<int> onDoingTask() async {
-  int value =
-      await readTaskID() - await readTaskGiveUp() - await readTaskDone();
-  return value;
-}
-
-Future<void> saveTaskDone() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Task_done_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) + 1 : 1;
-  prefs.setInt(key, value);
-}
-
-Future<int> readTaskDone() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Task_done_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) : 0;
-  return value;
-}
-
-Future<void> saveTaskGiveUp() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Task_give_up_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) + 1 : 1;
-  prefs.setInt(key, value);
-}
-
-Future<int> readTaskGiveUp() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_Task_give_up_key";
-  final value = prefs.getInt(key) != null ? prefs.getInt(key) : 0;
-  return value;
-}
-
 Future<void> setTime() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_time_open_app_key";
@@ -238,27 +138,27 @@ Future<void> resetVideoReward() async {
 Future<void> updateVideoReward() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_video_reward_key";
-  final value = prefs.getInt(key) == null ? 0 : prefs.getInt(key) + 1;
+  final value = prefs.getInt(key) ?? 0;
   prefs.setInt(key, value);
 }
 
 Future<int> getVideoReward() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_video_reward_key";
-  final value = prefs.getInt(key) == null ? 0 : prefs.getInt(key);
+  final value = prefs.getInt(key) ?? 0;
   return value;
 }
 
 Future<void> setLoadAdsInfirst(bool val) async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_load_ads_in_first_key";
-  final value = prefs.getBool(key) == null ? false : val;
+  final value = prefs.getBool(key) ?? false;
   prefs.setBool(key, value);
 }
 
 Future<bool> getLoadAdsInfirst() async {
   final prefs = await SharedPreferences.getInstance();
   final key = "my_load_ads_in_first_key";
-  final value = prefs.getBool(key) == null ? false : prefs.getBool(key);
+  final value = prefs.getBool(key) ?? false;
   return value;
 }

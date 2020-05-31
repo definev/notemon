@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/hand_side/bloc/hand_side_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/models/pokemon_state.dart';
+import 'package:gottask/models/task.dart';
+import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
@@ -23,9 +26,31 @@ class _SettingScreenState extends State<SettingScreen>
 
   HandSide _handSide;
   HandSideBloc _handsideBloc;
+  AllPokemonBloc _allPokemonBloc;
+  TaskBloc _taskBloc;
+  TodoBloc _todoBloc;
+  FavouritePokemonBloc _favouritePokemonBloc;
+  StarBloc _starBloc;
   bool _isInit = false;
 
   List<bool> _leftOrRight;
+
+  deleteAll() {
+    _allPokemonBloc.pokemonStateList.forEach((state) {
+      _allPokemonBloc.add(
+        UpdatePokemonStateEvent(
+          pokemonState: PokemonState(name: state.name, state: 0),
+        ),
+      );
+    });
+
+    List<Todo> _todoList = _todoBloc.todoList;
+    _todoList.forEach((todo) => _todoBloc.add(DeleteTodoEvent(todo: todo)));
+    List<Task> _taskList = _taskBloc.taskList;
+    _taskList.forEach((task) => _taskBloc.add(DeleteTaskEvent(task)));
+    _starBloc.add(SetStarEvent(point: null));
+    _favouritePokemonBloc.add(UpdateFavouritePokemonEvent(null));
+  }
 
   initHandSide() async {
     _handSide = await currentHandSide();
@@ -56,6 +81,11 @@ class _SettingScreenState extends State<SettingScreen>
     if (_isInit == false) {
       _handsideBloc = Provider.of<HandSideBloc>(widget.ctx);
       initHandSide();
+      _allPokemonBloc = findBloc<AllPokemonBloc>();
+      _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
+      _starBloc = findBloc<StarBloc>();
+      _todoBloc = findBloc<TodoBloc>();
+      _taskBloc = findBloc<TaskBloc>();
       _isInit = true;
     }
     return Scaffold(
@@ -130,6 +160,7 @@ class _SettingScreenState extends State<SettingScreen>
                   AuthServices _auth = AuthServices();
                   _auth.signOut().then((value) async {
                     updateLoginState(false);
+                    deleteAll();
                     Navigator.pushNamed(context, '/signIn');
                   });
                 },

@@ -6,64 +6,70 @@ import 'package:meta/meta.dart';
 import 'dart:convert';
 
 class Todo {
-  final int id;
-  final String content;
-  final bool isDone;
-  final int color;
-  final String images;
-  final String audioPath;
-  final String catagories;
+    final String id;
+    final String content;
+    final String images;
+    final String state;
+    final int color;
+    final String audioPath;
+    final String audioCode;
+    final String catagories;
 
-  Todo({
-    @required this.id,
-    @required this.content,
-    @required this.images,
-    @required this.isDone,
-    @required this.color,
-    @required this.audioPath,
-    @required this.catagories,
-  });
+    Todo({
+        @required this.id,
+        @required this.content,
+        @required this.images,
+        @required this.state,
+        @required this.color,
+        @required this.audioPath,
+        @required this.audioCode,
+        @required this.catagories,
+    });
 
-  factory Todo.fromJson(String str) => Todo.fromMap(json.decode(str));
+    Todo copyWith({
+        String id,
+        String content,
+        String images,
+        String state,
+        int color,
+        String audioPath,
+        String audioCode,
+        String catagories,
+    }) => 
+        Todo(
+            id: id ?? this.id,
+            content: content ?? this.content,
+            images: images ?? this.images,
+            state: state ?? this.state,
+            color: color ?? this.color,
+            audioPath: audioPath ?? this.audioPath,
+            audioCode: audioCode ?? this.audioCode,
+            catagories: catagories ?? this.catagories,
+        );
 
-  String toJson() => json.encode(toMap());
+    factory Todo.fromJson(String str) => Todo.fromMap(json.decode(str));
 
-  factory Todo.fromMap(Map<String, dynamic> json) => Todo(
+    String toJson() => json.encode(toMap());
+
+    factory Todo.fromMap(Map<String, dynamic> json) => Todo(
         id: json["id"],
         content: json["content"],
         images: json["images"],
-        isDone: json["isDone"] == 1 ? true : false,
+        state: json["state"],
         color: json["color"],
         audioPath: json["audioPath"],
+        audioCode: json["audioCode"],
         catagories: json["catagories"],
-      );
+    );
 
-  Map<String, dynamic> toMap() => {
+    Map<String, dynamic> toMap() => {
         "id": id,
         "content": content,
         "images": images,
-        "isDone": isDone == true ? 1 : 0,
+        "state": state,
         "color": color,
         "audioPath": audioPath,
+        "audioCode": audioCode,
         "catagories": catagories,
-      };
-  Todo copyWith({
-    int id,
-    String content,
-    String images,
-    String imageURLs,
-    bool isDone,
-    int color,
-    String audioPath,
-    String catagories,
-  }) =>
-      Todo(
-        id: id ?? this.id,
-        content: content ?? this.content,
-        images: images ?? this.images,
-        isDone: isDone ?? this.isDone,
-        color: color ?? this.color,
-        audioPath: audioPath ?? this.audioPath,
-        catagories: catagories ?? this.catagories,
-      );
+    };
 }

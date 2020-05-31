@@ -7,7 +7,7 @@ class TaskTable {
 
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
-      id INTEGER PRIMARY KEY,
+      id TEXT PRIMARY KEY,
       TaskName TEXT,
       icon INTEGER,
       color INTEGER,
@@ -52,7 +52,7 @@ class TaskTable {
     );
   }
 
-  static Future<Task> selectTask(int index) async {
+  static Future<Task> selectTask(String id) async {
     final Database db = TaskDatabase.instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       TABLE_NAME,
@@ -68,7 +68,7 @@ class TaskTable {
         'isDoneAchieve',
       ],
       where: 'id = ?',
-      whereArgs: [index],
+      whereArgs: [id],
     );
     return Task(
       id: map[1]['id'],

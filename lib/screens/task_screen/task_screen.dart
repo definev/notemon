@@ -8,11 +8,8 @@ import 'package:flutter_incall/flutter_incall.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/do_del_done_task/bloc/do_del_done_task_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
-import 'package:gottask/bloc/task/bloc/task_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/countdown_clock.dart';
-import 'package:gottask/models/do_del_done_task.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
@@ -50,7 +47,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   TimerState _timerState = TimerState.PAUSE;
 
   TaskBloc _taskBloc;
-  DoDelDoneTaskBloc _doDelDoneTaskBloc;
   StarBloc _starBloc;
   FirebaseRepository _repository;
   TextEditingController _achieveTextController = TextEditingController();
@@ -291,20 +287,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         setState(() {
           _timerState = TimerState.DONE;
         });
-        await saveTaskDone();
-        int doTask = await onDoingTask();
-        int delTask = await readTaskGiveUp();
-        int doneTask = await readTaskDone();
-        _doDelDoneTaskBloc.add(
-          UpdateDoDelDoneTaskEvent(
-            DoDelDoneTask(
-              id: 1,
-              doTask: doTask,
-              delTask: delTask,
-              doneTask: doneTask,
-            ),
-          ),
-        );
         int pointGet = maxTime.inMinutes;
         _starBloc.add(AddStarEvent(point: pointGet));
       },
@@ -341,7 +323,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   Widget build(BuildContext context) {
     if (_isInit == false) {
       _taskBloc = findBloc<TaskBloc>();
-      _doDelDoneTaskBloc = findBloc<DoDelDoneTaskBloc>();
       _starBloc = findBloc<StarBloc>();
       _repository = findBloc<FirebaseRepository>();
       _isInit = true;
@@ -712,20 +693,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          await saveTaskGiveUp();
-                          int doTask = await onDoingTask();
-                          int delTask = await readTaskGiveUp();
-                          int doneTask = await readTaskDone();
-                          _doDelDoneTaskBloc.add(
-                            UpdateDoDelDoneTaskEvent(
-                              DoDelDoneTask(
-                                id: 1,
-                                doTask: doTask,
-                                delTask: delTask,
-                                doneTask: doneTask,
-                              ),
-                            ),
-                          );
                           _taskBloc.add(DeleteTaskEvent(widget.task));
                           if (await checkConnection())
                             _repository.deleteTaskOnFirebase(widget.task);

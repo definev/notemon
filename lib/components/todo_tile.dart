@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:gottask/bloc/do_del_done_todo/bloc/do_del_done_todo_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
-import 'package:gottask/bloc/todo/bloc/todo_bloc.dart';
-import 'package:gottask/models/do_del_done_todo.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/todo_screen/todo_screen.dart';
@@ -13,11 +10,9 @@ import 'package:gottask/helper.dart';
 
 class TodoTile extends StatefulWidget {
   final Todo task;
-  final int index;
   const TodoTile({
     Key key,
     this.task,
-    @required this.index,
   }) : super(key: key);
 
   @override
@@ -28,7 +23,6 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
   bool _isChecked;
   bool _isDone = false;
   TodoBloc _todoBloc;
-  DoDelDoneTodoBloc _doDelDoneTodoBloc;
   StarBloc _starBloc;
   FirebaseRepository _repository;
   Todo _currentTask;
@@ -36,13 +30,15 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
   @override
   void initState() {
     super.initState();
-    _isChecked = widget.task.isDone;
+    if (widget.task.state == "done")
+      _isChecked = true;
+    else
+      _isChecked = false;
   }
 
   @override
   Widget build(BuildContext context) {
     _todoBloc = findBloc<TodoBloc>();
-    _doDelDoneTodoBloc = findBloc<DoDelDoneTodoBloc>();
     _starBloc = findBloc<StarBloc>();
     _repository = findBloc<FirebaseRepository>();
     _currentTask = widget.task;
@@ -79,7 +75,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                   onTap: () async {
                     if (_isDone != true) {
                       setState(() => _isChecked = !_isChecked);
-                      _currentTask = _currentTask.copyWith(isDone: _isChecked);
+                      _currentTask = _currentTask.copyWith(
+                          state: _isChecked ? "done" : "notDone");
                       _todoBloc.add(EditTodoEvent(todo: _currentTask));
                       if (await checkConnection())
                         _repository.updateTodoToFirebase(_currentTask);
@@ -111,9 +108,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: Color(
-                                  int.parse(colors[widget.task.color]),
-                                ),
+                                color:
+                                    Color(int.parse(colors[widget.task.color])),
                                 width: 2,
                               ),
                             ),
@@ -150,8 +146,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
               if (_isChecked == false) {
                 Future.delayed(Duration(milliseconds: 300), () {
                   setState(() => _isChecked = !_isChecked);
-                  _currentTask =
-                      _currentTask.copyWith(isDone: !_currentTask.isDone);
+                  _currentTask = _currentTask.copyWith(
+                      state: _isChecked ? "done" : "notDone");
                   _todoBloc.add(EditTodoEvent(todo: _currentTask));
                   if (connection)
                     _repository.updateTodoToFirebase(_currentTask);
@@ -159,22 +155,6 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
               } else if (_isChecked == true) {
                 _isDone = true;
                 Future.delayed(Duration(milliseconds: 350), () async {
-                  await saveDoneTask();
-
-                  int doTodo = await onDoingTask();
-                  int delTodo = await readDeleteTask();
-                  int doneTodo = await readDoneTask();
-                  print('');
-                  _doDelDoneTodoBloc.add(
-                    UpdateDoDelDoneTodoEvent(
-                      DoDelDoneTodo(
-                        id: 1,
-                        doTodo: doTodo,
-                        delTodo: delTodo,
-                        doneTodo: doneTodo,
-                      ),
-                    ),
-                  );
                   _todoBloc.add(DeleteTodoEvent(todo: widget.task));
                   if (connection)
                     _repository.deleteTodoOnFirebase(_currentTask);
@@ -222,22 +202,6 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 _isDone = true;
                 bool connection = await checkConnection();
                 Future.delayed(Duration(milliseconds: 350), () async {
-                  await saveDoneTask();
-
-                  int doTodo = await onDoingTask();
-                  int delTodo = await readDeleteTask();
-                  int doneTodo = await readDoneTask();
-
-                  _doDelDoneTodoBloc.add(
-                    UpdateDoDelDoneTodoEvent(
-                      DoDelDoneTodo(
-                        id: 1,
-                        doTodo: doTodo,
-                        delTodo: delTodo,
-                        doneTodo: doneTodo,
-                      ),
-                    ),
-                  );
                   _todoBloc.add(DeleteTodoEvent(todo: widget.task));
                   if (connection)
                     _repository.deleteTodoOnFirebase(_currentTask);

@@ -6,12 +6,13 @@ class TodoTable {
   static const TABLE_NAME = 'Tododb';
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
-      id INTEGER PRIMARY KEY,
+      id TEXT PRIMARY KEY,
       content TEXT,
       images TEXT,
-      isDone INTEGER,
+      state TEXT,
       color INTEGER,
       audioPath TEXT,
+      audioCode TEXT,
       catagories TEXT
     );   
   ''';
@@ -29,7 +30,7 @@ class TodoTable {
     );
   }
 
-  static Future<int> deleteTodo(int index) {
+  static Future<int> deleteTodo(String index) {
     final Database db = TodoDatabase.instance.database;
     print('delete!');
     return db.delete(
@@ -57,7 +58,7 @@ class TodoTable {
         'id',
         'content',
         'images',
-        'isDone',
+        'state',
         'color',
         'audioPath',
         'catagories',
@@ -80,9 +81,10 @@ class TodoTable {
         'id',
         'content',
         'images',
-        'isDone',
+        'state',
         'color',
         'audioPath',
+        'audioCode',
         'catagories',
       ],
       where: 'id = ?',
@@ -92,9 +94,10 @@ class TodoTable {
       id: map[1]['id'],
       content: map[1]['content'],
       images: map[1]['images'],
-      isDone: map[1]['isDone'] == 1 ? true : false,
+      state: map[1]['state'],
       color: map[1]['color'],
       audioPath: map[1]['audioPath'],
+      audioCode: map[1]['audioCode'],
       catagories: map[1]['catagories'],
     );
   }
@@ -108,9 +111,10 @@ class TodoTable {
         id: maps[index]['id'],
         content: maps[index]['content'],
         images: maps[index]['images'],
-        isDone: maps[index]['isDone'] == 1 ? true : false,
+        state: maps[index]['state'],
         color: maps[index]['color'],
         audioPath: maps[index]['audioPath'],
+        audioCode: maps[index]['audioCode'],
         catagories: maps[index]['catagories'],
       );
     });

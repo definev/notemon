@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
-import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
-import 'package:gottask/bloc/task/bloc/task_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/models/todo.dart';

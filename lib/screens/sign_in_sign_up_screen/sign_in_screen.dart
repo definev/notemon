@@ -1,10 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
-import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
-import 'package:gottask/bloc/task/bloc/task_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_up_screen.dart';
 import 'package:gottask/utils/constant.dart';
@@ -227,30 +224,22 @@ class _SignInScreenState extends State<SignInScreen> {
                                     updateLoginState(true);
                                     await _repository.initUser();
                                     await _repository.getAllTaskAndLoadToDb(
-                                      Provider.of<TaskBloc>(
-                                        context,
-                                        listen: false,
-                                      ),
+                                      Provider.of<TaskBloc>(context,
+                                          listen: false),
                                     );
                                     await _repository
                                         .getAllPokemonStateAndLoadToDb(
-                                      Provider.of<AllPokemonBloc>(
-                                        context,
-                                        listen: false,
-                                      ),
+                                      Provider.of<AllPokemonBloc>(context,
+                                          listen: false),
                                     );
                                     await _repository
                                         .getFavouritePokemonStateAndLoadToDb(
-                                      Provider.of<FavouritePokemonBloc>(
-                                        context,
-                                        listen: false,
-                                      ),
+                                      Provider.of<FavouritePokemonBloc>(context,
+                                          listen: false),
                                     );
                                     await _repository.getStarpoint(
-                                      Provider.of<StarBloc>(
-                                        context,
-                                        listen: false,
-                                      ),
+                                      Provider.of<StarBloc>(context,
+                                          listen: false),
                                     );
                                     Navigator.pushNamed(context, '/home');
                                   }

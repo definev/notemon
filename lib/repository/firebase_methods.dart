@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
-import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
-import 'package:gottask/bloc/task/bloc/task_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/todo_table.dart';
 import 'package:gottask/models/favourite_pokemon.dart';
 import 'package:gottask/models/task.dart';
@@ -16,8 +13,22 @@ class FirebaseMethods {
   FirebaseAuth _auth = FirebaseAuth.instance;
   Firestore _firestore = Firestore.instance;
 
+  /// Method of [Save todo delete key]
+  Future<void> saveDeleteTodoKey(Todo todo) async {
+    final FirebaseUser _user = await _auth.currentUser();
+    await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('deleteTodos')
+        .document(todo.id)
+        .setData(
+      {'id': todo.id},
+      merge: true,
+    );
+  }
+
   /// Method of [Todo]
-  Future<void> getAllTodoAndLoadToDb() async {}
+  Future<void> compareTodo(TodoBloc todoBloc) async {}
 
   Future<void> updateTodoToFirebase(Todo todo) async {
     final FirebaseUser _user = await _auth.currentUser();
@@ -27,7 +38,7 @@ class FirebaseMethods {
         .collection('databases')
         .document(_user.uid)
         .collection('todos')
-        .document(todo.id.toString())
+        .document(todo.id)
         .setData(
           todo.toMap(),
           merge: true,
@@ -41,7 +52,7 @@ class FirebaseMethods {
           .collection('databases')
           .document(_user.uid)
           .collection('todos')
-          .document(todo.id.toString())
+          .document(todo.id)
           .setData(
             todo.toMap(),
             merge: true,
@@ -55,8 +66,22 @@ class FirebaseMethods {
         .collection('databases')
         .document(_user.uid)
         .collection('todos')
-        .document(todo.id.toString())
+        .document(todo.id)
         .delete();
+  }
+
+  /// Method of [Save task delete key]
+  Future<void> saveDeleteTaskKey(Task task) async {
+    final FirebaseUser _user = await _auth.currentUser();
+    await _firestore
+        .collection('databases')
+        .document(_user.uid)
+        .collection('deleteTasks')
+        .document(task.id)
+        .setData(
+      {'id': task.id},
+      merge: true,
+    );
   }
 
   /// Method of [Task]
@@ -83,7 +108,7 @@ class FirebaseMethods {
         .collection('databases')
         .document(_user.uid)
         .collection('tasks')
-        .document(task.id.toString())
+        .document(task.id)
         .setData(
           task.toMap(),
           merge: true,
@@ -97,7 +122,7 @@ class FirebaseMethods {
           .collection('databases')
           .document(_user.uid)
           .collection('tasks')
-          .document(task.id.toString())
+          .document(task.id)
           .setData(
             task.toMap(),
             merge: true,
@@ -111,7 +136,7 @@ class FirebaseMethods {
         .collection('databases')
         .document(_user.uid)
         .collection('tasks')
-        .document(task.id.toString())
+        .document(task.id)
         .delete();
   }
 

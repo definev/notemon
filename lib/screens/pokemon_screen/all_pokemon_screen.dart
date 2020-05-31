@@ -8,10 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/bloc/all_pokemon/bloc/all_pokemon_bloc.dart';
-import 'package:gottask/bloc/favourite_pokemon/bloc/favourite_pokemon_bloc.dart';
-import 'package:gottask/bloc/hand_side/bloc/hand_side_bloc.dart';
-import 'package:gottask/bloc/star/bloc/star_bloc.dart';
+import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';
@@ -43,6 +40,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
 
   AllPokemonBloc _allPokemonBloc;
   StarBloc _starBloc;
+  FirebaseRepository _repository;
   FavouritePokemonBloc _favouritePokemonBloc;
   HandSideBloc _handsideBloc;
 
@@ -114,6 +112,13 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                               ),
                             ),
                           );
+                          if (await checkConnection()) {
+                            _repository
+                                .updatePokemonStateToFirebase(PokemonState(
+                              name: pokedex[_currentPokemon]['name'],
+                              state: 1,
+                            ));
+                          }
                           _currentStarPoint -= 60;
                           Navigator.pop(context);
                         },
@@ -436,7 +441,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
       _starBloc = findBloc<StarBloc>();
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
       _handsideBloc = findBloc<HandSideBloc>();
-
+      _repository = findBloc<FirebaseRepository>();
       _allPokemonBloc.add(InitAllPokemonEvent());
       _handsideBloc.add(InitHandSide());
       getCurrentHandside();

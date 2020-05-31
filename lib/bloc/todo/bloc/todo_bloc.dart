@@ -6,12 +6,14 @@ import 'package:gottask/database/todo_database.dart';
 import 'package:gottask/database/todo_table.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   List<Todo> todoList = [];
+  List<String> deleteTodoKey = [];
 
   @override
   TodoState get initialState => TodoInitial();
@@ -27,12 +29,19 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Future<void> _deleteEvent(Todo todo) async {
+    Directory appDocDirectory;
+    if (Platform.isIOS) {
+      appDocDirectory = await getApplicationDocumentsDirectory();
+    } else {
+      appDocDirectory = await getExternalStorageDirectory();
+    }
     if (todo.audioPath != '') {
-      var audioFile = File(todo.audioPath);
-      audioFile.deleteSync(recursive: true);
+      var audioFile = File(appDocDirectory.path + todo.audioPath);
+      if (audioFile.existsSync()) audioFile.deleteSync(recursive: true);
     }
     await TodoTable.deleteTodo(todo.id);
     todoList = await TodoTable.selectAllTodo();
+    deleteTodoKey.add(todo.id);
   }
 
   Future<void> _editEvent(Todo todo) async {
