@@ -19,9 +19,8 @@ import 'package:swipedetector/swipedetector.dart';
 
 class AllPokemonScreen extends StatefulWidget {
   final int currentPokemon;
-  final FirebaseRepository repository;
 
-  AllPokemonScreen({this.currentPokemon, @required this.repository});
+  AllPokemonScreen({this.currentPokemon});
   @override
   _AllPokemonScreenState createState() => _AllPokemonScreenState();
 }
@@ -845,7 +844,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
               onTap: () {
                 _favouritePokemonBloc
                     .add(UpdateFavouritePokemonEvent(_currentPokemon));
-                widget.repository.updateFavouritePokemon(_currentPokemon);
+                _repository.updateFavouritePokemon(_currentPokemon);
                 setState(() {
                   _favouritePokemonBloc.favouritePokemon = _currentPokemon;
                 });
@@ -859,7 +858,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
           : GestureDetector(
               onTap: () {
                 _favouritePokemonBloc.add(UpdateFavouritePokemonEvent(-1));
-                widget.repository.updateFavouritePokemon(-1);
+                _repository.updateFavouritePokemon(-1);
                 setState(() {
                   _favouritePokemonBloc.favouritePokemon = -1;
                 });

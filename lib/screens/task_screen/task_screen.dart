@@ -662,9 +662,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 20,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
@@ -683,7 +681,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                             child: Text(
                               'Cancel',
                               style: kTitleStyle.copyWith(
-                                // decorationStyle: TextDecorationStyle.double,
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
                               ),

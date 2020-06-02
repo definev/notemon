@@ -4,9 +4,11 @@ import 'package:sqflite/sqflite.dart';
 
 class TodoTable {
   static const TABLE_NAME = 'Tododb';
+  static const DELETE_TABLE_NAME = 'deleteKeyTododb';
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
       id TEXT PRIMARY KEY,
+      timestamp TEXT,
       content TEXT,
       images TEXT,
       state TEXT,
@@ -16,10 +18,31 @@ class TodoTable {
       catagories TEXT
     );   
   ''';
-  static const DROP_TABLE_QUERY = '''
-      DROP TABLE IF EXISTS $TABLE_NAME
+  static const CREATE_DELETE_TABLE_QUERY = '''
+    CREATE TABLE $DELETE_TABLE_NAME (id TEXT PRIMARY KEY);  
   ''';
 
+  /// [Todo delete key]
+  static Future<int> insertTodoDeleteKey(String id) {
+    final Database db = TodoDatabase.instance.database;
+
+    return db.insert(
+      DELETE_TABLE_NAME,
+      {'id': id},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  static Future<List<String>> selectAllDeleteKey() async {
+    final Database db = TodoDatabase.instance.database;
+
+    final deleteKeyList = await db.query(DELETE_TABLE_NAME);
+    List<String> deleteKey = [];
+    deleteKeyList.forEach((map) => deleteKey.add(map['id']));
+    return deleteKey;
+  }
+
+  /// [Todo] database
   static Future<int> insertTodo(Todo todo) {
     final Database db = TodoDatabase.instance.database;
 
@@ -79,6 +102,7 @@ class TodoTable {
       TABLE_NAME,
       columns: [
         'id',
+        'timestamp',
         'content',
         'images',
         'state',
@@ -92,6 +116,7 @@ class TodoTable {
     );
     return Todo(
       id: map[1]['id'],
+      timestamp: map[1]['timestamp'],
       content: map[1]['content'],
       images: map[1]['images'],
       state: map[1]['state'],
@@ -104,11 +129,12 @@ class TodoTable {
 
   static Future<List<Todo>> selectAllTodo() async {
     final Database db = TodoDatabase.instance.database;
-    final List<Map<String, dynamic>> maps = await db.query('$TABLE_NAME');
+    final List<Map<String, dynamic>> maps = await db.query(TABLE_NAME);
     if (maps.length == 0) return [];
     return List.generate(maps.length, (index) {
       return Todo(
         id: maps[index]['id'],
+        timestamp: maps[index]['timestamp'],
         content: maps[index]['content'],
         images: maps[index]['images'],
         state: maps[index]['state'],

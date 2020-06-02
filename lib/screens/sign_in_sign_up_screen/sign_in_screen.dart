@@ -17,6 +17,27 @@ class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
   FirebaseRepository _repository;
 
+  _loginSuccess() async {
+    updateLoginState(true);
+    await _repository.initUser();
+    await _repository.getAllTodoAndLoadToDb(
+      Provider.of<TodoBloc>(context, listen: false),
+    );
+    await _repository.getAllTaskAndLoadToDb(
+      Provider.of<TaskBloc>(context, listen: false),
+    );
+    await _repository.getAllPokemonStateAndLoadToDb(
+      Provider.of<AllPokemonBloc>(context, listen: false),
+    );
+    await _repository.getFavouritePokemonStateAndLoadToDb(
+      Provider.of<FavouritePokemonBloc>(context, listen: false),
+    );
+    await _repository.getStarpoint(
+      Provider.of<StarBloc>(context, listen: false),
+    );
+    Navigator.pushNamed(context, '/home');
+  }
+
   @override
   Widget build(BuildContext context) {
     _repository = Provider.of<FirebaseRepository>(context);
@@ -56,9 +77,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               margin: const EdgeInsets.only(left: 10),
                               child: Center(
                                 child: TypewriterAnimatedTextKit(
-                                  onTap: () {
-                                    print("Tap Event");
-                                  },
                                   text: [
                                     "Notemon",
                                     "Easy to use.",
@@ -221,27 +239,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ),
                                     );
                                   } else {
-                                    updateLoginState(true);
-                                    await _repository.initUser();
-                                    await _repository.getAllTaskAndLoadToDb(
-                                      Provider.of<TaskBloc>(context,
-                                          listen: false),
-                                    );
-                                    await _repository
-                                        .getAllPokemonStateAndLoadToDb(
-                                      Provider.of<AllPokemonBloc>(context,
-                                          listen: false),
-                                    );
-                                    await _repository
-                                        .getFavouritePokemonStateAndLoadToDb(
-                                      Provider.of<FavouritePokemonBloc>(context,
-                                          listen: false),
-                                    );
-                                    await _repository.getStarpoint(
-                                      Provider.of<StarBloc>(context,
-                                          listen: false),
-                                    );
-                                    Navigator.pushNamed(context, '/home');
+                                    await _loginSuccess();
                                   }
                                 } else {
                                   Scaffold.of(context).showSnackBar(

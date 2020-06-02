@@ -17,6 +17,7 @@ class StarBloc extends Bloc<StarEvent, StarState> {
 
   _initStarBloc() async {
     currentStarPoint = await currentStar();
+    await _repository.initUser();
   }
 
   _addEvent(int point) async {

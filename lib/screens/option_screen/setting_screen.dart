@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
-import 'package:gottask/models/pokemon_state.dart';
-import 'package:gottask/models/task.dart';
-import 'package:gottask/models/todo.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/helper.dart';

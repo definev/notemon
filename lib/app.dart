@@ -45,46 +45,46 @@ class _MyAppState extends State<MyApp> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: _isStart != null
-          ? MultiProvider(
-              providers: [
-                BlocProvider<TodoBloc>(
-                  create: (context) => TodoBloc(),
-                ),
-                BlocProvider<TaskBloc>(
-                  create: (context) => TaskBloc(),
-                ),
-                BlocProvider<AllPokemonBloc>(
-                  create: (context) => AllPokemonBloc(),
-                ),
-                BlocProvider<StarBloc>(
-                  create: (context) => StarBloc(),
-                ),
-                BlocProvider<FavouritePokemonBloc>(
-                  create: (context) => FavouritePokemonBloc(),
-                ),
-                Provider<FirebaseRepository>(
-                  create: (context) => FirebaseRepository(),
-                ),
-              ],
-              child: MaterialApp(
-                title: 'Notemon',
-                debugShowCheckedModeBanner: false,
-                theme: ThemeData(
-                  canvasColor: Colors.transparent,
-                  scaffoldBackgroundColor: TodoColors.scaffoldWhite,
-                  appBarTheme: AppBarTheme(
-                    color: TodoColors.deepPurple,
+          ? Provider(
+              create: (context) => FirebaseRepository(),
+              child: MultiProvider(
+                providers: [
+                  BlocProvider<TodoBloc>(
+                    create: (context) => TodoBloc(),
                   ),
-                  unselectedWidgetColor: Colors.black,
-                  accentColor: TodoColors.deepPurple,
-                  primaryColor: TodoColors.deepPurple,
+                  BlocProvider<TaskBloc>(
+                    create: (context) => TaskBloc(),
+                  ),
+                  BlocProvider<AllPokemonBloc>(
+                    create: (context) => AllPokemonBloc(),
+                  ),
+                  BlocProvider<StarBloc>(
+                    create: (context) => StarBloc(),
+                  ),
+                  BlocProvider<FavouritePokemonBloc>(
+                    create: (context) => FavouritePokemonBloc(),
+                  ),
+                ],
+                child: MaterialApp(
+                  title: 'Notemon',
+                  debugShowCheckedModeBanner: false,
+                  theme: ThemeData(
+                    canvasColor: Colors.transparent,
+                    scaffoldBackgroundColor: TodoColors.scaffoldWhite,
+                    appBarTheme: AppBarTheme(
+                      color: TodoColors.deepPurple,
+                    ),
+                    unselectedWidgetColor: Colors.black,
+                    accentColor: TodoColors.deepPurple,
+                    primaryColor: TodoColors.deepPurple,
+                  ),
+                  initialRoute: getRoute(),
+                  routes: {
+                    '/splash': (context) => SplashScreen(),
+                    '/home': (context) => HomeScreen(),
+                    '/signIn': (context) => SignInScreen(),
+                  },
                 ),
-                initialRoute: getRoute(),
-                routes: {
-                  '/splash': (context) => SplashScreen(),
-                  '/home': (context) => HomeScreen(),
-                  '/signIn': (context) => SignInScreen(),
-                },
               ),
             )
           : Container(

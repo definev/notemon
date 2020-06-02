@@ -21,6 +21,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Future<void> _initTodayBloc() async {
     await TodoDatabase.instance.init();
     todoList = await TodoTable.selectAllTodo();
+    deleteTodoKey = await TodoTable.selectAllDeleteKey();
+    print(deleteTodoKey);
   }
 
   Future<void> _addEvent(Todo todo) async {
@@ -40,8 +42,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       if (audioFile.existsSync()) audioFile.deleteSync(recursive: true);
     }
     await TodoTable.deleteTodo(todo.id);
+    await TodoTable.insertTodoDeleteKey(todo.id);
+
     todoList = await TodoTable.selectAllTodo();
-    deleteTodoKey.add(todo.id);
+    deleteTodoKey = await TodoTable.selectAllDeleteKey();
+    print(deleteTodoKey);
   }
 
   Future<void> _editEvent(Todo todo) async {

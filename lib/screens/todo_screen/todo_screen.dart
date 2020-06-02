@@ -69,6 +69,7 @@ class _TodoScreenState extends State<TodoScreen>
       StreamController<String>.broadcast();
 
   TodoBloc _todoBloc;
+  StarBloc _starBloc;
   FirebaseRepository _repository;
   Todo _currentTask;
 
@@ -319,6 +320,7 @@ class _TodoScreenState extends State<TodoScreen>
   Widget build(BuildContext context) {
     if (_isInitWidget == false) {
       _todoBloc = findBloc<TodoBloc>();
+      _starBloc = findBloc<StarBloc>();
       _repository = findBloc<FirebaseRepository>();
       _isInitWidget = true;
       _currentTask = widget.todo;
@@ -403,11 +405,16 @@ class _TodoScreenState extends State<TodoScreen>
             IconButton(
               color: Colors.white,
               icon: Icon(
-                Icons.delete_outline,
+                _currentTask.state == "done"
+                    ? Icons.check
+                    : Icons.delete_outline,
                 color: Colors.white,
               ),
               onPressed: () async {
                 _todoBloc.add(DeleteTodoEvent(todo: _currentTask));
+
+                _starBloc.add(AddStarEvent(point: 1));
+                _repository.deleteTodoOnFirebase(_currentTask);
                 Navigator.pop(context);
               },
             )

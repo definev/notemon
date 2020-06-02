@@ -53,14 +53,10 @@ class ConnectionStatusSingleton {
   //A clean up method to close our StreamController<bool>
   //   Because this is meant to exist through the entire application life cycle this isn't
   //   really an issue
-  void dispose() {
-    connectionChangeController.close();
-  }
+  void dispose() => connectionChangeController.close();
 
   //flutter_connectivity's listener
-  void _connectionChange(ConnectivityResult result) {
-    checkOutConnection();
-  }
+  void _connectionChange(ConnectivityResult result) => checkOutConnection();
 
   //The test to actually see if there is a connection
   Future<bool> checkOutConnection() async {

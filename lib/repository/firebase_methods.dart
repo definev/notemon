@@ -2,41 +2,70 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/todo_table.dart';
-import 'package:gottask/models/favourite_pokemon.dart';
-import 'package:gottask/models/task.dart';
-import 'package:gottask/models/pokemon_state.dart';
-import 'dart:async';
+import 'package:gottask/models/model.dart';
 
-import 'package:gottask/models/todo.dart';
+import 'dart:async';
 
 class FirebaseMethods {
   FirebaseAuth _auth = FirebaseAuth.instance;
   Firestore _firestore = Firestore.instance;
+  FirebaseUser user;
+
+  Future<void> initUser() async => user = await _auth.currentUser();
 
   /// Method of [Save todo delete key]
-  Future<void> saveDeleteTodoKey(Todo todo) async {
-    final FirebaseUser _user = await _auth.currentUser();
+  Future<void> addDeleteTodoKey(String id) async {
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('deleteTodos')
-        .document(todo.id)
+        .document(id)
         .setData(
-      {'id': todo.id},
+      {'id': id},
       merge: true,
     );
   }
 
+  Future<void> setDeleteTodoKey(List<String> data) async {
+    data.forEach((element) async {
+      await _firestore
+          .collection('databases')
+          .document(user.uid)
+          .collection('deleteTodos')
+          .document(element)
+          .setData(
+        {'id': element},
+        merge: true,
+      );
+    });
+  }
+
+  Future<List<String>> getDeleteTodoKey() async {
+    QuerySnapshot _snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('deleteTodos')
+        .getDocuments();
+    List<String> deleteKey = [];
+    _snapshot.documents.forEach((map) => deleteKey.add(map.data['id']));
+    return deleteKey;
+  }
+
   /// Method of [Todo]
-  Future<void> compareTodo(TodoBloc todoBloc) async {}
+  Stream<QuerySnapshot> todoStream() {
+    return _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('todos')
+        .snapshots();
+  }
 
   Future<void> updateTodoToFirebase(Todo todo) async {
-    final FirebaseUser _user = await _auth.currentUser();
     await TodoTable.updateOrInsertNewTodo(todo);
 
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('todos')
         .document(todo.id)
         .setData(
@@ -46,11 +75,10 @@ class FirebaseMethods {
   }
 
   Future<void> uploadAllTodoToFirebase(List<Todo> todoList) async {
-    final FirebaseUser _user = await _auth.currentUser();
     todoList.forEach((todo) async {
       await _firestore
           .collection('databases')
-          .document(_user.uid)
+          .document(user.uid)
           .collection('todos')
           .document(todo.id)
           .setData(
@@ -61,21 +89,42 @@ class FirebaseMethods {
   }
 
   Future<void> deleteTodoOnFirebase(Todo todo) async {
-    final FirebaseUser _user = await _auth.currentUser();
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('todos')
         .document(todo.id)
         .delete();
   }
 
+  Future<List<Todo>> getAllTodo() async {
+    QuerySnapshot _snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('todos')
+        .getDocuments();
+    List<Todo> todoList = [];
+    _snapshot.documents.forEach((map) => todoList.add(Todo.fromMap(map.data)));
+    return todoList;
+  }
+
+  Future<void> getAllTodoAndLoadToDb(TodoBloc todoBloc) async {
+    QuerySnapshot _taskSnapshots = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('todos')
+        .getDocuments();
+
+    todoBloc.add(InitTodoEvent());
+    _taskSnapshots.documents.forEach(
+        (map) => todoBloc.add(AddTodoEvent(todo: Todo.fromMap(map.data))));
+  }
+
   /// Method of [Save task delete key]
   Future<void> saveDeleteTaskKey(Task task) async {
-    final FirebaseUser _user = await _auth.currentUser();
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('deleteTasks')
         .document(task.id)
         .setData(
@@ -85,12 +134,29 @@ class FirebaseMethods {
   }
 
   /// Method of [Task]
-  Future<void> getAllTaskAndLoadToDb(TaskBloc taskBloc) async {
-    final FirebaseUser _user = await _auth.currentUser();
+  Future<List<Task>> getAllTask() async {
+    QuerySnapshot _snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('tasks')
+        .getDocuments();
+    List<Task> taskList = [];
+    _snapshot.documents.forEach((map) => taskList.add(Task.fromMap(map.data)));
+    return taskList;
+  }
 
+  Stream<QuerySnapshot> taskStream() {
+    return _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('tasks')
+        .snapshots();
+  }
+
+  Future<void> getAllTaskAndLoadToDb(TaskBloc taskBloc) async {
     QuerySnapshot _taskSnapshots = await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('tasks')
         .getDocuments();
 
@@ -102,11 +168,9 @@ class FirebaseMethods {
   }
 
   Future<void> updateTaskToFirebase(Task task) async {
-    final FirebaseUser _user = await _auth.currentUser();
-
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('tasks')
         .document(task.id)
         .setData(
@@ -116,11 +180,10 @@ class FirebaseMethods {
   }
 
   Future<void> uploadAllTaskToFirebase(List<Task> taskList) async {
-    final FirebaseUser _user = await _auth.currentUser();
     taskList.forEach((task) async {
       await _firestore
           .collection('databases')
-          .document(_user.uid)
+          .document(user.uid)
           .collection('tasks')
           .document(task.id)
           .setData(
@@ -131,23 +194,28 @@ class FirebaseMethods {
   }
 
   Future<void> deleteTaskOnFirebase(Task task) async {
-    final FirebaseUser _user = await _auth.currentUser();
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('tasks')
         .document(task.id)
         .delete();
   }
 
   /// Method of [PokemonState]
+  Stream<QuerySnapshot> pokemonStateStream() {
+    return _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('pokemonStates')
+        .snapshots();
+  }
+
   Future<void> getAllPokemonStateAndLoadToDb(
       AllPokemonBloc allPokemonBloc) async {
-    final FirebaseUser _user = await _auth.currentUser();
-
     QuerySnapshot _pokemonStateSnapshots = await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('pokemonStates')
         .getDocuments();
     allPokemonBloc.add(InitAllPokemonEvent());
@@ -158,11 +226,9 @@ class FirebaseMethods {
   }
 
   Future<void> updatePokemonStateToFirebase(PokemonState pokemonState) async {
-    final FirebaseUser _user = await _auth.currentUser();
-
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('pokemonStates')
         .document(pokemonState.name.toString())
         .setData(
@@ -173,11 +239,10 @@ class FirebaseMethods {
 
   Future<void> uploadAllPokemonStateToFirebase(
       List<PokemonState> pokemonStateList) async {
-    final FirebaseUser _user = await _auth.currentUser();
     pokemonStateList.forEach((pokemonState) async {
       await _firestore
           .collection('databases')
-          .document(_user.uid)
+          .document(user.uid)
           .collection('pokemonStates')
           .document(pokemonState.name.toString())
           .setData(
@@ -188,14 +253,20 @@ class FirebaseMethods {
   }
 
   /// Method of [FavouritePokemon]
+  Stream<QuerySnapshot> favouritePokemonStream() {
+    return _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('favouritePokemon')
+        .snapshots();
+  }
+
   Future<void> getFavouritePokemonStateAndLoadToDb(
       FavouritePokemonBloc favouritePokemonBloc) async {
-    final FirebaseUser _user = await _auth.currentUser();
-
     QuerySnapshot _favouritePokemonSnapshots = await _firestore
         .collection('databases')
-        .document(_user.uid)
-        .collection('pokemonStates')
+        .document(user.uid)
+        .collection('favouritePokemon')
         .getDocuments();
     favouritePokemonBloc.add(InitFavouritePokemonEvent());
     _favouritePokemonSnapshots.documents?.forEach((element) {});
@@ -207,10 +278,9 @@ class FirebaseMethods {
   }
 
   Future<void> updateFavouritePokemon(int pokemon) async {
-    final FirebaseUser _user = await _auth.currentUser();
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('favouritePokemon')
         .document('id')
         .setData(
@@ -220,11 +290,19 @@ class FirebaseMethods {
   }
 
   /// Method of [Starpoint]
+  Stream<DocumentSnapshot> starpointStream() {
+    return _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('starPoint')
+        .document('star')
+        .snapshots();
+  }
+
   Future<void> getStarpoint(StarBloc starBloc) async {
-    final FirebaseUser _user = await _auth.currentUser();
     DocumentSnapshot _starSnapshot = await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('starPoint')
         .document('star')
         .get();
@@ -234,12 +312,11 @@ class FirebaseMethods {
   }
 
   Future<void> updateStarpoint(int currentStar) async {
-    final FirebaseUser _user = await _auth.currentUser();
     Map<String, int> _star = {"star": currentStar};
 
     await _firestore
         .collection('databases')
-        .document(_user.uid)
+        .document(user.uid)
         .collection('starPoint')
         .document('star')
         .setData(

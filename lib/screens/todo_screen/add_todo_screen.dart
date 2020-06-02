@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
@@ -838,8 +839,9 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             isCreate = true;
             String id = Uuid().v1();
             Todo _todo = Todo(
-              content: _todoEditting.text,
               id: id,
+              timestamp: Timestamp.now().toString(),
+              content: _todoEditting.text,
               state: "notDone",
               images: images.toString(),
               color: indexColor,
@@ -847,7 +849,6 @@ class _AddTodoScreenState extends State<AddTodoScreen>
               audioCode: _haveRecord ? _audioCode : '',
               catagories: _catagoryItems.toString(),
             );
-            print(_todo.toMap());
             _todoBloc.add(AddTodoEvent(todo: _todo));
 
             if (await checkConnection())

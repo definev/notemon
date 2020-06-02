@@ -156,8 +156,9 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 _isDone = true;
                 Future.delayed(Duration(milliseconds: 350), () async {
                   _todoBloc.add(DeleteTodoEvent(todo: widget.task));
-                  if (connection)
+                  if (connection) {
                     _repository.deleteTodoOnFirebase(_currentTask);
+                  }
                   _starBloc.add(AddStarEvent(point: 1));
                 });
               }

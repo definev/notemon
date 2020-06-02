@@ -12,7 +12,10 @@ class TodoDatabase {
 
   Database get database => _database;
 
-  static const initScripts = [TodoTable.CREATE_TABLE_QUERY];
+  static const initScripts = [
+    TodoTable.CREATE_TABLE_QUERY,
+    TodoTable.CREATE_DELETE_TABLE_QUERY
+  ];
   static const migrationScripts = [];
 
   init() async {

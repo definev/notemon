@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,18 +13,14 @@ import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/habit_tile.dart';
 import 'package:gottask/components/todo_tile.dart';
 import 'package:gottask/helper.dart';
-import 'package:gottask/models/favourite_pokemon.dart';
-import 'package:gottask/models/pokemon_state.dart';
-import 'package:gottask/models/starpoint.dart';
-import 'package:gottask/models/task.dart';
-import 'package:gottask/models/todo.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
 import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
-import 'package:gottask/utils/connection.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -33,6 +30,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   bool _isInit = false;
+  Map<String, bool> _isLoading = {
+    'todo': false,
+    'task': false,
+    'pokemonState': false,
+  };
+
   ConnectionStatusSingleton connectionStatus;
   StreamController<bool> _connectionChangeStream;
 
@@ -48,25 +51,49 @@ class _HomeScreenState extends State<HomeScreen>
     showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
   }
 
-  _updateDatabase() {
+  _updateDatabase() async {
+    if (_repository.user == null) await _repository.initUser();
     if (_todoBloc.todoList != null) {
-      _repository?.uploadAllTodoToFirebase(_todoBloc.todoList);
-    }
-    if (_taskBloc.taskList != null) {
-      _repository?.uploadAllTaskToFirebase(_taskBloc.taskList);
-      _repository.getAllTaskAndLoadToDb(_taskBloc);
-    }
-    if (_starBloc.currentStarPoint != null) {
-      _repository?.updateStarpoint(_starBloc.currentStarPoint);
-      _repository.getAllTaskAndLoadToDb(_taskBloc);
-    }
-    if (_favouritePokemonBloc.favouritePokemon != null) {
-      _repository
-          ?.updateFavouritePokemon(_favouritePokemonBloc.favouritePokemon);
-    }
-    if (_allPokemonBloc.pokemonStateList != null) {
-      _repository
-          ?.uploadAllPokemonStateToFirebase(_allPokemonBloc.pokemonStateList);
+      List<String> _deleteKey = _todoBloc.deleteTodoKey;
+      List<String> _deleteKeyInServer = await _repository.getDeleteTodoKey();
+      List<String> _finalDeleteKey = [..._deleteKey, ..._deleteKeyInServer];
+      _finalDeleteKey = LinkedHashSet<String>.from(_finalDeleteKey).toList();
+      _repository.setDeleteTodoKey(_finalDeleteKey);
+      List<Todo> _todoListServer = [];
+
+      await _repository.getAllTodo().then(
+        (todoListServerRaw) {
+          _todoListServer = todoListServerRaw;
+          List<Todo>.from(todoListServerRaw).forEach((todo) {
+            if (_finalDeleteKey.contains(todo.id)) {
+              _todoListServer.remove(todo);
+              _repository.deleteTodoOnFirebase(todo);
+            }
+          });
+        },
+      );
+
+      List<Todo> _todoListLocal = _todoBloc.todoList;
+      List<Todo>.from(_todoBloc.todoList).forEach((todo) {
+        if (_finalDeleteKey.contains(todo.id)) {
+          _todoListLocal.remove(todo);
+          _todoBloc.add(DeleteTodoEvent(todo: todo));
+        }
+      });
+      List<Todo> _todoListFinal = _todoListLocal;
+      List<Todo> _todoListAddIn = [];
+
+      for (int i = 0; i < _todoListServer.length; i++) {
+        if (!_todoListLocal.contains(_todoListServer[i])) {
+          _todoListFinal.add(_todoListServer[i]);
+          _todoListAddIn.add(_todoListServer[i]);
+        }
+      }
+
+      await _repository.uploadAllTodoToFirebase(_todoListFinal);
+      _todoListAddIn.forEach(
+        (todo) => _todoBloc.add(AddTodoEvent(todo: todo)),
+      );
     }
   }
 
@@ -78,6 +105,15 @@ class _HomeScreenState extends State<HomeScreen>
     connectionStatus = ConnectionStatusSingleton.getInstance();
     connectionStatus.initialize();
     _connectionChangeStream = connectionStatus.connectionChangeController;
+    _connectionChangeStream.stream.listen(
+      (hasInternet) async {
+        if (hasInternet) {
+          setState(() => _isLoading['todo'] = true);
+          await _updateDatabase();
+          setState(() => _isLoading['todo'] = false);
+        }
+      },
+    );
   }
 
   @override
@@ -94,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen>
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _starBloc = findBloc<StarBloc>();
       _repository = findBloc<FirebaseRepository>();
-      _repository.initUser().then((value) => setState(() {}));
+      _repository.initUser().then((_) => setState(() {}));
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
       _todoBloc.add(InitTodoEvent());
       _taskBloc.add(InitTaskEvent());
@@ -146,9 +182,16 @@ class _HomeScreenState extends State<HomeScreen>
           body: StreamBuilder<bool>(
             stream: _connectionChangeStream.stream,
             builder: (context, snapshot) {
-              print(snapshot);
-              if (snapshot?.data == true) _updateDatabase();
-
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                connectionStatus.hasConnection = null;
+                connectionStatus.checkOutConnection();
+                return Center(
+                  child: LoadingJumpingLine.circle(
+                    backgroundColor: TodoColors.deepPurple,
+                  ),
+                );
+              }
+              print(snapshot.data);
               return IndexedStack(
                 children: [
                   Column(
@@ -201,12 +244,26 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Row(
                   children: <Widget>[
                     StreamBuilder<QuerySnapshot>(
-                      stream: Firestore.instance
-                          .collection('databases')
-                          .document(_repository.user.uid)
-                          .collection('favouritePokemon')
-                          .snapshots(),
+                      stream: _repository.favouritePokemonStream(),
                       builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: LoadingJumpingLine.circle(
+                                  size: 15,
+                                  backgroundColor: TodoColors.deepPurple,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                         if (snapshot.data == null) {
                           return GestureDetector(
                             onTap: () async {
@@ -218,9 +275,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   builder: (_) =>
                                       BlocProvider<HandSideBloc>.value(
                                     value: HandSideBloc(),
-                                    child: AllPokemonScreen(
-                                        repository: _repository,
-                                        currentPokemon: 0),
+                                    child: AllPokemonScreen(currentPokemon: 0),
                                   ),
                                 ),
                               );
@@ -261,7 +316,6 @@ class _HomeScreenState extends State<HomeScreen>
                                       BlocProvider<HandSideBloc>.value(
                                     value: HandSideBloc(),
                                     child: AllPokemonScreen(
-                                      repository: _repository,
                                       currentPokemon: _favouritePokemon.pokemon,
                                     ),
                                   ),
@@ -293,9 +347,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   builder: (_) =>
                                       BlocProvider<HandSideBloc>.value(
                                     value: HandSideBloc(),
-                                    child: AllPokemonScreen(
-                                        repository: _repository,
-                                        currentPokemon: 0),
+                                    child: AllPokemonScreen(currentPokemon: 0),
                                   ),
                                 ),
                               );
@@ -324,12 +376,7 @@ class _HomeScreenState extends State<HomeScreen>
                           Row(
                             children: <Widget>[
                               StreamBuilder<DocumentSnapshot>(
-                                stream: _repository.firestoreInstance
-                                    .collection('databases')
-                                    .document(_repository.user.uid)
-                                    .collection('starPoint')
-                                    .document('star')
-                                    .snapshots(),
+                                stream: _repository.starpointStream(),
                                 builder: (context, snapshot) {
                                   if (snapshot.data == null) {
                                     return Text(
@@ -413,13 +460,10 @@ class _HomeScreenState extends State<HomeScreen>
           width: MediaQuery.of(context).size.width - 20,
           padding: const EdgeInsets.all(2),
           child: StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection('databases')
-                .document(_repository.user.uid)
-                .collection('pokemonStates')
-                .snapshots(),
+            stream: _repository.pokemonStateStream(),
             builder: (context, snapshot) {
-              if (snapshot.data == null) {
+              if (snapshot.data == null ||
+                  snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: Text('Waiting ...'),
                 );
@@ -459,7 +503,6 @@ class _HomeScreenState extends State<HomeScreen>
                           builder: (_) => BlocProvider<HandSideBloc>.value(
                             value: HandSideBloc(),
                             child: AllPokemonScreen(
-                              repository: _repository,
                               currentPokemon: index,
                             ),
                           ),
@@ -565,12 +608,21 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTodo() => Expanded(
         child: StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance
-              .collection('databases')
-              .document(_repository.user.uid)
-              .collection('todos')
-              .snapshots(),
+          stream: _repository.todoStream(),
           builder: (context, snapshots) {
+            if (snapshots.connectionState == ConnectionState.waiting ||
+                _isLoading['todo'] == true) {
+              return SizedBox(
+                height: kListViewHeight + 2,
+                width: double.infinity,
+                child: Center(
+                  child: LoadingJumpingLine.circle(
+                    size: 30,
+                    backgroundColor: TodoColors.deepPurple,
+                  ),
+                ),
+              );
+            }
             if (snapshots.data != null) {
               List<Todo> _todoList = [];
               snapshots.data.documents
@@ -620,53 +672,27 @@ class _HomeScreenState extends State<HomeScreen>
               style: kTitleStyle,
             ),
             const SizedBox(width: 10),
-            Row(
-              children: [
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 10),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.spaceGrey,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.more_horiz,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailTaskScreen(),
-                        ),
-                      );
-                    },
-                  ),
+            Container(
+              width: 25,
+              height: 25,
+              margin: const EdgeInsets.only(right: 20),
+              child: RawMaterialButton(
+                fillColor: TodoColors.deepPurple,
+                shape: const CircleBorder(),
+                elevation: 0.5,
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
                 ),
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 20),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.deepPurple,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTaskScreen(),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddTaskScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -674,12 +700,20 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTask() {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
-          .collection('databases')
-          .document(_repository.user.uid)
-          .collection('tasks')
-          .snapshots(),
+      stream: _repository.taskStream(),
       builder: (context, snapshots) {
+        if (snapshots.connectionState == ConnectionState.waiting) {
+          return SizedBox(
+            height: kListViewHeight + 2,
+            width: double.infinity,
+            child: Center(
+              child: LoadingJumpingLine.circle(
+                size: 30,
+                backgroundColor: TodoColors.deepPurple,
+              ),
+            ),
+          );
+        }
         if (snapshots.data == null) {
           _repository.uploadAllTaskToFirebase(_taskBloc.taskList);
           return SizedBox(
@@ -801,7 +835,6 @@ class _HomeScreenState extends State<HomeScreen>
                                           BlocProvider<HandSideBloc>.value(
                                         value: HandSideBloc(),
                                         child: AllPokemonScreen(
-                                          repository: _repository,
                                           currentPokemon: state.pokemon,
                                         ),
                                       ),
@@ -832,9 +865,8 @@ class _HomeScreenState extends State<HomeScreen>
                                       builder: (_) =>
                                           BlocProvider<HandSideBloc>.value(
                                         value: HandSideBloc(),
-                                        child: AllPokemonScreen(
-                                            repository: _repository,
-                                            currentPokemon: 0),
+                                        child:
+                                            AllPokemonScreen(currentPokemon: 0),
                                       ),
                                     ),
                                   );
@@ -913,6 +945,7 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
       );
+
   Widget _buildOfflinePetCollection() => Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 14,
@@ -954,7 +987,6 @@ class _HomeScreenState extends State<HomeScreen>
                               builder: (_) => BlocProvider<HandSideBloc>.value(
                                 value: HandSideBloc(),
                                 child: AllPokemonScreen(
-                                  repository: _repository,
                                   currentPokemon: index,
                                 ),
                               ),
@@ -1110,53 +1142,27 @@ class _HomeScreenState extends State<HomeScreen>
               style: kTitleStyle,
             ),
             const SizedBox(width: 10),
-            Row(
-              children: [
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 10),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.spaceGrey,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.more_horiz,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailTaskScreen(),
-                        ),
-                      );
-                    },
-                  ),
+            Container(
+              width: 25,
+              height: 25,
+              margin: const EdgeInsets.only(right: 20),
+              child: RawMaterialButton(
+                fillColor: TodoColors.deepPurple,
+                shape: const CircleBorder(),
+                elevation: 0.5,
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
                 ),
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 20),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.deepPurple,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTaskScreen(),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddTaskScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -1300,3 +1306,26 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 }
+
+//                  Container(
+//                   width: 25,
+//                   height: 25,
+//                   margin: const EdgeInsets.only(right: 10),
+//                   child: RawMaterialButton(
+//                     fillColor: TodoColors.spaceGrey,
+//                     shape: const CircleBorder(),
+//                     elevation: 0.5,
+//                     child: Icon(
+//                       Icons.more_horiz,
+//                       color: Colors.white,
+//                     ),
+//                     onPressed: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => DetailTaskScreen(),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
