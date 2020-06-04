@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 class TaskTable {
   static const TABLE_NAME = 'Taskdb';
+  static const DELETE_TABLE_NAME = 'deleteKeyTaskdb';
 
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
@@ -20,10 +21,43 @@ class TaskTable {
       percent INTEGER
     );   
   ''';
-  static const DROP_TABLE_QUERY = '''
-      DROP TABLE IF EXISTS $TABLE_NAME
+  static const CREATE_DELETE_TABLE_QUERY = '''
+    CREATE TABLE $DELETE_TABLE_NAME (id TEXT PRIMARY KEY);  
   ''';
 
+  /// [Task delete key]
+  static Future<int> insertTaskDeleteKey(String id) {
+    final Database db = TaskDatabase.instance.database;
+
+    return db.insert(
+      DELETE_TABLE_NAME,
+      {'id': id},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  static Future<List<String>> selectAllDeleteKey() async {
+    final Database db = TaskDatabase.instance.database;
+
+    final deleteKeyList = await db.query(DELETE_TABLE_NAME);
+    List<String> deleteKey = [];
+    deleteKeyList.forEach((map) => deleteKey.add(map['id']));
+    return deleteKey;
+  }
+
+  static Future<void> deleteAllDeleteKey() async {
+    final Database db = TaskDatabase.instance.database;
+    List<String> deleteKey = await selectAllDeleteKey();
+    deleteKey.forEach((key) async {
+      await db.delete(
+        DELETE_TABLE_NAME,
+        where: 'id = ?',
+        whereArgs: [key],
+      );
+    });
+  }
+
+  ///[Task] databases
   static Future<int> insertTask(Task task) {
     final Database database = TaskDatabase.instance.database;
     return database.insert(

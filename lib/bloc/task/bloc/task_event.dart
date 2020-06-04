@@ -8,17 +8,17 @@ class InitTaskEvent extends TaskEvent {}
 class AddTaskEvent extends TaskEvent {
   final Task task;
 
-  AddTaskEvent(this.task);
+  AddTaskEvent({this.task});
 }
 
-class UpdateTaskEvent extends TaskEvent {
+class EditTaskEvent extends TaskEvent {
   final Task task;
 
-  UpdateTaskEvent(this.task);
+  EditTaskEvent({this.task});
 }
 
 class DeleteTaskEvent extends TaskEvent {
   final Task task;
-
-  DeleteTaskEvent(this.task);
+  final bool addDeleteKey;
+  DeleteTaskEvent({this.task, @required this.addDeleteKey});
 }

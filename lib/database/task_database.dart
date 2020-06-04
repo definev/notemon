@@ -12,7 +12,10 @@ class TaskDatabase {
 
   Database get database => _database;
 
-  static const initScripts = [TaskTable.CREATE_TABLE_QUERY];
+  static const initScripts = [
+    TaskTable.CREATE_TABLE_QUERY,
+    TaskTable.CREATE_DELETE_TABLE_QUERY,
+  ];
   static const migrationScripts = [];
   init() async {
     _database = await openDatabase(

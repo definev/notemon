@@ -42,6 +42,18 @@ class TodoTable {
     return deleteKey;
   }
 
+  static Future<void> deleteAllDeleteKey() async {
+    final Database db = TodoDatabase.instance.database;
+    List<String> deleteKey = await selectAllDeleteKey();
+    deleteKey.forEach((key) async {
+      await db.delete(
+        DELETE_TABLE_NAME,
+        where: 'id = ?',
+        whereArgs: [key],
+      );
+    });
+  }
+
   /// [Todo] database
   static Future<int> insertTodo(Todo todo) {
     final Database db = TodoDatabase.instance.database;
@@ -116,7 +128,7 @@ class TodoTable {
     );
     return Todo(
       id: map[1]['id'],
-      timestamp: map[1]['timestamp'],
+      timestamp: DateTime.parse(map[1]['timestamp']),
       content: map[1]['content'],
       images: map[1]['images'],
       state: map[1]['state'],
@@ -134,7 +146,7 @@ class TodoTable {
     return List.generate(maps.length, (index) {
       return Todo(
         id: maps[index]['id'],
-        timestamp: maps[index]['timestamp'],
+        timestamp: DateTime.parse(maps[index]['timestamp']),
         content: maps[index]['content'],
         images: maps[index]['images'],
         state: maps[index]['state'],

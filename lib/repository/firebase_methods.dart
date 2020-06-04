@@ -52,14 +52,6 @@ class FirebaseMethods {
   }
 
   /// Method of [Todo]
-  Stream<QuerySnapshot> todoStream() {
-    return _firestore
-        .collection('databases')
-        .document(user.uid)
-        .collection('todos')
-        .snapshots();
-  }
-
   Future<void> updateTodoToFirebase(Todo todo) async {
     await TodoTable.updateOrInsertNewTodo(todo);
 
@@ -69,7 +61,7 @@ class FirebaseMethods {
         .collection('todos')
         .document(todo.id)
         .setData(
-          todo.toMap(),
+          todo.toFirebaseMap(),
           merge: true,
         );
   }
@@ -82,7 +74,7 @@ class FirebaseMethods {
           .collection('todos')
           .document(todo.id)
           .setData(
-            todo.toMap(),
+            todo.toFirebaseMap(),
             merge: true,
           );
     });
@@ -104,7 +96,8 @@ class FirebaseMethods {
         .collection('todos')
         .getDocuments();
     List<Todo> todoList = [];
-    _snapshot.documents.forEach((map) => todoList.add(Todo.fromMap(map.data)));
+    _snapshot.documents
+        .forEach((map) => todoList.add(Todo.fromFirebaseMap(map.data)));
     return todoList;
   }
 
@@ -116,8 +109,8 @@ class FirebaseMethods {
         .getDocuments();
 
     todoBloc.add(InitTodoEvent());
-    _taskSnapshots.documents.forEach(
-        (map) => todoBloc.add(AddTodoEvent(todo: Todo.fromMap(map.data))));
+    _taskSnapshots.documents.forEach((map) =>
+        todoBloc.add(AddTodoEvent(todo: Todo.fromFirebaseMap(map.data))));
   }
 
   /// Method of [Save task delete key]
@@ -133,6 +126,44 @@ class FirebaseMethods {
     );
   }
 
+  /// Method of [Save task delete key]
+  Future<void> addDeleteTaskKey(String id) async {
+    await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('deleteTasks')
+        .document(id)
+        .setData(
+      {'id': id},
+      merge: true,
+    );
+  }
+
+  Future<void> setDeleteTaskKey(List<String> data) async {
+    data.forEach((element) async {
+      await _firestore
+          .collection('databases')
+          .document(user.uid)
+          .collection('deleteTasks')
+          .document(element)
+          .setData(
+        {'id': element},
+        merge: true,
+      );
+    });
+  }
+
+  Future<List<String>> getDeleteTaskKey() async {
+    QuerySnapshot _snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('deleteTasks')
+        .getDocuments();
+    List<String> deleteKey = [];
+    _snapshot.documents.forEach((map) => deleteKey.add(map.data['id']));
+    return deleteKey;
+  }
+
   /// Method of [Task]
   Future<List<Task>> getAllTask() async {
     QuerySnapshot _snapshot = await _firestore
@@ -145,14 +176,6 @@ class FirebaseMethods {
     return taskList;
   }
 
-  Stream<QuerySnapshot> taskStream() {
-    return _firestore
-        .collection('databases')
-        .document(user.uid)
-        .collection('tasks')
-        .snapshots();
-  }
-
   Future<void> getAllTaskAndLoadToDb(TaskBloc taskBloc) async {
     QuerySnapshot _taskSnapshots = await _firestore
         .collection('databases')
@@ -163,7 +186,7 @@ class FirebaseMethods {
     taskBloc.add(InitTaskEvent());
     _taskSnapshots.documents.forEach((map) {
       Task task = Task.fromMap(map.data);
-      taskBloc.add(AddTaskEvent(task));
+      taskBloc.add(AddTaskEvent(task: task));
     });
   }
 
@@ -203,14 +226,6 @@ class FirebaseMethods {
   }
 
   /// Method of [PokemonState]
-  Stream<QuerySnapshot> pokemonStateStream() {
-    return _firestore
-        .collection('databases')
-        .document(user.uid)
-        .collection('pokemonStates')
-        .snapshots();
-  }
-
   Future<void> getAllPokemonStateAndLoadToDb(
       AllPokemonBloc allPokemonBloc) async {
     QuerySnapshot _pokemonStateSnapshots = await _firestore
@@ -253,14 +268,6 @@ class FirebaseMethods {
   }
 
   /// Method of [FavouritePokemon]
-  Stream<QuerySnapshot> favouritePokemonStream() {
-    return _firestore
-        .collection('databases')
-        .document(user.uid)
-        .collection('favouritePokemon')
-        .snapshots();
-  }
-
   Future<void> getFavouritePokemonStateAndLoadToDb(
       FavouritePokemonBloc favouritePokemonBloc) async {
     QuerySnapshot _favouritePokemonSnapshots = await _firestore
@@ -290,15 +297,6 @@ class FirebaseMethods {
   }
 
   /// Method of [Starpoint]
-  Stream<DocumentSnapshot> starpointStream() {
-    return _firestore
-        .collection('databases')
-        .document(user.uid)
-        .collection('starPoint')
-        .document('star')
-        .snapshots();
-  }
-
   Future<void> getStarpoint(StarBloc starBloc) async {
     DocumentSnapshot _starSnapshot = await _firestore
         .collection('databases')

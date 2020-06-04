@@ -110,7 +110,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 achieve: _achieveLists.toString(),
                 isDoneAchieve: _isDoneAchieveLists.toString(),
               );
-              _taskBloc.add(AddTaskEvent(_task));
+              _taskBloc.add(AddTaskEvent(task: _task));
               _repository.updateTaskToFirebase(_task);
               Navigator.pop(context);
             }

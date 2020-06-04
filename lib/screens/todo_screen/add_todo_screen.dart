@@ -840,7 +840,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             String id = Uuid().v1();
             Todo _todo = Todo(
               id: id,
-              timestamp: Timestamp.now().toString(),
+              timestamp: Timestamp.now().toDate(),
               content: _todoEditting.text,
               state: "notDone",
               images: images.toString(),

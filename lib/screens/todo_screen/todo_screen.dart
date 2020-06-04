@@ -411,7 +411,8 @@ class _TodoScreenState extends State<TodoScreen>
                 color: Colors.white,
               ),
               onPressed: () async {
-                _todoBloc.add(DeleteTodoEvent(todo: _currentTask));
+                _todoBloc.add(
+                    DeleteTodoEvent(todo: _currentTask, addDeleteKey: true));
 
                 _starBloc.add(AddStarEvent(point: 1));
                 _repository.deleteTodoOnFirebase(_currentTask);

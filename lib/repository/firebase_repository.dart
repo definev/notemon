@@ -7,7 +7,7 @@ import 'package:gottask/repository/repository.dart';
 class FirebaseRepository {
   final FirebaseMethods _firebaseMethods = FirebaseMethods();
   final AuthServices _authServices = AuthServices();
-
+  Firestore firestore = Firestore.instance;
   FirebaseUser get user => _firebaseMethods.user;
 
   FirebaseAuth get firebaseAuthInstance => FirebaseAuth.instance;
@@ -21,19 +21,25 @@ class FirebaseRepository {
   Future<FirebaseUser> googleSignIn() => _authServices.googleSignIn();
 
   /// [Task] methods
-  Stream<QuerySnapshot> taskStream() => _firebaseMethods.taskStream();
   Future<void> uploadAllTaskToFirebase(List<Task> taskList) =>
       _firebaseMethods.uploadAllTaskToFirebase(taskList);
   Future<void> updateTaskToFirebase(Task task) =>
       _firebaseMethods.updateTaskToFirebase(task);
-  Future<void> deleteTaskOnFirebase(Task task) =>
-      _firebaseMethods.deleteTaskOnFirebase(task);
+  Future<void> deleteTaskOnFirebase(Task task) async {
+    await _firebaseMethods.deleteTaskOnFirebase(task);
+    await _firebaseMethods.addDeleteTaskKey(task.id);
+  }
+
   Future<void> getAllTaskAndLoadToDb(TaskBloc taskBloc) =>
       _firebaseMethods.getAllTaskAndLoadToDb(taskBloc);
   Future<List<Task>> getAllTask() => _firebaseMethods.getAllTask();
+  Future<void> setDeleteTaskKey(List<String> data) =>
+      _firebaseMethods.setDeleteTaskKey(data);
+
+  Future<List<String>> getDeleteTaskKey() =>
+      _firebaseMethods.getDeleteTaskKey();
 
   /// [Todo] methods
-  Stream<QuerySnapshot> todoStream() => _firebaseMethods.todoStream();
   Future<void> uploadAllTodoToFirebase(List<Todo> todoList) =>
       _firebaseMethods.uploadAllTodoToFirebase(todoList);
   Future<void> updateTodoToFirebase(Todo todo) =>
@@ -44,6 +50,9 @@ class FirebaseRepository {
     await _firebaseMethods.addDeleteTodoKey(todo.id);
   }
 
+  Future<void> deleteTodoOnFirebaseNotAddDeleteKey(Todo todo) =>
+      _firebaseMethods.deleteTodoOnFirebase(todo);
+
   Future<void> setDeleteTodoKey(List<String> data) =>
       _firebaseMethods.setDeleteTodoKey(data);
 
@@ -53,8 +62,6 @@ class FirebaseRepository {
       _firebaseMethods.getAllTodoAndLoadToDb(todoBloc);
 
   /// [PokemonState] methods
-  Stream<QuerySnapshot> pokemonStateStream() =>
-      _firebaseMethods.pokemonStateStream();
   Future<void> getAllPokemonStateAndLoadToDb(AllPokemonBloc allPokemonBloc) =>
       _firebaseMethods.getAllPokemonStateAndLoadToDb(allPokemonBloc);
   Future<void> uploadAllPokemonStateToFirebase(
@@ -64,8 +71,6 @@ class FirebaseRepository {
       _firebaseMethods.updatePokemonStateToFirebase(pokemonState);
 
   /// [Favourite pokemon] methods
-  Stream<QuerySnapshot> favouritePokemonStream() =>
-      _firebaseMethods.favouritePokemonStream();
   Future<void> getFavouritePokemonStateAndLoadToDb(
           FavouritePokemonBloc favouritePokemonBloc) =>
       _firebaseMethods
@@ -74,8 +79,6 @@ class FirebaseRepository {
       _firebaseMethods.updateFavouritePokemon(pokemon);
 
   /// [Starpoint] methods
-  Stream<DocumentSnapshot> starpointStream() =>
-      _firebaseMethods.starpointStream();
   Future<void> getStarpoint(StarBloc starBloc) =>
       _firebaseMethods.getStarpoint(starBloc);
   Future<void> updateStarpoint(int currentStar) =>

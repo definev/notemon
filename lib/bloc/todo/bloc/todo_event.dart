@@ -13,8 +13,8 @@ class AddTodoEvent extends TodoEvent {
 
 class DeleteTodoEvent extends TodoEvent {
   final Todo todo;
-
-  DeleteTodoEvent({this.todo});
+  final bool addDeleteKey;
+  DeleteTodoEvent({this.todo, @required this.addDeleteKey});
 }
 
 class CheckedTodoEvent extends TodoEvent {

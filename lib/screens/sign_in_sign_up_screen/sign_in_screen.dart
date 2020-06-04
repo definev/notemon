@@ -6,6 +6,7 @@ import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_up_screen.dart';
 import 'package:gottask/utils/constant.dart';
 import 'package:gottask/utils/utils.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
   FirebaseRepository _repository;
+  bool _isLoading = false;
 
   _loginSuccess() async {
     updateLoginState(true);
@@ -228,6 +230,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               hoverColor: Colors.transparent,
                               splashColor: Colors.transparent,
                               onTap: () async {
+                                setState(() => _isLoading = true);
                                 if (await checkConnection()) {
                                   FirebaseUser user =
                                       await _authServices.googleSignIn();
@@ -248,6 +251,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   );
                                 }
+                                setState(() => _isLoading = false);
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -297,6 +301,16 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
           ),
+          if (_isLoading)
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.black45,
+              child: LoadingFadingLine.circle(
+                backgroundColor: Colors.white,
+                size: 100,
+              ),
+            ),
         ],
       ),
     );

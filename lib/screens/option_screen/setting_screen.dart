@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/database/database.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
@@ -43,9 +44,13 @@ class _SettingScreenState extends State<SettingScreen>
     });
 
     List<Todo> _todoList = _todoBloc.todoList;
-    _todoList.forEach((todo) => _todoBloc.add(DeleteTodoEvent(todo: todo)));
+    _todoList.forEach((todo) =>
+        _todoBloc.add(DeleteTodoEvent(todo: todo, addDeleteKey: false)));
     List<Task> _taskList = _taskBloc.taskList;
-    _taskList.forEach((task) => _taskBloc.add(DeleteTaskEvent(task)));
+    TodoTable.deleteAllDeleteKey();
+    _taskList.forEach((task) =>
+        _taskBloc.add(DeleteTaskEvent(task: task, addDeleteKey: false)));
+    TaskTable.deleteAllDeleteKey();
     _starBloc.add(SetStarEvent(point: null));
     _favouritePokemonBloc.add(UpdateFavouritePokemonEvent(null));
   }

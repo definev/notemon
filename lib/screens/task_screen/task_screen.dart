@@ -83,8 +83,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     );
     Duration _completeTimer = _oldTimer - _timer;
     _taskBloc.add(
-      UpdateTaskEvent(
-        widget.task.copyWith(
+      EditTaskEvent(
+        task: widget.task.copyWith(
           achieve: _achievelists.toString(),
           catagories: _catagoryItems.toString(),
           completeTimer: _completeTimer.toString(),
@@ -232,8 +232,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   );
                   Duration _completeTimer = _oldTimer - _timer;
                   _taskBloc.add(
-                    UpdateTaskEvent(
-                      widget.task.copyWith(
+                    EditTaskEvent(
+                      task: widget.task.copyWith(
                         achieve: _achievelists.toString(),
                         catagories: _catagoryItems.toString(),
                         completeTimer: _completeTimer.toString(),
@@ -474,7 +474,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             : IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () async {
-                  _taskBloc.add(DeleteTaskEvent(widget.task));
+                  _taskBloc.add(DeleteTaskEvent(task: widget.task, addDeleteKey: true));
                   if (await checkConnection())
                     _repository.deleteTaskOnFirebase(widget.task);
                   Navigator.pop(context);
@@ -690,7 +690,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          _taskBloc.add(DeleteTaskEvent(widget.task));
+                          _taskBloc.add(DeleteTaskEvent(task: widget.task, addDeleteKey: true));
                           if (await checkConnection())
                             _repository.deleteTaskOnFirebase(widget.task);
                           Navigator.pop(context);

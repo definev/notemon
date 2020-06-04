@@ -55,18 +55,17 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
         fastThreshold: 20,
         child: Container(
           height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
+          color: Colors.white,
           child: InkWell(
             onTap: () {
-              if (_isDone != true)
+              if (_isDone != true) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TodoScreen(todo: _currentTask),
                   ),
                 );
+              }
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,8 +77,9 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                       _currentTask = _currentTask.copyWith(
                           state: _isChecked ? "done" : "notDone");
                       _todoBloc.add(EditTodoEvent(todo: _currentTask));
-                      if (await checkConnection())
-                        _repository.updateTodoToFirebase(_currentTask);
+                      if (await checkConnection()) {
+                        await _repository.updateTodoToFirebase(_currentTask);
+                      }
                     }
                   },
                   child: _isChecked
@@ -142,22 +142,25 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
         secondaryActions: <Widget>[
           SlideAction(
             onTap: () async {
-              bool connection = await checkConnection();
               if (_isChecked == false) {
-                Future.delayed(Duration(milliseconds: 300), () {
+                Future.delayed(Duration(milliseconds: 300), () async {
                   setState(() => _isChecked = !_isChecked);
                   _currentTask = _currentTask.copyWith(
                       state: _isChecked ? "done" : "notDone");
                   _todoBloc.add(EditTodoEvent(todo: _currentTask));
-                  if (connection)
-                    _repository.updateTodoToFirebase(_currentTask);
+                  if (await checkConnection()) {
+                    await _repository.updateTodoToFirebase(_currentTask);
+                  }
                 });
               } else if (_isChecked == true) {
                 _isDone = true;
                 Future.delayed(Duration(milliseconds: 350), () async {
-                  _todoBloc.add(DeleteTodoEvent(todo: widget.task));
-                  if (connection) {
-                    _repository.deleteTodoOnFirebase(_currentTask);
+                  _todoBloc.add(DeleteTodoEvent(
+                    todo: widget.task,
+                    addDeleteKey: true,
+                  ));
+                  if (await checkConnection()) {
+                    await _repository.deleteTodoOnFirebase(_currentTask);
                   }
                   _starBloc.add(AddStarEvent(point: 1));
                 });
@@ -203,10 +206,13 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 _isDone = true;
                 bool connection = await checkConnection();
                 Future.delayed(Duration(milliseconds: 350), () async {
-                  _todoBloc.add(DeleteTodoEvent(todo: widget.task));
-                  if (connection)
-                    _repository.deleteTodoOnFirebase(_currentTask);
-                  _starBloc.add(AddStarEvent(point: 1));
+                  _todoBloc.add(DeleteTodoEvent(
+                    todo: widget.task,
+                    addDeleteKey: true,
+                  ));
+                  if (connection) {
+                    _repository.deleteTodoOnFirebase(widget.task);
+                  }
                 });
               },
               closeOnTap: true,

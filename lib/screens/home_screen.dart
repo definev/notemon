@@ -51,49 +51,204 @@ class _HomeScreenState extends State<HomeScreen>
     showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
   }
 
-  _updateDatabase() async {
+  _updateTodo() async {
     if (_repository.user == null) await _repository.initUser();
     if (_todoBloc.todoList != null) {
-      List<String> _deleteKey = _todoBloc.deleteTodoKey;
+      /// [Delete key setup]
+      List<String> _deleteKey = List<String>.from(_todoBloc.deleteTodoKey);
       List<String> _deleteKeyInServer = await _repository.getDeleteTodoKey();
       List<String> _finalDeleteKey = [..._deleteKey, ..._deleteKeyInServer];
       _finalDeleteKey = LinkedHashSet<String>.from(_finalDeleteKey).toList();
-      _repository.setDeleteTodoKey(_finalDeleteKey);
-      List<Todo> _todoListServer = [];
-
-      await _repository.getAllTodo().then(
-        (todoListServerRaw) {
-          _todoListServer = todoListServerRaw;
-          List<Todo>.from(todoListServerRaw).forEach((todo) {
-            if (_finalDeleteKey.contains(todo.id)) {
-              _todoListServer.remove(todo);
-              _repository.deleteTodoOnFirebase(todo);
-            }
-          });
-        },
-      );
-
-      List<Todo> _todoListLocal = _todoBloc.todoList;
-      List<Todo>.from(_todoBloc.todoList).forEach((todo) {
-        if (_finalDeleteKey.contains(todo.id)) {
-          _todoListLocal.remove(todo);
-          _todoBloc.add(DeleteTodoEvent(todo: todo));
-        }
-      });
-      List<Todo> _todoListFinal = _todoListLocal;
-      List<Todo> _todoListAddIn = [];
-
-      for (int i = 0; i < _todoListServer.length; i++) {
-        if (!_todoListLocal.contains(_todoListServer[i])) {
-          _todoListFinal.add(_todoListServer[i]);
-          _todoListAddIn.add(_todoListServer[i]);
+      _deleteKey = [];
+      for (String key in _finalDeleteKey) {
+        if (!_deleteKeyInServer.contains(key)) {
+          _deleteKey.add(key);
         }
       }
 
-      await _repository.uploadAllTodoToFirebase(_todoListFinal);
-      _todoListAddIn.forEach(
-        (todo) => _todoBloc.add(AddTodoEvent(todo: todo)),
+      await _repository.setDeleteTodoKey(_deleteKey);
+
+      /// [Remove todo if todo.id == deleteKey on server]
+      List<Todo> _todoListServer = [];
+
+      _repository.getAllTodo().then(
+        (todoListServerRaw) async {
+          _todoListServer = todoListServerRaw;
+          List<Todo>.from(todoListServerRaw).forEach((todo) async {
+            if (_deleteKey.contains(todo.id)) {
+              _todoListServer.remove(todo);
+              await _repository.deleteTodoOnFirebase(todo);
+            }
+          });
+          List<Todo> _todoListLocal = _todoBloc.todoList;
+          List<Todo>.from(_todoBloc.todoList).forEach((todo) {
+            if (_finalDeleteKey.contains(todo.id)) {
+              _todoListLocal.remove(todo);
+              _todoBloc.add(DeleteTodoEvent(todo: todo, addDeleteKey: false));
+            }
+          });
+          List<Todo> _todoListFinal = _todoListLocal;
+          List<Todo> _todoListAddIn = [];
+
+          for (int i = 0; i < _todoListServer.length; i++) {
+            if (!_todoListLocal.contains(_todoListServer[i])) {
+              _todoListFinal.add(_todoListServer[i]);
+              _todoListAddIn.add(_todoListServer[i]);
+            }
+          }
+
+          await _repository.uploadAllTodoToFirebase(_todoListFinal);
+          _todoListAddIn.forEach(
+            (todo) => _todoBloc.add(AddTodoEvent(todo: todo)),
+          );
+        },
       );
+    }
+    setState(() => _isLoading['todo'] = true);
+  }
+
+  _updateTask() async {
+    if (_repository.user == null) await _repository.initUser();
+    if (_taskBloc.taskList != null) {
+      /// [Delete key setup]
+      List<String> _deleteKey = List<String>.from(_taskBloc.deleteTaskKey);
+      List<String> _deleteKeyInServer = await _repository.getDeleteTaskKey();
+      List<String> _finalDeleteKey = [..._deleteKey, ..._deleteKeyInServer];
+      _finalDeleteKey = LinkedHashSet<String>.from(_finalDeleteKey).toList();
+      _deleteKey = [];
+      for (String key in _finalDeleteKey) {
+        if (!_deleteKeyInServer.contains(key)) {
+          _deleteKey.add(key);
+        }
+      }
+
+      await _repository.setDeleteTaskKey(_deleteKey);
+
+      /// [Remove task if task.id == deleteKey on server]
+      List<Task> _taskListServer = [];
+
+      _repository.getAllTask().then(
+        (taskListServerRaw) async {
+          _taskListServer = taskListServerRaw;
+          List<Task>.from(taskListServerRaw).forEach((task) async {
+            if (_deleteKey.contains(task.id)) {
+              _taskListServer.remove(task);
+              await _repository.deleteTaskOnFirebase(task);
+            }
+          });
+          List<Task> _taskListLocal = _taskBloc.taskList;
+          List<Task>.from(_taskBloc.taskList).forEach((task) {
+            if (_finalDeleteKey.contains(task.id)) {
+              _taskListLocal.remove(task);
+              _taskBloc.add(DeleteTaskEvent(task: task, addDeleteKey: false));
+            }
+          });
+          List<Task> _taskListFinal = _taskListLocal;
+          List<Task> _taskListAddIn = [];
+
+          for (int i = 0; i < _taskListServer.length; i++) {
+            if (!_taskListLocal.contains(_taskListServer[i])) {
+              _taskListFinal.add(_taskListServer[i]);
+              _taskListAddIn.add(_taskListServer[i]);
+            }
+          }
+
+          await _repository.uploadAllTaskToFirebase(_taskListFinal);
+          _taskListAddIn.forEach(
+            (task) => _taskBloc.add(AddTaskEvent(task: task)),
+          );
+        },
+      );
+    }
+
+    setState(() => _isLoading['task'] = true);
+  }
+
+  _updateDatabase() async {
+    setState(() {
+      _isLoading['todo'] = true;
+      _isLoading['task'] = true;
+      _isLoading['pokemonState'] = true;
+    });
+    await _updateTodo();
+    await _updateTask();
+  }
+
+  _updateTodosWhenbackToOnline(List<Todo> todoList) async {
+    List<Todo> _todoListLocal = List<Todo>.from(_todoBloc.todoList);
+    List<Todo> _addTodoLocal = [];
+    for (Todo todo in todoList) {
+      for (int i = 0; i <= _todoListLocal.length; i++) {
+        if (!_todoListLocal.contains(todo)) {
+          _addTodoLocal.add(todo);
+        } else {
+          int index =
+              _todoListLocal.indexWhere((todoLocal) => todo == todoLocal);
+          print("ONLINE: ---: ${todo.hashCode}");
+          print("OFFLINE: ---: ${_todoListLocal[index].hashCode}");
+          print(todo.hashCode != _todoListLocal[index].hashCode);
+          print("");
+          if (todo.hashCode != _todoListLocal[index].hashCode) {
+            _todoBloc.add(EditTodoEvent(todo: todo));
+          }
+        }
+      }
+    }
+
+    for (Todo todo in _addTodoLocal) {
+      _todoBloc.add(AddTodoEvent(todo: todo));
+    }
+
+    List<String> _deleteKey = await _repository.getDeleteTodoKey();
+    _todoListLocal = List<Todo>.from(_todoBloc.todoList);
+    for (Todo todo in _todoListLocal) {
+      if (_deleteKey.contains(todo.id)) {
+        _todoBloc.add(
+          DeleteTodoEvent(
+            todo: todo,
+            addDeleteKey: true,
+          ),
+        );
+      }
+    }
+  }
+
+  _updateTasksWhenbackToOnline(List<Task> taskList) async {
+    List<Task> _taskListLocal = List<Task>.from(_taskBloc.taskList);
+    List<Task> _addTaskLocal = [];
+    for (Task task in taskList) {
+      for (int i = 0; i <= _taskListLocal.length; i++) {
+        if (!_taskListLocal.contains(task)) {
+          _addTaskLocal.add(task);
+        } else {
+          int index =
+              _taskListLocal.indexWhere((taskLocal) => task == taskLocal);
+          print("ONLINE: ---: ${task.hashCode}");
+          print("OFFLINE: ---: ${_taskListLocal[index].hashCode}");
+          print(task.hashCode != _taskListLocal[index].hashCode);
+          print("");
+          if (task.hashCode != _taskListLocal[index].hashCode) {
+            _taskBloc.add(EditTaskEvent(task: task));
+          }
+        }
+      }
+    }
+
+    for (Task task in _addTaskLocal) {
+      _taskBloc.add(AddTaskEvent(task: task));
+    }
+
+    List<String> _deleteKey = await _repository.getDeleteTaskKey();
+    _taskListLocal = List<Task>.from(_taskBloc.taskList);
+    for (Task task in _taskListLocal) {
+      if (_deleteKey.contains(task.id)) {
+        _taskBloc.add(
+          DeleteTaskEvent(
+            task: task,
+            addDeleteKey: true,
+          ),
+        );
+      }
     }
   }
 
@@ -108,9 +263,7 @@ class _HomeScreenState extends State<HomeScreen>
     _connectionChangeStream.stream.listen(
       (hasInternet) async {
         if (hasInternet) {
-          setState(() => _isLoading['todo'] = true);
           await _updateDatabase();
-          setState(() => _isLoading['todo'] = false);
         }
       },
     );
@@ -244,7 +397,11 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Row(
                   children: <Widget>[
                     StreamBuilder<QuerySnapshot>(
-                      stream: _repository.favouritePokemonStream(),
+                      stream: _repository.firestore
+                          .collection('databases')
+                          .document(_repository.user.uid)
+                          .collection('favouritePokemon')
+                          .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -376,7 +533,12 @@ class _HomeScreenState extends State<HomeScreen>
                           Row(
                             children: <Widget>[
                               StreamBuilder<DocumentSnapshot>(
-                                stream: _repository.starpointStream(),
+                                stream: _repository.firestore
+                                    .collection('databases')
+                                    .document(_repository.user.uid)
+                                    .collection('starPoint')
+                                    .document('star')
+                                    .snapshots(),
                                 builder: (context, snapshot) {
                                   if (snapshot.data == null) {
                                     return Text(
@@ -460,7 +622,11 @@ class _HomeScreenState extends State<HomeScreen>
           width: MediaQuery.of(context).size.width - 20,
           padding: const EdgeInsets.all(2),
           child: StreamBuilder<QuerySnapshot>(
-            stream: _repository.pokemonStateStream(),
+            stream: _repository.firestore
+                .collection('databases')
+                .document(_repository.user.uid)
+                .collection('pokemonStates')
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.data == null ||
                   snapshot.connectionState == ConnectionState.waiting) {
@@ -608,7 +774,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTodo() => Expanded(
         child: StreamBuilder<QuerySnapshot>(
-          stream: _repository.todoStream(),
+          stream: _repository.firestore
+              .collection('databases')
+              .document(_repository.user.uid)
+              .collection('todos')
+              .orderBy('timestamp', descending: false)
+              .snapshots(),
           builder: (context, snapshots) {
             if (snapshots.connectionState == ConnectionState.waiting ||
                 _isLoading['todo'] == true) {
@@ -625,8 +796,10 @@ class _HomeScreenState extends State<HomeScreen>
             }
             if (snapshots.data != null) {
               List<Todo> _todoList = [];
-              snapshots.data.documents
-                  .forEach((todo) => _todoList.add(Todo.fromMap(todo.data)));
+              snapshots.data.documents.forEach(
+                  (todo) => _todoList.add(Todo.fromFirebaseMap(todo.data)));
+
+              if (!_isLoading['todo']) _updateTodosWhenbackToOnline(_todoList);
               if (_todoList.isEmpty) {
                 return const Center(
                   child: Text(
@@ -700,9 +873,14 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTask() {
     return StreamBuilder<QuerySnapshot>(
-      stream: _repository.taskStream(),
+      stream: _repository.firestore
+          .collection('databases')
+          .document(_repository.user.uid)
+          .collection('tasks')
+          .snapshots(),
       builder: (context, snapshots) {
-        if (snapshots.connectionState == ConnectionState.waiting) {
+        if (snapshots.connectionState == ConnectionState.waiting ||
+            _isLoading['task'] == true) {
           return SizedBox(
             height: kListViewHeight + 2,
             width: double.infinity,
@@ -742,6 +920,7 @@ class _HomeScreenState extends State<HomeScreen>
             List<Task> _taskList = [];
             snapshots.data.documents
                 .forEach((maps) => _taskList.add(Task.fromMap(maps.data)));
+            if (!_isLoading['task']) _updateTasksWhenbackToOnline(_taskList);
             return Padding(
               padding: const EdgeInsets.only(left: 10),
               child: SizedBox(
@@ -1306,26 +1485,3 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 }
-
-//                  Container(
-//                   width: 25,
-//                   height: 25,
-//                   margin: const EdgeInsets.only(right: 10),
-//                   child: RawMaterialButton(
-//                     fillColor: TodoColors.spaceGrey,
-//                     shape: const CircleBorder(),
-//                     elevation: 0.5,
-//                     child: Icon(
-//                       Icons.more_horiz,
-//                       color: Colors.white,
-//                     ),
-//                     onPressed: () {
-//                       Navigator.push(
-//                         context,
-//                         MaterialPageRoute(
-//                           builder: (context) => DetailTaskScreen(),
-//                         ),
-//                       );
-//                     },
-//                   ),
-//                 ),

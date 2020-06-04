@@ -1,14 +1,6 @@
-// To parse this JSON data, do
-//
-//     final todo = todoFromMap(jsonString);
-
-import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-Todo todoFromMap(String str) => Todo.fromMap(json.decode(str));
-
-String todoToMap(Todo data) => json.encode(data.toMap());
+import 'package:meta/meta.dart';
 
 class Todo {
   Todo({
@@ -24,7 +16,7 @@ class Todo {
   });
 
   String id;
-  String timestamp;
+  DateTime timestamp;
   String content;
   String images;
   String state;
@@ -33,19 +25,9 @@ class Todo {
   String audioCode;
   String catagories;
 
-  int get hashCode => hashValues(this.id, this.content);
-
-  @override
-  bool operator ==(other) {
-    if (other is Todo && other.id == this.id)
-      return true;
-    else
-      return false;
-  }
-
   Todo copyWith({
     String id,
-    String timestamp,
+    DateTime timestamp,
     String content,
     String images,
     String state,
@@ -66,9 +48,28 @@ class Todo {
         catagories: catagories ?? this.catagories,
       );
 
-  factory Todo.fromMap(Map<String, dynamic> json) => Todo(
+  @override
+  int get hashCode => hashValues(
+        this.id,
+        this.timestamp,
+        this.content,
+        this.images,
+        this.state,
+        this.color,
+        this.audioPath,
+        this.audioCode,
+        this.catagories,
+      );
+  bool operator ==(other) {
+    if (other is Todo && other.id == this.id) {
+      return true;
+    }
+    return false;
+  }
+
+  factory Todo.fromFirebaseMap(Map<String, dynamic> json) => Todo(
         id: json["id"],
-        timestamp: json["timestamp"],
+        timestamp: json["timestamp"].toDate(),
         content: json["content"],
         images: json["images"],
         state: json["state"],
@@ -80,7 +81,19 @@ class Todo {
 
   Map<String, dynamic> toMap() => {
         "id": id,
-        "timestamp": timestamp,
+        "timestamp": timestamp.toIso8601String(),
+        "content": content,
+        "images": images,
+        "state": state,
+        "color": color,
+        "audioPath": audioPath,
+        "audioCode": audioCode,
+        "catagories": catagories,
+      };
+
+  Map<String, dynamic> toFirebaseMap() => {
+        "id": id,
+        "timestamp": Timestamp.fromDate(timestamp),
         "content": content,
         "images": images,
         "state": state,

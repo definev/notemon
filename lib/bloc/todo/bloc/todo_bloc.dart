@@ -5,6 +5,8 @@ import 'package:bloc/bloc.dart';
 import 'package:gottask/database/todo_database.dart';
 import 'package:gottask/database/todo_table.dart';
 import 'package:gottask/models/todo.dart';
+import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/utils.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -22,6 +24,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     await TodoDatabase.instance.init();
     todoList = await TodoTable.selectAllTodo();
     deleteTodoKey = await TodoTable.selectAllDeleteKey();
+
     print(deleteTodoKey);
   }
 
@@ -30,7 +33,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     todoList = await TodoTable.selectAllTodo();
   }
 
-  Future<void> _deleteEvent(Todo todo) async {
+  Future<void> _deleteEvent({Todo todo, bool addDeleteKey}) async {
     Directory appDocDirectory;
     if (Platform.isIOS) {
       appDocDirectory = await getApplicationDocumentsDirectory();
@@ -42,11 +45,19 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       if (audioFile.existsSync()) audioFile.deleteSync(recursive: true);
     }
     await TodoTable.deleteTodo(todo.id);
-    await TodoTable.insertTodoDeleteKey(todo.id);
-
+    if (addDeleteKey) await TodoTable.insertTodoDeleteKey(todo.id);
+    if (await checkConnection()) {
+      FirebaseRepository _repository = FirebaseRepository();
+      await _repository.initUser();
+      List<String> _onlineKey = await _repository.getDeleteTodoKey();
+      for (String key in _onlineKey) {
+        if (!deleteTodoKey.contains(key)) {
+          TodoTable.insertTodoDeleteKey(key);
+        }
+      }
+    }
     todoList = await TodoTable.selectAllTodo();
     deleteTodoKey = await TodoTable.selectAllDeleteKey();
-    print(deleteTodoKey);
   }
 
   Future<void> _editEvent(Todo todo) async {
@@ -65,7 +76,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       await _addEvent(event.todo);
       yield TodoLoaded(todo: todoList);
     } else if (event is DeleteTodoEvent) {
-      await _deleteEvent(event.todo);
+      await _deleteEvent(todo: event.todo, addDeleteKey: event.addDeleteKey);
       yield TodoLoaded(todo: todoList);
     } else if (event is EditTodoEvent) {
       await _editEvent(event.todo);
