@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/countdown_clock.dart';
+import 'package:gottask/components/parrallel_background.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/utils.dart';
@@ -21,9 +22,8 @@ import 'package:vibration/vibration.dart';
 class MyBehavior extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
-  }
+          BuildContext context, Widget child, AxisDirection axisDirection) =>
+      child;
 }
 
 class TaskScreen extends StatefulWidget {
@@ -94,14 +94,16 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         ),
       ),
     );
-    _repository.updateTaskToFirebase(widget.task.copyWith(
-      achieve: _achievelists.toString(),
-      catagories: _catagoryItems.toString(),
-      completeTimer: _completeTimer.toString(),
-      icon: _iconIndex,
-      isDoneAchieve: _isDoneAchieve.toString(),
-      percent: _percent,
-    ));
+    _repository.updateTaskToFirebase(
+      widget.task.copyWith(
+        achieve: _achievelists.toString(),
+        catagories: _catagoryItems.toString(),
+        completeTimer: _completeTimer.toString(),
+        icon: _iconIndex,
+        isDoneAchieve: _isDoneAchieve.toString(),
+        percent: _percent,
+      ),
+    );
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -207,6 +209,25 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     amplitude: 2,
                   );
                 }
+                if (await checkConnection()) {
+                  var _oldTimer = Duration(
+                    hours: int.parse(durTimer[0]),
+                    minutes: int.parse(durTimer[1]),
+                    seconds: int.parse(durTimerSecond[0]),
+                  );
+                  Duration _completeTimer = _oldTimer - _timer;
+                  _repository.updateTaskToFirebase(
+                    widget.task.copyWith(
+                      onDoing: true,
+                      achieve: _achievelists.toString(),
+                      catagories: _catagoryItems.toString(),
+                      completeTimer: _completeTimer.toString(),
+                      icon: _iconIndex,
+                      isDoneAchieve: _isDoneAchieve.toString(),
+                      percent: _percent,
+                    ),
+                  );
+                }
                 setState(() {
                   isProcess = false;
                   _timerState = TimerState.PLAY;
@@ -243,14 +264,17 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       ),
                     ),
                   );
-                  _repository.updateTaskToFirebase(widget.task.copyWith(
-                    achieve: _achievelists.toString(),
-                    catagories: _catagoryItems.toString(),
-                    completeTimer: _completeTimer.toString(),
-                    icon: _iconIndex,
-                    isDoneAchieve: _isDoneAchieve.toString(),
-                    percent: _percent,
-                  ));
+                  _repository.updateTaskToFirebase(
+                    widget.task.copyWith(
+                      onDoing: false,
+                      achieve: _achievelists.toString(),
+                      catagories: _catagoryItems.toString(),
+                      completeTimer: _completeTimer.toString(),
+                      icon: _iconIndex,
+                      isDoneAchieve: _isDoneAchieve.toString(),
+                      percent: _percent,
+                    ),
+                  );
                 });
                 if (audioPlayer.state == AudioPlayerState.PLAYING) {
                   await audioPlayer.stop();
@@ -328,9 +352,20 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       _isInit = true;
     }
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
+    return widget.task.onDoing == false
+        ? _bodyOnDoingFalse(context)
+        : _bodyOnDoingTrue();
+  }
+
+  Theme _bodyOnDoingFalse(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        accentColor: Color(
+          int.parse(
+            colors[widget.task.color],
+          ),
+        ),
+      ),
       child: Scaffold(
         appBar: _appBar(context),
         body: WillPopScope(
@@ -348,6 +383,58 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _bodyOnDoingTrue() {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Stack(
+        children: [
+          ParrallelBackground(
+            child: Padding(
+              padding: const EdgeInsets.all(0),
+              child: Image.asset(
+                'assets/png/abstract.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Center(
+            child: Material(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ShaderMask(
+                    shaderCallback: (rect) {
+                      return LinearGradient(
+                        tileMode: TileMode.repeated,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        stops: [0.1, 0.3, 1],
+                        colors: <Color>[
+                          Colors.white,
+                          tagColor['Flying'],
+                          tagColor['Water'],
+                        ],
+                      ).createShader(rect);
+                    },
+                    blendMode: BlendMode.modulate,
+                    child: Text(
+                      "\nDoing in another device! \n",
+                      style: kBigTitleStyle.copyWith(fontFamily: 'Tomorrow'),
+                    ),
+                  ),
+                  Text(
+                    "Don't distract 😁",
+                    style: kBigTitleStyle.copyWith(fontFamily: 'Tomorrow'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -474,7 +561,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             : IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () async {
-                  _taskBloc.add(DeleteTaskEvent(task: widget.task, addDeleteKey: true));
+                  _taskBloc.add(
+                      DeleteTaskEvent(task: widget.task, addDeleteKey: true));
                   if (await checkConnection())
                     _repository.deleteTaskOnFirebase(widget.task);
                   Navigator.pop(context);
@@ -518,12 +606,11 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                                 ),
                               )
                             : Colors.white,
+                        width: 1.3,
                       ),
                       color: _catagoryItems[index]
                           ? Color(
-                              int.parse(
-                                colors[widget.task.color],
-                              ),
+                              int.parse(colors[widget.task.color]),
                             )
                           : Colors.white,
                     ),
@@ -550,9 +637,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                             style: TextStyle(
                               color: _catagoryItems[index] == false
                                   ? Color(
-                                      int.parse(
-                                        colors[widget.task.color],
-                                      ),
+                                      int.parse(colors[widget.task.color]),
                                     )
                                   : Colors.white,
                             ),
@@ -690,7 +775,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          _taskBloc.add(DeleteTaskEvent(task: widget.task, addDeleteKey: true));
+                          _taskBloc.add(DeleteTaskEvent(
+                              task: widget.task, addDeleteKey: true));
                           if (await checkConnection())
                             _repository.deleteTaskOnFirebase(widget.task);
                           Navigator.pop(context);

@@ -1,24 +1,15 @@
 // To parse this JSON data, do
 //
-//     final task = taskFromJson(jsonString);
+//     final task = taskFromMap(jsonString);
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
-import 'dart:convert';
 
 class Task {
-  final String id;
-  final int icon;
-  final String taskName;
-  final String timer;
-  final int percent;
-  final int color;
-  final String achieve;
-  final String completeTimer;
-  final String isDoneAchieve;
-  final String catagories;
-
   Task({
     @required this.id,
+    @required this.timestamp,
+    this.onDoing = false,
     @required this.icon,
     @required this.taskName,
     @required this.timer,
@@ -30,8 +21,23 @@ class Task {
     @required this.catagories,
   });
 
+  String id;
+  DateTime timestamp;
+  bool onDoing;
+  int icon;
+  String taskName;
+  String timer;
+  int percent;
+  int color;
+  String achieve;
+  String completeTimer;
+  String isDoneAchieve;
+  String catagories;
+
   Task copyWith({
     String id,
+    DateTime timestamp,
+    bool onDoing,
     int icon,
     String taskName,
     String timer,
@@ -44,6 +50,8 @@ class Task {
   }) =>
       Task(
         id: id ?? this.id,
+        timestamp: timestamp ?? this.timestamp,
+        onDoing: onDoing ?? this.onDoing,
         icon: icon ?? this.icon,
         taskName: taskName ?? this.taskName,
         timer: timer ?? this.timer,
@@ -55,12 +63,10 @@ class Task {
         catagories: catagories ?? this.catagories,
       );
 
-  factory Task.fromJson(String str) => Task.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory Task.fromMap(Map<String, dynamic> json) => Task(
+  factory Task.fromFirebaseMap(Map<String, dynamic> json) => Task(
         id: json["id"],
+        timestamp: json["timestamp"].toDate(),
+        onDoing: json["onDoing"],
         icon: json["icon"],
         taskName: json["taskName"],
         timer: json["timer"],
@@ -72,8 +78,24 @@ class Task {
         catagories: json["catagories"],
       );
 
+  Map<String, dynamic> toFirebaseMap() => {
+        "id": id,
+        "timestamp": Timestamp.fromDate(timestamp),
+        "onDoing": onDoing ?? false,
+        "icon": icon,
+        "taskName": taskName,
+        "timer": timer,
+        "percent": percent,
+        "color": color,
+        "achieve": achieve,
+        "completeTimer": completeTimer,
+        "isDoneAchieve": isDoneAchieve,
+        "catagories": catagories,
+      };
+
   Map<String, dynamic> toMap() => {
         "id": id,
+        "timestamp": timestamp.toIso8601String(),
         "icon": icon,
         "taskName": taskName,
         "timer": timer,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -43,207 +44,216 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
           currentFocus.unfocus();
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Color(int.parse(colors[indexColor])),
-          title: Text(
-            'Add Task',
-            style: const TextStyle(
-              fontFamily: 'Alata',
-              color: Colors.white,
-            ),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                getIconUsingPrefix(name: icons[_iconIndex]),
+      child: Theme(
+        data: Theme.of(context)
+            .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
+        child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Color(int.parse(colors[indexColor])),
+            title: Text(
+              'Add Task',
+              style: const TextStyle(
+                fontFamily: 'Alata',
                 color: Colors.white,
               ),
-              onPressed: () {
-                _buildIconPicker(context);
-              },
             ),
-          ],
-        ),
-        bottomNavigationBar: GestureDetector(
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            color: Color(int.parse(colors[indexColor])),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Ionicons.ios_add,
-                    color: Colors.white,
-                  ),
-                  Text(
-                    ' Add task',
-                    style: kNormalStyle.copyWith(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          onTap: () async {
-            if (_taskNameTextController.text == null ||
-                _taskNameTextController.text == '' ||
-                timer == const Duration(hours: 0, minutes: 0)) {
-              _buildWarningDialog(context);
-            } else {
-              for (int i = 0; i < _achieveLists.length; i++) {
-                _achieveLists[i] = _achieveLists[i]
-                    .replaceAll(RegExp(r','), 'String.fromCharCode(44)');
-              }
-              String id = Uuid().v1();
-              Task _task = Task(
-                id: id,
-                color: indexColor,
-                catagories: _catagoryItems.toString(),
-                icon: _iconIndex,
-                taskName: _taskNameTextController.text,
-                percent: 0,
-                timer: timer.toString(),
-                completeTimer: const Duration(hours: 0, minutes: 0).toString(),
-                achieve: _achieveLists.toString(),
-                isDoneAchieve: _isDoneAchieveLists.toString(),
-              );
-              _taskBloc.add(AddTaskEvent(task: _task));
-              _repository.updateTaskToFirebase(_task);
-              Navigator.pop(context);
-            }
-          },
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildRename(),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Time',
-                  style: kNormalStyle.copyWith(color: Colors.grey),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  getIconUsingPrefix(name: icons[_iconIndex]),
+                  color: Colors.white,
                 ),
+                onPressed: () {
+                  _buildIconPicker(context);
+                },
               ),
-              const SizedBox(height: 5),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: LimitedBox(
-                  maxHeight: 100,
-                  child: CupertinoTimerPicker(
-                    onTimerDurationChanged: (duration) {
-                      timer = duration;
-                    },
-                    mode: CupertinoTimerPickerMode.hm,
-                    minuteInterval: 5,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              _buildTitle('Color'),
-              _buildColorPicker(),
-              const SizedBox(height: 10),
-              _buildTitle('Catagory'),
-              _buildCatagoriesPicker(),
-              _buildTitle('Achievment'),
-              const SizedBox(height: 5),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  height: 60,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Color(int.parse(colors[indexColor])),
-                              width: 1,
-                            ),
-                          ),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(10),
-                              labelText: 'Achieve goal',
-                              labelStyle:
-                                  kNormalStyle.copyWith(color: Colors.grey),
-                              border: InputBorder.none,
-                            ),
-                            controller: _achieveTextController,
-                          ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (_achieveTextController.text != '' &&
-                              _achieveTextController != null) {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            setState(() {
-                              _achieveLists.add(_achieveTextController.text);
-                              _isDoneAchieveLists.add(false);
-                              _achieveTextController.clear();
-                            });
-                          }
-                        },
-                        child: Material(
-                          elevation: 1,
-                          color: Color(int.parse(colors[indexColor])),
-                          borderRadius: BorderRadiusDirectional.circular(10),
-                          child: Container(
-                            height: 60,
-                            width: 60,
-                            child: Icon(
-                              Ionicons.ios_add,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: StreamBuilder<List<String>>(
-                  initialData: _achieveLists,
-                  stream: _achieveController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData == false) {
-                      return const Center(
-                        child: Text(
-                          'Empty achieve.',
-                          style: kNormalSmallStyle,
-                        ),
-                      );
-                    }
-                    if (snapshot.data.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'Empty achieve.',
-                          style: kNormalSmallStyle,
-                        ),
-                      );
-                    }
-                    return Column(
-                      children: List.generate(
-                        snapshot.data.length,
-                        (index) => _buildAchieve(snapshot, index),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
             ],
+          ),
+          bottomNavigationBar: GestureDetector(
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              color: Color(int.parse(colors[indexColor])),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Ionicons.ios_add,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      ' Add task',
+                      style: kNormalStyle.copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            onTap: () async {
+              if (_taskNameTextController.text == null ||
+                  _taskNameTextController.text == '' ||
+                  timer == const Duration(hours: 0, minutes: 0)) {
+                _buildWarningDialog(context);
+              } else {
+                for (int i = 0; i < _achieveLists.length; i++) {
+                  _achieveLists[i] = _achieveLists[i]
+                      .replaceAll(RegExp(r','), 'String.fromCharCode(44)');
+                }
+                String id = Uuid().v1();
+                Task _task = Task(
+                  id: id,
+                  timestamp: Timestamp.now().toDate(),
+                  onDoing: false,
+                  color: indexColor,
+                  catagories: _catagoryItems.toString(),
+                  icon: _iconIndex,
+                  taskName: _taskNameTextController.text,
+                  percent: 0,
+                  timer: timer.toString(),
+                  completeTimer:
+                      const Duration(hours: 0, minutes: 0).toString(),
+                  achieve: _achieveLists.toString(),
+                  isDoneAchieve: _isDoneAchieveLists.toString(),
+                );
+                _taskBloc.add(AddTaskEvent(task: _task));
+                if (await checkConnection()) {
+                  _repository.updateTaskToFirebase(_task);
+                }
+                Navigator.pop(context);
+              }
+            },
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.only(top: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _buildRename(),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Time',
+                    style: kNormalStyle.copyWith(color: Colors.grey),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: LimitedBox(
+                    maxHeight: 100,
+                    child: CupertinoTimerPicker(
+                      onTimerDurationChanged: (duration) {
+                        timer = duration;
+                      },
+                      mode: CupertinoTimerPickerMode.hm,
+                      minuteInterval: 5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buildTitle('Color'),
+                _buildColorPicker(),
+                const SizedBox(height: 10),
+                _buildTitle('Catagory'),
+                _buildCatagoriesPicker(),
+                _buildTitle('Achievment'),
+                const SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    height: 60,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Color(int.parse(colors[indexColor])),
+                                width: 1,
+                              ),
+                            ),
+                            child: TextField(
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(10),
+                                labelText: 'Achieve goal',
+                                labelStyle:
+                                    kNormalStyle.copyWith(color: Colors.grey),
+                                border: InputBorder.none,
+                              ),
+                              controller: _achieveTextController,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if (_achieveTextController.text != '' &&
+                                _achieveTextController != null) {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              setState(() {
+                                _achieveLists.add(_achieveTextController.text);
+                                _isDoneAchieveLists.add(false);
+                                _achieveTextController.clear();
+                              });
+                            }
+                          },
+                          child: Material(
+                            elevation: 1,
+                            color: Color(int.parse(colors[indexColor])),
+                            borderRadius: BorderRadiusDirectional.circular(10),
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              child: Icon(
+                                Ionicons.ios_add,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: StreamBuilder<List<String>>(
+                    initialData: _achieveLists,
+                    stream: _achieveController.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData == false) {
+                        return const Center(
+                          child: Text(
+                            'Empty achieve.',
+                            style: kNormalSmallStyle,
+                          ),
+                        );
+                      }
+                      if (snapshot.data.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Empty achieve.',
+                            style: kNormalSmallStyle,
+                          ),
+                        );
+                      }
+                      return Column(
+                        children: List.generate(
+                          snapshot.data.length,
+                          (index) => _buildAchieve(snapshot, index),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

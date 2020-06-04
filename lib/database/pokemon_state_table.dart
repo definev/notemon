@@ -26,7 +26,6 @@ class PokemonStateTable {
 
   static Future<int> updatePokemonState(PokemonState pokemonState) {
     Database db = PokemonStateDatabase.instance.database;
-    print('update ${pokemonState.toMap().toString()}');
 
     return db.update(
       TABLE_NAME,

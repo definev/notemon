@@ -11,7 +11,7 @@ part 'task_state.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   List<Task> taskList = [];
-  List<Task> deleteTaskKey = [];
+  List<String> deleteTaskKey = [];
 
   @override
   TaskState get initialState => TaskInitial();
@@ -19,6 +19,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _initTaskBloc() async {
     await TaskDatabase.instance.init();
     taskList = await TaskTable.selectAllTask();
+    deleteTaskKey = await TaskTable.selectAllDeleteKey();
   }
 
   Future<void> _addEvent(Task task) async {
@@ -34,7 +35,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _deleteEvent(Task task, bool addDeleteKey) async {
     await TaskTable.deleteTask(task);
     taskList = await TaskTable.selectAllTask();
-    if (addDeleteKey) await TaskTable.insertTaskDeleteKey(task.id);
+    if (addDeleteKey) {
+      await TaskTable.insertTaskDeleteKey(task.id);
+      deleteTaskKey = await TaskTable.selectAllDeleteKey();
+    }
   }
 
   @override

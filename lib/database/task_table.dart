@@ -9,6 +9,7 @@ class TaskTable {
   static const CREATE_TABLE_QUERY = '''
     CREATE TABLE $TABLE_NAME (
       id TEXT PRIMARY KEY,
+      timestamp TEXT,
       TaskName TEXT,
       icon INTEGER,
       color INTEGER,
@@ -60,6 +61,7 @@ class TaskTable {
   ///[Task] databases
   static Future<int> insertTask(Task task) {
     final Database database = TaskDatabase.instance.database;
+
     return database.insert(
       TABLE_NAME,
       task.toMap(),
@@ -106,6 +108,7 @@ class TaskTable {
     );
     return Task(
       id: map[1]['id'],
+      timestamp: DateTime.parse(map[1]['timestamp']),
       taskName: map[1]['TaskName'],
       color: map[1]['color'],
       icon: map[1]['icon'],
@@ -125,6 +128,7 @@ class TaskTable {
     return List.generate(maps.length, (index) {
       return Task(
         id: maps[index]['id'],
+        timestamp: DateTime.parse(maps[index]['timestamp']),
         taskName: maps[index]['TaskName'],
         color: maps[index]['color'],
         catagories: maps[index]['catagories'],

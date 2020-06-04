@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen>
         },
       );
     }
-    setState(() => _isLoading['todo'] = true);
+    setState(() => _isLoading['todo'] = false);
   }
 
   _updateTask() async {
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    setState(() => _isLoading['task'] = true);
+    setState(() => _isLoading['task'] = false);
   }
 
   _updateDatabase() async {
@@ -184,10 +184,7 @@ class _HomeScreenState extends State<HomeScreen>
         } else {
           int index =
               _todoListLocal.indexWhere((todoLocal) => todo == todoLocal);
-          print("ONLINE: ---: ${todo.hashCode}");
-          print("OFFLINE: ---: ${_todoListLocal[index].hashCode}");
-          print(todo.hashCode != _todoListLocal[index].hashCode);
-          print("");
+
           if (todo.hashCode != _todoListLocal[index].hashCode) {
             _todoBloc.add(EditTodoEvent(todo: todo));
           }
@@ -223,8 +220,8 @@ class _HomeScreenState extends State<HomeScreen>
         } else {
           int index =
               _taskListLocal.indexWhere((taskLocal) => task == taskLocal);
-          print("ONLINE: ---: ${task.hashCode}");
-          print("OFFLINE: ---: ${_taskListLocal[index].hashCode}");
+          print("TASK ONLINE: ---: ${task.hashCode}");
+          print("TASK OFFLINE: ---: ${_taskListLocal[index].hashCode}");
           print(task.hashCode != _taskListLocal[index].hashCode);
           print("");
           if (task.hashCode != _taskListLocal[index].hashCode) {
@@ -278,6 +275,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     if (_isInit == false) {
+      /// Find bloc in provider
       _todoBloc = findBloc<TodoBloc>();
       _taskBloc = findBloc<TaskBloc>();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
@@ -285,6 +283,8 @@ class _HomeScreenState extends State<HomeScreen>
       _repository = findBloc<FirebaseRepository>();
       _repository.initUser().then((_) => setState(() {}));
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
+
+      /// add initState
       _todoBloc.add(InitTodoEvent());
       _taskBloc.add(InitTaskEvent());
       _allPokemonBloc.add(InitAllPokemonEvent());
@@ -877,6 +877,7 @@ class _HomeScreenState extends State<HomeScreen>
           .collection('databases')
           .document(_repository.user.uid)
           .collection('tasks')
+          .orderBy('timestamp', descending: false)
           .snapshots(),
       builder: (context, snapshots) {
         if (snapshots.connectionState == ConnectionState.waiting ||
@@ -918,8 +919,8 @@ class _HomeScreenState extends State<HomeScreen>
             );
           } else {
             List<Task> _taskList = [];
-            snapshots.data.documents
-                .forEach((maps) => _taskList.add(Task.fromMap(maps.data)));
+            snapshots.data.documents.forEach(
+                (maps) => _taskList.add(Task.fromFirebaseMap(maps.data)));
             if (!_isLoading['task']) _updateTasksWhenbackToOnline(_taskList);
             return Padding(
               padding: const EdgeInsets.only(left: 10),
@@ -1347,91 +1348,89 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
 
-  Widget _buildOfflineTask() {
-    return BlocBuilder<TaskBloc, TaskState>(
-      bloc: _taskBloc,
-      builder: (context, state) {
-        if (state is TaskLoaded) {
-          if (state.task.isEmpty) {
-            return SizedBox(
-              height: kListViewHeight + 2,
-              width: double.infinity,
-              child: const Center(
-                child: Text(
-                  'Empty task',
-                  style: kNormalStyle,
-                ),
-              ),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: SizedBox(
+  Widget _buildOfflineTask() => BlocBuilder<TaskBloc, TaskState>(
+        bloc: _taskBloc,
+        builder: (context, state) {
+          if (state is TaskLoaded) {
+            if (state.task.isEmpty) {
+              return SizedBox(
                 height: kListViewHeight + 2,
                 width: double.infinity,
-                child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemCount: state.task.length + 1,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    if (index == state.task.length) {
-                      return Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddTaskScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            height: kListViewHeight,
-                            width: kListViewHeight,
-                            child: DottedBorder(
-                              radius: const Radius.circular(30),
-                              borderType: BorderType.RRect,
-                              dashPattern: const [20, 5, 20, 5],
-                              color: Colors.grey,
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.grey,
-                                  size: 40,
+                child: const Center(
+                  child: Text(
+                    'Empty task',
+                    style: kNormalStyle,
+                  ),
+                ),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: SizedBox(
+                  height: kListViewHeight + 2,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: state.task.length + 1,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      if (index == state.task.length) {
+                        return Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddTaskScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 15),
+                              height: kListViewHeight,
+                              width: kListViewHeight,
+                              child: DottedBorder(
+                                radius: const Radius.circular(30),
+                                borderType: BorderType.RRect,
+                                dashPattern: const [20, 5, 20, 5],
+                                color: Colors.grey,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.grey,
+                                    size: 40,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
+                        );
+                      }
+
+                      return Center(
+                        child: TaskTile(
+                          task: state.task[index],
+                          key: UniqueKey(),
                         ),
                       );
-                    }
-
-                    return Center(
-                      child: TaskTile(
-                        task: state.task[index],
-                        key: UniqueKey(),
-                      ),
-                    );
-                  },
+                    },
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           }
-        }
-        return SizedBox(
-          height: kListViewHeight + 2,
-          width: double.infinity,
-          child: const Center(
-            child: Text(
-              'Empty task',
-              style: kNormalStyle,
+          return SizedBox(
+            height: kListViewHeight + 2,
+            width: double.infinity,
+            child: const Center(
+              child: Text(
+                'Empty task',
+                style: kNormalStyle,
+              ),
             ),
-          ),
-        );
-      },
-    );
-  }
+          );
+        },
+      );
 
   /// [Shared]
 

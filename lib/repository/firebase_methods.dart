@@ -172,7 +172,8 @@ class FirebaseMethods {
         .collection('tasks')
         .getDocuments();
     List<Task> taskList = [];
-    _snapshot.documents.forEach((map) => taskList.add(Task.fromMap(map.data)));
+    _snapshot.documents
+        .forEach((map) => taskList.add(Task.fromFirebaseMap(map.data)));
     return taskList;
   }
 
@@ -185,19 +186,20 @@ class FirebaseMethods {
 
     taskBloc.add(InitTaskEvent());
     _taskSnapshots.documents.forEach((map) {
-      Task task = Task.fromMap(map.data);
+      Task task = Task.fromFirebaseMap(map.data);
       taskBloc.add(AddTaskEvent(task: task));
     });
   }
 
   Future<void> updateTaskToFirebase(Task task) async {
+    print(task.toFirebaseMap());
     await _firestore
         .collection('databases')
         .document(user.uid)
         .collection('tasks')
         .document(task.id)
         .setData(
-          task.toMap(),
+          task.toFirebaseMap(),
           merge: true,
         );
   }
@@ -210,7 +212,7 @@ class FirebaseMethods {
           .collection('tasks')
           .document(task.id)
           .setData(
-            task.toMap(),
+            task.toFirebaseMap(),
             merge: true,
           );
     });
