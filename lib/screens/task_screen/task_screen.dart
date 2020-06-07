@@ -41,7 +41,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   int _maxTimer;
   bool _isInit = false;
   List<bool> _isDoneAchieve = [];
-  List<bool> _catagoryItems = List.generate(9, (index) => false);
+  List<bool> _catagoryItems =
+      List.generate(catagories.length, (index) => false);
 
   SlideCountdownClock countdownClock;
   TimerState _timerState = TimerState.PAUSE;
@@ -85,22 +86,22 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     _taskBloc.add(
       EditTaskEvent(
         task: widget.task.copyWith(
-          achieve: _achievelists.toString(),
-          catagories: _catagoryItems.toString(),
+          achieve: _achievelists,
+          catagories: _catagoryItems,
           completeTimer: _completeTimer.toString(),
           icon: _iconIndex,
-          isDoneAchieve: _isDoneAchieve.toString(),
+          isDoneAchieve: _isDoneAchieve,
           percent: _percent,
         ),
       ),
     );
     _repository.updateTaskToFirebase(
       widget.task.copyWith(
-        achieve: _achievelists.toString(),
-        catagories: _catagoryItems.toString(),
+        achieve: _achievelists,
+        catagories: _catagoryItems,
         completeTimer: _completeTimer.toString(),
         icon: _iconIndex,
-        isDoneAchieve: _isDoneAchieve.toString(),
+        isDoneAchieve: _isDoneAchieve,
         percent: _percent,
       ),
     );
@@ -149,198 +150,177 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance.initialize(appId: appId);
-    myInterstitial = _interstitialAds();
+    if (!widget.task.onDoing) {
+      FirebaseAdMob.instance.initialize(appId: appId);
+      myInterstitial = _interstitialAds();
 
-    myFocusNode = FocusNode();
-    var _rawCatagoryItems = widget.task.catagories
-        .substring(1, widget.task.catagories.length - 1)
-        .split(', ');
-    for (int i = 0; i < _rawCatagoryItems.length; i++) {
-      if (_rawCatagoryItems[i] == 'false') {
-        _catagoryItems[i] = false;
-      } else {
-        _catagoryItems[i] = true;
+      myFocusNode = FocusNode();
+      _catagoryItems = widget.task.catagories;
+
+      _achievelists = widget.task.achieve;
+      List<String> durTimer = widget.task.timer.split(':');
+      List<String> durCompleteTimer = widget.task.completeTimer.split(':');
+      List<String> durTimerSecond = durTimer[2].split('.');
+      List<String> durCompleteTimerSecond = durCompleteTimer[2].split('.');
+      _timer = Duration(
+        hours: int.parse(durTimer[0]) - int.parse(durCompleteTimer[0]),
+        minutes: int.parse(durTimer[1]) - int.parse(durCompleteTimer[1]),
+        seconds:
+            int.parse(durTimerSecond[0]) - int.parse(durCompleteTimerSecond[0]),
+      );
+      _maxTimer = int.parse(durTimer[0]) * 3600 +
+          int.parse(durTimer[1]) * 60 +
+          int.parse(
+            durTimerSecond[0],
+          );
+      _percent = widget.task.percent;
+      _iconIndex = widget.task.icon;
+      if (_timer == Duration(hours: 0, minutes: 0, seconds: 0)) {
+        _timerState = TimerState.DONE;
       }
-    }
 
-    String _rawList =
-        widget.task.achieve.substring(1, widget.task.achieve.length - 1);
-    _achievelists = _rawList.split(', ');
-    if (_achievelists[0] == '') _achievelists = [];
-    List<String> durTimer = widget.task.timer.split(':');
-    List<String> durCompleteTimer = widget.task.completeTimer.split(':');
-    List<String> durTimerSecond = durTimer[2].split('.');
-    List<String> durCompleteTimerSecond = durCompleteTimer[2].split('.');
-    _timer = Duration(
-      hours: int.parse(durTimer[0]) - int.parse(durCompleteTimer[0]),
-      minutes: int.parse(durTimer[1]) - int.parse(durCompleteTimer[1]),
-      seconds:
-          int.parse(durTimerSecond[0]) - int.parse(durCompleteTimerSecond[0]),
-    );
-    _maxTimer = int.parse(durTimer[0]) * 3600 +
-        int.parse(durTimer[1]) * 60 +
-        int.parse(
-          durTimerSecond[0],
-        );
-    _percent = widget.task.percent;
-    _iconIndex = widget.task.icon;
-    if (_timer == Duration(hours: 0, minutes: 0, seconds: 0)) {
-      _timerState = TimerState.DONE;
-    }
-
-    if (Platform.isAndroid && _timerState != TimerState.DONE) {
-      _incallManager.enableProximitySensor(true);
-      _incallManager.turnScreenOff();
-      _incallManager.onProximity.stream.listen(
-        (proximity) async {
-          if (_timerState == TimerState.DONE) {
-            _incallManager.turnScreenOn();
-            if (audioPlayer.state == AudioPlayerState.PLAYING &&
-                proximity == false) {
-              await audioPlayer.stop();
-            }
-          } else {
-            if (proximity == true) {
-              if (isProcess == true) {
-                if (await Vibration.hasVibrator()) {
-                  Vibration.vibrate(
-                    duration: 100,
-                    amplitude: 2,
-                  );
-                }
-                if (await checkConnection()) {
-                  var _oldTimer = Duration(
-                    hours: int.parse(durTimer[0]),
-                    minutes: int.parse(durTimer[1]),
-                    seconds: int.parse(durTimerSecond[0]),
-                  );
-                  Duration _completeTimer = _oldTimer - _timer;
-                  _repository.updateTaskToFirebase(
-                    widget.task.copyWith(
-                      onDoing: true,
-                      achieve: _achievelists.toString(),
-                      catagories: _catagoryItems.toString(),
-                      completeTimer: _completeTimer.toString(),
-                      icon: _iconIndex,
-                      isDoneAchieve: _isDoneAchieve.toString(),
-                      percent: _percent,
-                    ),
-                  );
-                }
-                setState(() {
-                  isProcess = false;
-                  _timerState = TimerState.PLAY;
-                  countdownClock.onPause = false;
-                });
+      if (Platform.isAndroid && _timerState != TimerState.DONE) {
+        _incallManager.enableProximitySensor(true);
+        _incallManager.turnScreenOff();
+        _incallManager.onProximity.stream.listen(
+          (proximity) async {
+            if (_timerState == TimerState.DONE) {
+              _incallManager.turnScreenOn();
+              if (audioPlayer.state == AudioPlayerState.PLAYING &&
+                  proximity == false) {
+                await audioPlayer.stop();
               }
             } else {
-              if (isProcess == false) {
-                if (await Vibration.hasVibrator()) {
-                  Vibration.vibrate(
-                    duration: 100,
-                    amplitude: 200,
-                  );
-                }
-                setState(() {
-                  isProcess = true;
-                  _timerState = TimerState.PAUSE;
-                  countdownClock.onPause = true;
-                  var _oldTimer = Duration(
-                    hours: int.parse(durTimer[0]),
-                    minutes: int.parse(durTimer[1]),
-                    seconds: int.parse(durTimerSecond[0]),
-                  );
-                  Duration _completeTimer = _oldTimer - _timer;
-                  _taskBloc.add(
-                    EditTaskEvent(
-                      task: widget.task.copyWith(
-                        achieve: _achievelists.toString(),
-                        catagories: _catagoryItems.toString(),
+              if (proximity == true) {
+                if (isProcess == true) {
+                  if (await Vibration.hasVibrator()) {
+                    Vibration.vibrate(
+                      duration: 100,
+                      amplitude: 2,
+                    );
+                  }
+                  if (await checkConnection()) {
+                    var _oldTimer = Duration(
+                      hours: int.parse(durTimer[0]),
+                      minutes: int.parse(durTimer[1]),
+                      seconds: int.parse(durTimerSecond[0]),
+                    );
+                    Duration _completeTimer = _oldTimer - _timer;
+                    _repository.updateTaskToFirebase(
+                      widget.task.copyWith(
+                        onDoing: true,
+                        achieve: _achievelists,
+                        catagories: _catagoryItems,
                         completeTimer: _completeTimer.toString(),
                         icon: _iconIndex,
-                        isDoneAchieve: _isDoneAchieve.toString(),
+                        isDoneAchieve: _isDoneAchieve,
                         percent: _percent,
                       ),
-                    ),
-                  );
-                  _repository.updateTaskToFirebase(
-                    widget.task.copyWith(
-                      onDoing: false,
-                      achieve: _achievelists.toString(),
-                      catagories: _catagoryItems.toString(),
-                      completeTimer: _completeTimer.toString(),
-                      icon: _iconIndex,
-                      isDoneAchieve: _isDoneAchieve.toString(),
-                      percent: _percent,
-                    ),
-                  );
-                });
-                if (audioPlayer.state == AudioPlayerState.PLAYING) {
-                  await audioPlayer.stop();
+                    );
+                  }
+                  setState(() {
+                    isProcess = false;
+                    _timerState = TimerState.PLAY;
+                    countdownClock.onPause = false;
+                  });
+                }
+              } else {
+                if (isProcess == false) {
+                  if (await Vibration.hasVibrator()) {
+                    Vibration.vibrate(
+                      duration: 100,
+                      amplitude: 200,
+                    );
+                  }
+                  setState(() {
+                    isProcess = true;
+                    _timerState = TimerState.PAUSE;
+                    countdownClock.onPause = true;
+                    var _oldTimer = Duration(
+                      hours: int.parse(durTimer[0]),
+                      minutes: int.parse(durTimer[1]),
+                      seconds: int.parse(durTimerSecond[0]),
+                    );
+                    Duration _completeTimer = _oldTimer - _timer;
+                    _taskBloc.add(
+                      EditTaskEvent(
+                        task: widget.task.copyWith(
+                          achieve: _achievelists,
+                          catagories: _catagoryItems,
+                          completeTimer: _completeTimer.toString(),
+                          icon: _iconIndex,
+                          isDoneAchieve: _isDoneAchieve,
+                          percent: _percent,
+                        ),
+                      ),
+                    );
+                    _repository.updateTaskToFirebase(
+                      widget.task.copyWith(
+                        onDoing: false,
+                        achieve: _achievelists,
+                        catagories: _catagoryItems,
+                        completeTimer: _completeTimer.toString(),
+                        icon: _iconIndex,
+                        isDoneAchieve: _isDoneAchieve,
+                        percent: _percent,
+                      ),
+                    );
+                  });
+                  if (audioPlayer.state == AudioPlayerState.PLAYING) {
+                    await audioPlayer.stop();
+                  }
                 }
               }
             }
-          }
+          },
+        );
+      }
+
+      countdownClock = SlideCountdownClock(
+        duration: Duration(
+          hours: _timer.inHours,
+          minutes: _timer.inMinutes.remainder(60),
+          seconds: _timer.inSeconds.remainder(60),
+        ),
+        onChanged: (duration) {
+          _timer = duration;
+          setState(() {
+            _percent++;
+          });
         },
+        onDone: () async {
+          audioPlayer = await audioCache.loop(
+            audioFile['Caught_Pokemon'],
+          );
+          var maxTime = Duration(
+            hours: int.parse(durTimer[0]),
+            minutes: int.parse(durTimer[1]),
+            seconds: int.parse(durTimerSecond[0]),
+          );
+
+          setState(() {
+            _timerState = TimerState.DONE;
+          });
+          int pointGet = maxTime.inMinutes;
+          _starBloc.add(AddStarEvent(point: pointGet));
+        },
+        separator: ':',
+        textStyle: TextStyle(
+          fontFamily: 'ABeeZee',
+          letterSpacing: 1,
+          fontSize: 40,
+        ),
       );
+      _isDoneAchieve = widget.task.isDoneAchieve;
     }
-
-    countdownClock = SlideCountdownClock(
-      duration: Duration(
-        hours: _timer.inHours,
-        minutes: _timer.inMinutes.remainder(60),
-        seconds: _timer.inSeconds.remainder(60),
-      ),
-      onChanged: (duration) {
-        _timer = duration;
-        setState(() {
-          _percent++;
-        });
-      },
-      onDone: () async {
-        audioPlayer = await audioCache.loop(
-          audioFile['Caught_Pokemon'],
-        );
-        var maxTime = Duration(
-          hours: int.parse(durTimer[0]),
-          minutes: int.parse(durTimer[1]),
-          seconds: int.parse(durTimerSecond[0]),
-        );
-
-        setState(() {
-          _timerState = TimerState.DONE;
-        });
-        int pointGet = maxTime.inMinutes;
-        _starBloc.add(AddStarEvent(point: pointGet));
-      },
-      separator: ':',
-      textStyle: TextStyle(
-        fontFamily: 'ABeeZee',
-        letterSpacing: 1,
-        fontSize: 40,
-      ),
-    );
-    String _superRawIsDoneAchieve = widget.task.isDoneAchieve
-        .substring(1, widget.task.isDoneAchieve.length - 1);
-    var _rawIsDoneAchieve = _superRawIsDoneAchieve.split(', ');
-    if (_rawIsDoneAchieve[0] == '') {
-      _isDoneAchieve = [];
-    } else
-      _rawIsDoneAchieve.forEach((element) {
-        if (element == 'true')
-          _isDoneAchieve.add(true);
-        else
-          _isDoneAchieve.add(false);
-      });
   }
 
   @override
   void dispose() {
-    super.dispose();
-    myFocusNode.dispose();
+    if (myFocusNode != null) myFocusNode.dispose();
     _incallManager.enableProximitySensor(false);
     _incallManager.turnScreenOn();
+    super.dispose();
   }
 
   @override
@@ -389,12 +369,15 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   Widget _bodyOnDoingTrue() {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: Color(0xFF5e5d96),
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       child: Stack(
         children: [
-          ParrallelBackground(
-            child: Padding(
-              padding: const EdgeInsets.all(0),
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: ParrallelBackground(
               child: Image.asset(
                 'assets/png/abstract.png',
                 fit: BoxFit.cover,
@@ -404,31 +387,46 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           Center(
             child: Material(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ShaderMask(
-                    shaderCallback: (rect) {
-                      return LinearGradient(
-                        tileMode: TileMode.repeated,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        stops: [0.1, 0.3, 1],
-                        colors: <Color>[
-                          Colors.white,
-                          tagColor['Flying'],
-                          tagColor['Water'],
-                        ],
-                      ).createShader(rect);
-                    },
-                    blendMode: BlendMode.modulate,
-                    child: Text(
-                      "\nDoing in another device! \n",
-                      style: kBigTitleStyle.copyWith(fontFamily: 'Tomorrow'),
-                    ),
+                  Column(
+                    children: [
+                      Text(
+                        "Doing in another device,\n",
+                        style: kBigTitleStyle.copyWith(
+                            fontFamily: 'Source_Sans_Pro',
+                            color: Colors.white,
+                            fontSize: 35),
+                      ),
+                      Text(
+                        "Don't distract! 😊",
+                        style: kBigTitleStyle.copyWith(
+                            fontFamily: 'Source_Sans_Pro',
+                            color: Colors.white,
+                            fontSize: 35),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Don't distract 😁",
-                    style: kBigTitleStyle.copyWith(fontFamily: 'Tomorrow'),
+                  InkWell(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      height: 85,
+                      width: 85,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 10,
+                            color: TodoColors.deepPurple,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 40,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -585,68 +583,134 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           scrollDirection: Axis.horizontal,
           physics: BouncingScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.only(left: 5.0),
+            padding: const EdgeInsets.only(left: 10),
             child: Row(
               children: List.generate(
                 _catagoryItems.length,
-                (index) => GestureDetector(
-                  onTap: () {
-                    setState(
-                        () => _catagoryItems[index] = !_catagoryItems[index]);
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: _catagoryItems[index] == false
-                            ? Color(
-                                int.parse(
-                                  colors[widget.task.color],
-                                ),
-                              )
-                            : Colors.white,
-                        width: 1.3,
-                      ),
-                      color: _catagoryItems[index]
-                          ? Color(
-                              int.parse(colors[widget.task.color]),
-                            )
-                          : Colors.white,
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.only(
-                      right: 5,
-                    ),
-                    child: FittedBox(
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            catagoryIcons[index],
-                            size: 15,
-                            color: _catagoryItems[index] == false
-                                ? Color(
-                                    int.parse(
-                                      colors[widget.task.color],
-                                    ),
-                                  )
-                                : Colors.white,
-                          ),
-                          Text(
-                            ' ${catagories[index]}',
-                            style: TextStyle(
+                (index) {
+                  if (index == _catagoryItems.length - 1) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4.5),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() =>
+                              _catagoryItems[index] = !_catagoryItems[index]);
+                        },
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
                               color: _catagoryItems[index] == false
                                   ? Color(
-                                      int.parse(colors[widget.task.color]),
+                                      int.parse(
+                                        colors[widget.task.color],
+                                      ),
+                                    )
+                                  : TodoColors.scaffoldWhite,
+                              width: 1.3,
+                            ),
+                            color: _catagoryItems[index]
+                                ? Color(
+                                    int.parse(colors[widget.task.color]),
+                                  )
+                                : TodoColors.scaffoldWhite,
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.only(
+                            right: 5,
+                          ),
+                          child: FittedBox(
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  catagories[index]["iconData"],
+                                  size: 15,
+                                  color: _catagoryItems[index] == false
+                                      ? Color(
+                                          int.parse(
+                                            colors[widget.task.color],
+                                          ),
+                                        )
+                                      : TodoColors.scaffoldWhite,
+                                ),
+                                Text(
+                                  ' ${catagories[index]["name"]}',
+                                  style: TextStyle(
+                                    color: _catagoryItems[index] == false
+                                        ? Color(
+                                            int.parse(
+                                                colors[widget.task.color]),
+                                          )
+                                        : TodoColors.scaffoldWhite,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return GestureDetector(
+                    onTap: () {
+                      setState(
+                          () => _catagoryItems[index] = !_catagoryItems[index]);
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _catagoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[widget.task.color],
+                                  ),
+                                )
+                              : Colors.white,
+                          width: 1.3,
+                        ),
+                        color: _catagoryItems[index]
+                            ? Color(
+                                int.parse(colors[widget.task.color]),
+                              )
+                            : Colors.white,
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(
+                        right: 5,
+                      ),
+                      child: FittedBox(
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              catagories[index]["iconData"],
+                              size: 15,
+                              color: _catagoryItems[index] == false
+                                  ? Color(
+                                      int.parse(
+                                        colors[widget.task.color],
+                                      ),
                                     )
                                   : Colors.white,
                             ),
-                          ),
-                        ],
+                            Text(
+                              ' ${catagories[index]["name"]}',
+                              style: TextStyle(
+                                color: _catagoryItems[index] == false
+                                    ? Color(
+                                        int.parse(colors[widget.task.color]),
+                                      )
+                                    : Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),
@@ -659,14 +723,14 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                height: 50,
+                height: 60,
                 width: MediaQuery.of(context).size.width - 80,
                 margin: EdgeInsets.only(right: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color: Color(int.parse(colors[widget.task.color])),
-                    width: 1,
+                    width: 1.3,
                   ),
                 ),
                 child: TextField(
@@ -674,7 +738,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(10),
                     labelText: 'Achieve goal',
-                    labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+                    labelStyle: kNormalSuperSmallStyle.copyWith(
+                      color: Colors.grey[600],
+                    ),
                     border: InputBorder.none,
                   ),
                   controller: _achieveTextController,
@@ -703,7 +769,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     child: Icon(
                       Ionicons.ios_add,
                       color: Colors.white,
-                      size: 35,
                     ),
                   ),
                 ),
@@ -906,67 +971,67 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     );
   }
 
-  Future _buildIconPicker(BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: TodoColors.scaffoldWhite,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
+  Future _buildIconPicker(BuildContext context) => showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: TodoColors.scaffoldWhite,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
             ),
-          ),
-          height: 200,
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'Icon',
-                  style: TextStyle(fontFamily: 'Alata', fontSize: 20),
-                  textAlign: TextAlign.center,
-                ),
-                Divider(),
-                Wrap(
-                  direction: Axis.horizontal,
-                  children: List.generate(
-                    icons.length,
-                    (index) {
-                      return Padding(
-                        padding: EdgeInsets.all(5),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _iconIndex = index;
-                              Navigator.pop(context);
-                            });
-                          },
-                          child: Material(
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                getIconUsingPrefix(
-                                  name: icons[index],
-                                ),
-                                color: Colors.white,
-                              ),
-                            ),
-                            color: Color(int.parse(colors[widget.task.color])),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      );
-                    },
+            height: 200,
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 5),
+                  Text(
+                    'Icon',
+                    style: TextStyle(fontFamily: 'Alata', fontSize: 20),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-              ],
+                  Divider(),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    children: List.generate(
+                      icons.length,
+                      (index) {
+                        return Padding(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _iconIndex = index;
+                                Navigator.pop(context);
+                              });
+                            },
+                            child: Material(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  getIconUsingPrefix(
+                                    name: icons[index],
+                                  ),
+                                  color: Colors.white,
+                                ),
+                              ),
+                              color:
+                                  Color(int.parse(colors[widget.task.color])),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
-  }
+          );
+        },
+      );
 
   Container _buildAddAchieve() {
     return Container(
@@ -974,7 +1039,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       margin: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.grey,
+          color: Colors.grey.shade400,
           width: 1.5,
           style: BorderStyle.solid,
         ),
@@ -989,7 +1054,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           iconSize: 60,
           icon: Icon(
             Icons.add,
-            color: Colors.grey,
+            color: Colors.grey.shade400,
           ),
           onPressed: () => FocusScope.of(context).requestFocus(myFocusNode),
         ),

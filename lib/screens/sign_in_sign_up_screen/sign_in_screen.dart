@@ -37,7 +37,7 @@ class _SignInScreenState extends State<SignInScreen> {
     await _repository.getStarpoint(
       Provider.of<StarBloc>(context, listen: false),
     );
-    Navigator.pushNamed(context, '/home');
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override

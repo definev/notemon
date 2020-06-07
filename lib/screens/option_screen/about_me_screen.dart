@@ -37,7 +37,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
       appBar: AppBar(
         title: Text(
           'About this app',
-          style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
+          style: kTitleStyle.copyWith(
+              fontFamily: 'Montserrat', color: Colors.white),
         ),
         actions: <Widget>[
           IconButton(
@@ -72,8 +73,10 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                       ),
                       Text(
                         '''Gottash is my personal project. If you like it, rate it 5 stars ^.^, or if you are not satisfied with this app, please give me a comment. ''',
-                        style:
-                            kNormalStyle.copyWith(fontWeight: FontWeight.w300),
+                        style: TextStyle(
+                          fontFamily: 'Source_Sans_Pro',
+                          fontSize: 17,
+                        ),
                       ),
                       SizedBox(
                         height: 20,
@@ -193,14 +196,47 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                           ),
                                         ),
                                       ),
-                                      if (animation.value == 1)
-                                        Center(
-                                          child: Text(
-                                            'duongbnno1111@gmail.com',
-                                            style: kNormalStyle,
-                                            overflow: TextOverflow.ellipsis,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              const url =
+                                  'https://github.com/definev';
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                throw 'Could not launch $url';
+                              }
+                            },
+                            child: Material(
+                              borderRadius: BorderRadius.circular(200),
+                              elevation: 2,
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                padding: const EdgeInsets.all(10),
+                                height: 60,
+                                width: animation.value * 170 + 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200),
+                                  color: Colors.white,
+                                ),
+                                child: Center(
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Center(
+                                        child: FadeTransition(
+                                          opacity: fadeAnimation,
+                                          child: Icon(
+                                            MaterialCommunityIcons.github_circle,
+                                            size: 40,
+                                            color: Colors.black,
                                           ),
-                                        )
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

@@ -106,6 +106,17 @@ class TaskTable {
       where: 'id = ?',
       whereArgs: [id],
     );
+    String achieve =
+        map[1]['achieve'].substring(1, map[1]['achieve'].length - 1);
+    List<String> achieveList = achieve.split(', ');
+    List<String> isDoneAchieve = map[1]['isDoneAchieve']
+        .substring(1, map[1]['isDoneAchieve'].length - 1)
+        .split(', ');
+    List<bool> isDoneAchieveList = isDoneAchieve
+        .map(
+          (isDone) => isDone == "false" ? false : true,
+        )
+        .toList();
     return Task(
       id: map[1]['id'],
       timestamp: DateTime.parse(map[1]['timestamp']),
@@ -113,11 +124,11 @@ class TaskTable {
       color: map[1]['color'],
       icon: map[1]['icon'],
       catagories: map[1]['catagories'],
-      achieve: map[1]['achieve'],
+      achieve: achieveList,
       timer: map[1]['timer'],
       completeTimer: map[1]['completeTimer'],
       percent: map[1]['percent'],
-      isDoneAchieve: map[1]['isDoneAchieve'],
+      isDoneAchieve: isDoneAchieveList,
     );
   }
 
@@ -126,18 +137,37 @@ class TaskTable {
     final List<Map<String, dynamic>> maps = await db.query('$TABLE_NAME');
     if (maps.length == 0) return [];
     return List.generate(maps.length, (index) {
+      String achieve = maps[index]['achieve']
+          .substring(1, maps[index]['achieve'].length - 1);
+      List<String> achieveList = achieve.split(', ');
+      List<String> isDoneAchieve = maps[index]['isDoneAchieve']
+          .substring(1, maps[index]['isDoneAchieve'].length - 1)
+          .split(', ');
+      List<bool> isDoneAchieveList = isDoneAchieve
+          .map(
+            (isDone) => isDone == "false" ? false : true,
+          )
+          .toList();
+      List<String> catagories = maps[index]['catagories']
+          .substring(1, maps[index]['catagories'].length - 1)
+          .split(', ');
+      List<bool> catagoriesList = catagories
+          .map(
+            (isDone) => isDone == "false" ? false : true,
+          )
+          .toList();
       return Task(
         id: maps[index]['id'],
         timestamp: DateTime.parse(maps[index]['timestamp']),
         taskName: maps[index]['TaskName'],
         color: maps[index]['color'],
-        catagories: maps[index]['catagories'],
+        catagories: catagoriesList,
         icon: maps[index]['icon'],
-        achieve: maps[index]['achieve'],
+        achieve: achieveList,
         timer: maps[index]['timer'],
         completeTimer: maps[index]['completeTimer'],
         percent: maps[index]['percent'],
-        isDoneAchieve: maps[index]['isDoneAchieve'],
+        isDoneAchieve: isDoneAchieveList,
       );
     });
   }

@@ -49,10 +49,12 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     if (await checkConnection()) {
       FirebaseRepository _repository = FirebaseRepository();
       await _repository.initUser();
-      List<String> _onlineKey = await _repository.getDeleteTodoKey();
-      for (String key in _onlineKey) {
-        if (!deleteTodoKey.contains(key)) {
-          TodoTable.insertTodoDeleteKey(key);
+      if (_repository.user != null) {
+        List<String> _onlineKey = await _repository.getDeleteTodoKey();
+        for (String key in _onlineKey) {
+          if (!deleteTodoKey.contains(key)) {
+            TodoTable.insertTodoDeleteKey(key);
+          }
         }
       }
     }

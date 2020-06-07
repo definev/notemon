@@ -126,6 +126,12 @@ class TodoTable {
       where: 'id = ?',
       whereArgs: [index],
     );
+    List<String> _rawCatagoryItems = map[1]['catagories']
+        .substring(1, map[1]['catagories'].length - 1)
+        .split(', ');
+    List<bool> _catagoriesItems = _rawCatagoryItems
+        .map((isCheck) => isCheck == 'false' ? false : true)
+        .toList();
     return Todo(
       id: map[1]['id'],
       timestamp: DateTime.parse(map[1]['timestamp']),
@@ -135,7 +141,7 @@ class TodoTable {
       color: map[1]['color'],
       audioPath: map[1]['audioPath'],
       audioCode: map[1]['audioCode'],
-      catagories: map[1]['catagories'],
+      catagories: _catagoriesItems,
     );
   }
 
@@ -144,6 +150,12 @@ class TodoTable {
     final List<Map<String, dynamic>> maps = await db.query(TABLE_NAME);
     if (maps.length == 0) return [];
     return List.generate(maps.length, (index) {
+      List<String> _rawCatagoryItems = maps[index]['catagories']
+          .substring(1, maps[index]['catagories'].length - 1)
+          .split(', ');
+      List<bool> _catagoriesItems = _rawCatagoryItems
+          .map((isCheck) => isCheck == 'false' ? false : true)
+          .toList();
       return Todo(
         id: maps[index]['id'],
         timestamp: DateTime.parse(maps[index]['timestamp']),
@@ -153,7 +165,7 @@ class TodoTable {
         color: maps[index]['color'],
         audioPath: maps[index]['audioPath'],
         audioCode: maps[index]['audioCode'],
-        catagories: maps[index]['catagories'],
+        catagories: _catagoriesItems,
       );
     });
   }

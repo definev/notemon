@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:gottask/utils/constant.dart';
 import 'package:moor/moor.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -8,6 +9,7 @@ class ImageViewer extends StatefulWidget {
   final int imageLinkIndex;
   final List<Uint8List> imageLinkList;
   final Color color;
+
   const ImageViewer({this.imageLinkIndex, this.imageLinkList, this.color});
 
   @override
@@ -25,13 +27,23 @@ class _ImageViewerState extends State<ImageViewer> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.black,
-        body: Container(
-          decoration: const BoxDecoration(),
-          child: Stack(
+  Widget build(BuildContext context) => Theme(
+        data: Theme.of(context)
+            .copyWith(accentColor: widget.color.withOpacity(0.5)),
+        child: Scaffold(
+          backgroundColor: TodoColors.scaffoldWhite,
+          body: Stack(
             children: <Widget>[
               PhotoViewGallery.builder(
+                backgroundDecoration: BoxDecoration(
+                  color: TodoColors.scaffoldWhite,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                ),
+                scrollPhysics: AlwaysScrollableScrollPhysics(),
+                pageController: pageController,
                 itemCount: widget.imageLinkList.length,
                 builder: (context, index) => PhotoViewGalleryPageOptions(
                   imageProvider: MemoryImage(widget.imageLinkList[index]),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class ParrallelBackground extends StatefulWidget {
-  final Widget child;
+  final Image child;
 
   const ParrallelBackground({Key key, this.child}) : super(key: key);
   @override
@@ -32,12 +32,16 @@ class _ParrallelBackgroundState extends State<ParrallelBackground> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var time = DateTime.now().millisecondsSinceEpoch / 2000;
-    var scaleX = 1.2 + sin(time) * .08;
-    var scaleY = 1.2 + cos(time) * .06;
-    return Transform.translate(
-      offset: Offset(-(scaleX - 1) / 3 * size.width + size.width / 10,
-          -(scaleY - 1.2) / 3 * size.height),
-      child: widget.child,
+    var scaleX = 1.2 + sin(time) * .05;
+    var scaleY = 1.2 + cos(time) * .07;
+    var offsetY = 20 + cos(time) * 20;
+    return Transform(
+      transform: Matrix4.diagonal3Values(scaleX, scaleY, 1),
+      child: Transform.translate(
+        offset: Offset(-(scaleX - 1) / 2 * size.width,
+            -(scaleY - 1) / 2 * size.height + offsetY),
+        child: widget.child,
+      ),
     );
   }
 }

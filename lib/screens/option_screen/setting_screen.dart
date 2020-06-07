@@ -161,10 +161,11 @@ class _SettingScreenState extends State<SettingScreen>
               child: GestureDetector(
                 onTap: () {
                   AuthServices _auth = AuthServices();
-                  _auth.signOut().then((value) async {
+                  _auth.signOut().then((_) async {
                     updateLoginState(false);
                     deleteAll();
-                    Navigator.pushNamed(context, '/signIn');
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                    Navigator.popAndPushNamed(context, '/signIn');
                   });
                 },
                 child: Padding(

@@ -29,10 +29,10 @@ class Task {
   String timer;
   int percent;
   int color;
-  String achieve;
+  List<String> achieve;
   String completeTimer;
-  String isDoneAchieve;
-  String catagories;
+  List<bool> isDoneAchieve;
+  List<bool> catagories;
 
   Task copyWith({
     String id,
@@ -43,10 +43,10 @@ class Task {
     String timer,
     int percent,
     int color,
-    String achieve,
+    List<String> achieve,
     String completeTimer,
-    String isDoneAchieve,
-    String catagories,
+    List<bool> isDoneAchieve,
+    List<bool> catagories,
   }) =>
       Task(
         id: id ?? this.id,
@@ -63,20 +63,35 @@ class Task {
         catagories: catagories ?? this.catagories,
       );
 
-  factory Task.fromFirebaseMap(Map<String, dynamic> json) => Task(
-        id: json["id"],
-        timestamp: json["timestamp"].toDate(),
-        onDoing: json["onDoing"],
-        icon: json["icon"],
-        taskName: json["taskName"],
-        timer: json["timer"],
-        percent: json["percent"],
-        color: json["color"],
-        achieve: json["achieve"],
-        completeTimer: json["completeTimer"],
-        isDoneAchieve: json["isDoneAchieve"],
-        catagories: json["catagories"],
-      );
+  factory Task.fromFirebaseMap(Map<String, dynamic> json) {
+    List<bool> catagory = [];
+    json["catagories"].forEach((data) {
+      catagory.add(data);
+    });
+    List<String> achieve = [];
+    json["achieve"].forEach((data) {
+      achieve.add(data);
+    });
+    List<bool> isDoneAchieve = [];
+    json["isDoneAchieve"].forEach((data) {
+      isDoneAchieve.add(data);
+    });
+
+    return Task(
+      id: json["id"],
+      timestamp: json["timestamp"].toDate(),
+      onDoing: json["onDoing"],
+      icon: json["icon"],
+      taskName: json["taskName"],
+      timer: json["timer"],
+      percent: json["percent"],
+      color: json["color"],
+      achieve: achieve,
+      completeTimer: json["completeTimer"],
+      isDoneAchieve: isDoneAchieve,
+      catagories: catagory,
+    );
+  }
 
   Map<String, dynamic> toFirebaseMap() => {
         "id": id,
@@ -101,9 +116,9 @@ class Task {
         "timer": timer,
         "percent": percent,
         "color": color,
-        "achieve": achieve,
+        "achieve": achieve.toString(),
         "completeTimer": completeTimer,
-        "isDoneAchieve": isDoneAchieve,
-        "catagories": catagories,
+        "isDoneAchieve": isDoneAchieve.toString(),
+        "catagories": catagories.toString(),
       };
 }

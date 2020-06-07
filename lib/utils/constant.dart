@@ -21,14 +21,14 @@ enum HandSide {
 
 class TodoColors {
   static const deepPurple = Color(0xFF44427D);
-  static const lightOrange = Color(0xFFFAA662);
-  static const pastelPink = Color(0xFFE9857B);
+  static const lightOrange = Color(0xFF12947f);
+  static const pastelPink = Color(0xFFf7b71d);
   static const scaffoldWhite = Color(0xFFF6F5F4);
   static const chocolate = Color(0xFFD2691E);
   static const grassOld = Color(0xFF535F2D);
   static const lightGreen = Color(0xFF8BBC2F);
   static const spiritBlue = Color(0xFF4C6AC4);
-  static const blueMoon = Color(0xFF71AEC3);
+  static const blueMoon = Color(0xFF464159);
   static const blueAqua = Color(0xFF0181A0);
   static const spaceGrey = Color(0xFF687C95);
   static const groundPink = Color(0xFFD05D40);
@@ -116,42 +116,53 @@ List<String> icons = [
 ];
 
 List<String> colors = [
-  TodoColors.deepPurple.toString().substring(6, 16),
-  TodoColors.grassOld.toString().substring(6, 16),
-  TodoColors.massiveRed.toString().substring(6, 16),
-  TodoColors.chocolate.toString().substring(6, 16),
-  TodoColors.spaceGrey.toString().substring(6, 16),
-  TodoColors.spiritBlue.toString().substring(6, 16),
-  TodoColors.groundPink.toString().substring(6, 16),
-  TodoColors.blueAqua.toString().substring(6, 16),
-  TodoColors.lightGreen.toString().substring(6, 16),
-  TodoColors.lightOrange.toString().substring(6, 16),
-  TodoColors.pastelPink.toString().substring(6, 16),
-  TodoColors.blueMoon.toString().substring(6, 16),
+  TodoColors.blueMoon.toString().substring(6, 16), // 1
+  TodoColors.deepPurple.toString().substring(6, 16), // 3
+  TodoColors.massiveRed.toString().substring(6, 16), // 2
+  TodoColors.grassOld.toString().substring(6, 16), // 4
+  TodoColors.blueAqua.toString().substring(6, 16), // 12
+  TodoColors.chocolate.toString().substring(6, 16), // 5
+  TodoColors.spaceGrey.toString().substring(6, 16), // 6
+  TodoColors.spiritBlue.toString().substring(6, 16), // 8
+  TodoColors.groundPink.toString().substring(6, 16), // 7
+  TodoColors.lightGreen.toString().substring(6, 16), // 10
+  TodoColors.lightOrange.toString().substring(6, 16), // 9
+  TodoColors.pastelPink.toString().substring(6, 16), // 11
 ];
 
-List<String> catagories = [
-  "Grocery",
-  "Study",
-  "Work",
-  "Relax",
-  "Event",
-  "Party",
-  "Hobby",
-  "Reminder",
-  "Planing",
-];
-
-List<IconData> catagoryIcons = [
-  Icons.shopping_basket,
-  Icons.library_books,
-  Icons.work,
-  Icons.hot_tub,
-  Icons.event,
-  Icons.local_play,
-  Icons.weekend,
-  Icons.edit,
-  Icons.calendar_today,
+List<Map<String, dynamic>> catagories = [
+  {
+    "name": "Grocery",
+    "iconData": Icons.shopping_basket,
+  },
+  {
+    "name": "Work",
+    "iconData": Icons.work,
+  },
+  {
+    "name": "Study",
+    "iconData": Icons.library_books,
+  },
+  {
+    "name": "Hobby",
+    "iconData": Icons.weekend,
+  },
+  {
+    "name": "Event",
+    "iconData": Icons.event,
+  },
+  {
+    "name": "Party",
+    "iconData": Icons.local_play,
+  },
+  {
+    "name": "Relax",
+    "iconData": Icons.hot_tub,
+  },
+  {
+    "name": "Reminder",
+    "iconData": Icons.edit,
+  },
 ];
 
 Map<String, String> audioFile = {
@@ -308,116 +319,146 @@ Map<String, Color> tagColor = {
 };
 
 List<Map<String, dynamic>> disaster = [
-	{
-		"name": "Nước biển dâng",
-		"description": "Mực nước biển dâng do khí hậu trái đất nóng lên cộng với hiện tượng băng tan ở hai cực.",
-		"imageURL": ["https://images.pexels.com/photos/753619/pexels-photo-753619.jpeg"],
-		"damage":{
-			"affected_people":"480 triệu người",
-			"dangerous_level": 4.5,
-			"affect":["Nông nghiệp", "Đất đai"]
-		},
-		"icon": "sea_rises.png"
-	},
-	{
-		"name": "Cháy rừng",
-		"description": "Cháy rừng diễn ra do thời tiết nắng nóng, gây hậu quả to lớn về cả về con người và vật chất.",
-		"imageURL": ["https://images.pexels.com/photos/266487/pexels-photo-266487.jpeg"],
-		"damage":{
-			"affected_people":"10 triệu người/năm",
-			"dangerous_level": 2,
-			"affect":["Nông nghiệp", "Hệ sinh thái", "Cơ sở vật chất", "Đất lâm nghiệp"]
-		},
-		"icon": "forest_fire.png"
+  {
+    "name": "Nước biển dâng",
+    "description":
+        "Mực nước biển dâng do khí hậu trái đất nóng lên cộng với hiện tượng băng tan ở hai cực.",
+    "imageURL": [
+      "https://images.pexels.com/photos/753619/pexels-photo-753619.jpeg"
+    ],
+    "damage": {
+      "affected_people": "480 triệu người",
+      "dangerous_level": 4.5,
+      "affect": ["Nông nghiệp", "Đất đai"]
     },
-    {
-        "name": "Hạn hán",
-        "description": "Nắng nóng kéo dài và liên tục phá vỡ các kỉ lục đã gây ra hạn hán tại nhiều vùng miền.",
-        "imageURL": ["https://images.pexels.com/photos/2496572/pexels-photo-2496572.jpeg"],
-        "damage":{
-            "affected_people":"55 triệu người/năm",
-            "dangerous_level": 4,
-            "affect":["Nông nghiệp"]
-        },
-        "icon":"drought.png"
+    "icon": "sea_rises.png"
+  },
+  {
+    "name": "Cháy rừng",
+    "description":
+        "Cháy rừng diễn ra do thời tiết nắng nóng, gây hậu quả to lớn về cả về con người và vật chất.",
+    "imageURL": [
+      "https://images.pexels.com/photos/266487/pexels-photo-266487.jpeg"
+    ],
+    "damage": {
+      "affected_people": "10 triệu người/năm",
+      "dangerous_level": 2,
+      "affect": [
+        "Nông nghiệp",
+        "Hệ sinh thái",
+        "Cơ sở vật chất",
+        "Đất lâm nghiệp"
+      ]
     },
-    {
-        "name": "Bão nhiệt đới",
-        "description": "Các cơn bão nhiệt đới diễn ra ở khắp nơi trên thế giới.",
-        "imageURL": ["https://images.pexels.com/photos/71116/hurricane-earth-satellite-tracking-71116.jpeg"],
-        "damage":{
-            "affected_people":"500 triệu người/năm",
-            "dangerous_level": 5,
-            "affect":["Kinh tế", "Công nghiệp", "Cơ sở vật chất", "Nông nghiệp"]
-        },
-        "icon":"hurricane.png"
+    "icon": "forest_fire.png"
+  },
+  {
+    "name": "Hạn hán",
+    "description":
+        "Nắng nóng kéo dài và liên tục phá vỡ các kỉ lục đã gây ra hạn hán tại nhiều vùng miền.",
+    "imageURL": [
+      "https://images.pexels.com/photos/2496572/pexels-photo-2496572.jpeg"
+    ],
+    "damage": {
+      "affected_people": "55 triệu người/năm",
+      "dangerous_level": 4,
+      "affect": ["Nông nghiệp"]
     },
-    {
-        "name": "Ô nhiễm không khí",
-        "description": "Chất lượng không khí ở mức độc hại cho con người",
-        "imageURL": ["https://images.pexels.com/photos/1697357/pexels-photo-1697357.jpeg"],
-        "damage":{
-            "affected_people":"4 tỉ người",
-            "dangerous_level": 5,
-            "affect":["Sức khỏe", "Giao thông"]
-        },
-        "icon":"air_pollution.png"
+    "icon": "drought.png"
+  },
+  {
+    "name": "Bão nhiệt đới",
+    "description": "Các cơn bão nhiệt đới diễn ra ở khắp nơi trên thế giới.",
+    "imageURL": [
+      "https://images.pexels.com/photos/71116/hurricane-earth-satellite-tracking-71116.jpeg"
+    ],
+    "damage": {
+      "affected_people": "500 triệu người/năm",
+      "dangerous_level": 5,
+      "affect": ["Kinh tế", "Công nghiệp", "Cơ sở vật chất", "Nông nghiệp"]
     },
-    {
-        "name": "Lốc xoáy",
-        "description": "Thường hay xuất hiện ở vùng nhiệt đới trong các cơn dông.",
-        "imageURL": ["https://images.pexels.com/photos/1446076/pexels-photo-1446076.jpeg"],
-        "damage":{
-            "affected_people":"1 triệu người/năm",
-            "dangerous_level": 2,
-            "affect":["Nông nghiệp","Cơ sở vật chất"]
-        },
-        "icon":"tornado.png"
+    "icon": "hurricane.png"
+  },
+  {
+    "name": "Ô nhiễm không khí",
+    "description": "Chất lượng không khí ở mức độc hại cho con người",
+    "imageURL": [
+      "https://images.pexels.com/photos/1697357/pexels-photo-1697357.jpeg"
+    ],
+    "damage": {
+      "affected_people": "4 tỉ người",
+      "dangerous_level": 5,
+      "affect": ["Sức khỏe", "Giao thông"]
     },
-    {
-        "name": "Núi lửa",
-        "description": "Các hoạt động địa chất dưới lòng đất dẫn tới những vụ phun trào núi lửa.",
-        "imageURL": ["https://images.pexels.com/photos/4220967/pexels-photo-4220967.jpeg"],
-        "damage":{
-            "affected_people":"500 000 người/năm",
-            "dangerous_level": 1.5,
-            "affect":["Bầu khí quyển","Đất đai"]
-        },
-        "icon":"volcano.png"
+    "icon": "air_pollution.png"
+  },
+  {
+    "name": "Lốc xoáy",
+    "description": "Thường hay xuất hiện ở vùng nhiệt đới trong các cơn dông.",
+    "imageURL": [
+      "https://images.pexels.com/photos/1446076/pexels-photo-1446076.jpeg"
+    ],
+    "damage": {
+      "affected_people": "1 triệu người/năm",
+      "dangerous_level": 2,
+      "affect": ["Nông nghiệp", "Cơ sở vật chất"]
     },
-    {
-        "name": "Các cơn dông",
-        "description": "Xảy ra vào mùa hè do sự chênh lệch nhiệt độ đột ngột",
-        "imageURL": ["https://images.pexels.com/photos/158163/clouds-cloudporn-weather-lookup-158163.jpeg"],
-        "damage":{
-            "affected_people":"5 triệu người/năm",
-            "dangerous_level": 2,
-            "affect":["Nông nghiệp"]
-        },
-        "icon":"storm.png"
+    "icon": "tornado.png"
+  },
+  {
+    "name": "Núi lửa",
+    "description":
+        "Các hoạt động địa chất dưới lòng đất dẫn tới những vụ phun trào núi lửa.",
+    "imageURL": [
+      "https://images.pexels.com/photos/4220967/pexels-photo-4220967.jpeg"
+    ],
+    "damage": {
+      "affected_people": "500 000 người/năm",
+      "dangerous_level": 1.5,
+      "affect": ["Bầu khí quyển", "Đất đai"]
     },
-    {
-        "name": "Lũ lụt",
-        "description": "Lũ lụt gây ra bởi mưa sau các cơn bão.",
-        "imageURL": ["https://images.unsplash.com/photo-1580993777851-40514758f716"],
-        "damage":{
-            "affected_people":"10 triệu người/năm",
-            "dangerous_level": 3,
-            "affect":["Nông nghiệp", "Cơ sở vật chất"]
-        },
-        "icon":"flood.png"
+    "icon": "volcano.png"
+  },
+  {
+    "name": "Các cơn dông",
+    "description": "Xảy ra vào mùa hè do sự chênh lệch nhiệt độ đột ngột",
+    "imageURL": [
+      "https://images.pexels.com/photos/158163/clouds-cloudporn-weather-lookup-158163.jpeg"
+    ],
+    "damage": {
+      "affected_people": "5 triệu người/năm",
+      "dangerous_level": 2,
+      "affect": ["Nông nghiệp"]
     },
-    {
-        "name": "Mưa Axit",
-        "description": "Khí thải công nghiệp tích tụ trong bầu khí quyển lâu ngày sẽ gây ra hiện tượng mưa Axit",
-        "imageURL": ["https://images.unsplash.com/photo-1428592953211-077101b2021b"],
-        "damage":{
-            "affected_people":"5 triệu người/năm",
-            "dangerous_level": 3,
-            "affect":["Nông nghiệp","Hệ sinh thái","Sức khỏe"]
-        },
-        "icon":"axit_rain.png"
-    }
+    "icon": "storm.png"
+  },
+  {
+    "name": "Lũ lụt",
+    "description": "Lũ lụt gây ra bởi mưa sau các cơn bão.",
+    "imageURL": [
+      "https://images.unsplash.com/photo-1580993777851-40514758f716"
+    ],
+    "damage": {
+      "affected_people": "10 triệu người/năm",
+      "dangerous_level": 3,
+      "affect": ["Nông nghiệp", "Cơ sở vật chất"]
+    },
+    "icon": "flood.png"
+  },
+  {
+    "name": "Mưa Axit",
+    "description":
+        "Khí thải công nghiệp tích tụ trong bầu khí quyển lâu ngày sẽ gây ra hiện tượng mưa Axit",
+    "imageURL": [
+      "https://images.unsplash.com/photo-1428592953211-077101b2021b"
+    ],
+    "damage": {
+      "affected_people": "5 triệu người/năm",
+      "dangerous_level": 3,
+      "affect": ["Nông nghiệp", "Hệ sinh thái", "Sức khỏe"]
+    },
+    "icon": "axit_rain.png"
+  }
 ];
 
 List<Map<String, dynamic>> pokedex = [

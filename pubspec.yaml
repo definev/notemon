@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  gzx_dropdown_menu: ^2.1.0
   provider: ^4.0.3
   percent_indicator: ^2.1.1
   swipedetector: ^1.2.0

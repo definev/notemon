@@ -13,6 +13,7 @@ import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/habit_tile.dart';
 import 'package:gottask/components/todo_tile.dart';
 import 'package:gottask/helper.dart';
+import 'package:gottask/models/filter_picker.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
@@ -30,6 +31,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   bool _isInit = false;
+  List<bool> _todoFilter = List.generate(8, (index) => false);
+  List<bool> _taskFilter = List.generate(8, (index) => false);
   Map<String, bool> _isLoading = {
     'todo': false,
     'task': false,
@@ -103,8 +106,8 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       );
+      setState(() => _isLoading['todo'] = false);
     }
-    setState(() => _isLoading['todo'] = false);
   }
 
   _updateTask() async {
@@ -159,9 +162,8 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       );
+      setState(() => _isLoading['task'] = false);
     }
-
-    setState(() => _isLoading['task'] = false);
   }
 
   _updateDatabase() async {
@@ -922,57 +924,62 @@ class _HomeScreenState extends State<HomeScreen>
             snapshots.data.documents.forEach(
                 (maps) => _taskList.add(Task.fromFirebaseMap(maps.data)));
             if (!_isLoading['task']) _updateTasksWhenbackToOnline(_taskList);
-            return Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: SizedBox(
-                height: kListViewHeight + 2,
-                width: double.infinity,
-                child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemCount: _taskList.length + 1,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    if (index == _taskList.length) {
-                      return Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddTaskScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            height: kListViewHeight,
-                            width: kListViewHeight,
-                            child: DottedBorder(
-                              radius: const Radius.circular(30),
-                              borderType: BorderType.RRect,
-                              dashPattern: const [20, 5, 20, 5],
-                              color: Colors.grey,
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.grey,
-                                  size: 40,
-                                ),
+            return SizedBox(
+              height: kListViewHeight + 2,
+              width: double.infinity,
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemCount: _taskList.length + 1,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  if (index == _taskList.length) {
+                    return Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddTaskScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 15),
+                          height: kListViewHeight,
+                          width: kListViewHeight,
+                          child: DottedBorder(
+                            radius: const Radius.circular(30),
+                            borderType: BorderType.RRect,
+                            dashPattern: const [20, 5, 20, 5],
+                            color: Colors.grey,
+                            child: Center(
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.grey,
+                                size: 40,
                               ),
                             ),
                           ),
                         ),
-                      );
-                    }
-
-                    return Center(
+                      ),
+                    );
+                  }
+                  if (index == 0) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 10),
                       child: TaskTile(
                         task: _taskList[index],
                         key: UniqueKey(),
                       ),
                     );
-                  },
-                ),
+                  }
+                  return Center(
+                    child: TaskTile(
+                      task: _taskList[index],
+                      key: UniqueKey(),
+                    ),
+                  );
+                },
               ),
             );
           }
@@ -1254,20 +1261,56 @@ class _HomeScreenState extends State<HomeScreen>
               'To-do list',
               style: kTitleStyle,
             ),
-            Container(
-              width: 25,
-              height: 25,
-              margin: const EdgeInsets.only(right: 20),
-              child: RawMaterialButton(
-                fillColor: TodoColors.deepPurple,
-                shape: const CircleBorder(),
-                elevation: 0.5,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey[400],
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  margin: const EdgeInsets.only(
+                    right: 10,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 2,
+                  ),
+                  child: InkWell(
+                    child: Text('Bộ lọc'),
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (_) => FilterPicker(
+                          initCatagory: _todoFilter,
+                          onCompeleted: (catagories, priority) {
+                            setState(() {
+                              _todoFilter = catagories;
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
-                onPressed: _modalBottomSheetMenu,
-              ),
+                Container(
+                  width: 25,
+                  height: 25,
+                  margin: const EdgeInsets.only(right: 20),
+                  child: RawMaterialButton(
+                    fillColor: TodoColors.deepPurple,
+                    shape: const CircleBorder(),
+                    elevation: 0.5,
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    onPressed: _modalBottomSheetMenu,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -1286,12 +1329,43 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 );
               } else {
+                List<Todo> _todoList = state.todo;
+                if (_todoFilter.contains(true)) {
+                  List<Todo> _filterTodoList = [];
+                  for (int i = 0; i < _todoFilter.length; i++) {
+                    if (_todoFilter[i]) {
+                      _todoList.forEach((todo) {
+                        if (todo.catagories[i] == true) {
+                          bool _isAdd = true;
+                          for (int j = 0; j < _filterTodoList.length; j++) {
+                            if (_filterTodoList[j] == todo) {
+                              _isAdd = false;
+                              break;
+                            }
+                          }
+                          if (_isAdd) _filterTodoList.add(todo);
+                        }
+                      });
+                    }
+                  }
+                  _todoList = _filterTodoList;
+                }
+
+                if (_todoList.length == 0) {
+                  return const Center(
+                    child: Text(
+                      'Empty to-do',
+                      style: kNormalStyle,
+                    ),
+                  );
+                }
+
                 return ListView.builder(
                   physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.zero,
-                  itemCount: state.todo.length,
+                  itemCount: _todoList.length,
                   itemBuilder: (context, index) => TodoTile(
-                    task: state.todo[index],
+                    task: _todoList[index],
                     key: UniqueKey(),
                   ),
                 );
@@ -1364,57 +1438,64 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               );
             } else {
-              return Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: SizedBox(
-                  height: kListViewHeight + 2,
-                  width: double.infinity,
-                  child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: state.task.length + 1,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      if (index == state.task.length) {
-                        return Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddTaskScreen(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 15),
-                              height: kListViewHeight,
-                              width: kListViewHeight,
-                              child: DottedBorder(
-                                radius: const Radius.circular(30),
-                                borderType: BorderType.RRect,
-                                dashPattern: const [20, 5, 20, 5],
-                                color: Colors.grey,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Colors.grey,
-                                    size: 40,
-                                  ),
+              return SizedBox(
+                height: kListViewHeight + 2,
+                width: double.infinity,
+                child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
+                  itemCount: state.task.length + 1,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    if (index == state.task.length) {
+                      return Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddTaskScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 15),
+                            height: kListViewHeight,
+                            width: kListViewHeight,
+                            child: DottedBorder(
+                              radius: const Radius.circular(30),
+                              borderType: BorderType.RRect,
+                              dashPattern: const [20, 5, 20, 5],
+                              color: Colors.grey,
+                              child: Center(
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.grey,
+                                  size: 40,
                                 ),
                               ),
                             ),
                           ),
-                        );
-                      }
+                        ),
+                      );
+                    }
 
-                      return Center(
+                    if (index == 0) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 10),
                         child: TaskTile(
                           task: state.task[index],
                           key: UniqueKey(),
                         ),
                       );
-                    },
-                  ),
+                    }
+
+                    return Center(
+                      child: TaskTile(
+                        task: state.task[index],
+                        key: UniqueKey(),
+                      ),
+                    );
+                  },
                 ),
               );
             }

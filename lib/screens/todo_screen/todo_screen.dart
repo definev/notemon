@@ -273,16 +273,8 @@ class _TodoScreenState extends State<TodoScreen>
     }
     _content = widget.todo.content;
     indexColor = widget.todo.color;
-    var _rawCatagoryItems = widget.todo.catagories
-        .substring(1, widget.todo.catagories.length - 1)
-        .split(', ');
-    for (int i = 0; i < _rawCatagoryItems.length; i++) {
-      if (_rawCatagoryItems[i] == 'false') {
-        _catagoryItems[i] = false;
-      } else {
-        _catagoryItems[i] = true;
-      }
-    }
+    _catagoryItems = widget.todo.catagories;
+
     _init();
   }
 
@@ -431,18 +423,12 @@ class _TodoScreenState extends State<TodoScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _buildTaskNameTextField(),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 5),
-                    child: Text(
-                      'Color',
-                      style: kNormalStyle.copyWith(color: Colors.grey),
-                    ),
-                  ),
+                  _buildTitle('Color'),
                   SizedBox(height: 5),
                   _buildColorPicker(),
                   _buildTitle('Catagory'),
                   SizedBox(height: 5),
-                  _buildCatagoriesPicker(),
+                  _buildCatagoriesPicker(context),
                   _buildTitle('File'),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -618,7 +604,7 @@ class _TodoScreenState extends State<TodoScreen>
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: Color(int.parse(colors[indexColor])),
-                        inactiveTrackColor: Colors.grey,
+                        inactiveTrackColor: Colors.grey[350],
                         trackHeight: 3,
                         thumbColor: Color(int.parse(colors[indexColor])),
                         thumbShape: const RoundSliderThumbShape(
@@ -825,7 +811,7 @@ class _TodoScreenState extends State<TodoScreen>
       );
 
   Container _buildTaskNameTextField() => Container(
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(5.5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -869,7 +855,7 @@ class _TodoScreenState extends State<TodoScreen>
               color: indexColor,
               audioPath: _audioPath,
               audioCode: _audioCode,
-              catagories: _catagoryItems.toString(),
+              catagories: _catagoryItems,
             );
             _todoBloc.add(EditTodoEvent(todo: _currentTask));
             if (await checkConnection())
@@ -967,73 +953,81 @@ class _TodoScreenState extends State<TodoScreen>
         ),
       );
 
-  Widget _buildCatagoriesPicker() {
+  Widget _buildCatagoriesPicker(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 5,
-      ),
-      child: Wrap(
-        children: List.generate(
-          catagories.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _catagoryItems[index] = !_catagoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _catagoryItems[index] == false
-                      ? Color(
-                          int.parse(
-                            colors[indexColor],
-                          ),
-                        )
-                      : Colors.white,
-                ),
-                color: _catagoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : Colors.white,
-              ),
-              padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(
-                bottom: 5,
-                right: 5,
-              ),
-              child: FittedBox(
-                child: Row(
-                  children: <Widget>[
-                    Icon(
-                      catagoryIcons[index],
-                      size: 15,
+      padding: const EdgeInsets.all(2),
+      child: SizedBox(
+        height: 46.0 * 4 - 10,
+        child: Center(
+          child: GridView(
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: MediaQuery.of(context).size.width / 92,
+            ),
+            children: List.generate(
+              catagories.length,
+              (index) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _catagoryItems[index] = !_catagoryItems[index];
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
                       color: _catagoryItems[index] == false
                           ? Color(
                               int.parse(
                                 colors[indexColor],
                               ),
                             )
-                          : Colors.white,
+                          : TodoColors.scaffoldWhite,
+                      width: 1.3,
                     ),
-                    Text(
-                      ' ${catagories[index]}',
-                      style: TextStyle(
+                    color: _catagoryItems[index]
+                        ? Color(
+                            int.parse(
+                              colors[indexColor],
+                            ),
+                          )
+                        : TodoColors.scaffoldWhite,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  margin: const EdgeInsets.all(2.5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Icon(
+                        catagories[index]["iconData"],
+                        size: 17,
                         color: _catagoryItems[index] == false
                             ? Color(
                                 int.parse(
                                   colors[indexColor],
                                 ),
                               )
-                            : Colors.white,
+                            : TodoColors.scaffoldWhite,
                       ),
-                    ),
-                  ],
+                      Text(
+                        '${catagories[index]["name"]}',
+                        style: TextStyle(
+                          fontFamily: 'Source_Sans_Pro',
+                          fontSize: 16,
+                          color: _catagoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[indexColor],
+                                  ),
+                                )
+                              : TodoColors.scaffoldWhite,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1044,43 +1038,52 @@ class _TodoScreenState extends State<TodoScreen>
   }
 
   Widget _buildColorPicker() => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Wrap(
-          direction: Axis.horizontal,
-          children: List.generate(
-            colors.length,
-            (index) {
-              if (indexColor == index) {
-                return Container(
-                  margin: const EdgeInsets.all(3),
-                  height: (MediaQuery.of(context).size.width - 59) / 6,
-                  width: (MediaQuery.of(context).size.width - 59) / 6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(
-                      int.parse(colors[index]),
+        padding: const EdgeInsets.symmetric(horizontal: 1.5),
+        child: SizedBox(
+          height: 50 * 2.0 + 28,
+          child: GridView(
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 6,
+              childAspectRatio: 1,
+            ),
+            children: List.generate(
+              colors.length,
+              (index) {
+                if (indexColor == index) {
+                  return Container(
+                    margin: const EdgeInsets.all(3),
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(
+                        int.parse(colors[index]),
+                      ),
+                    ),
+                    child: Icon(Icons.check, color: Colors.white),
+                  );
+                }
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      indexColor = index;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(3),
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(
+                        int.parse(colors[index]),
+                      ),
                     ),
                   ),
-                  child: Icon(Icons.check, color: Colors.white),
                 );
-              }
-              return GestureDetector(
-                onTap: () {
-                  setState(() => indexColor = index);
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(3),
-                  height: (MediaQuery.of(context).size.width - 59) / 6,
-                  width: (MediaQuery.of(context).size.width - 59) / 6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(
-                      int.parse(colors[index]),
-                    ),
-                  ),
-                ),
-              );
-            },
+              },
+            ),
           ),
         ),
       );

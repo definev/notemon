@@ -61,8 +61,8 @@ class AuthServices {
               await _firebaseAuth.signInWithCredential(credential);
 
           // Return current user
-          updateUserData(_user);
           _user = _authResult.user;
+          updateUserData(_user);
           return _user;
         } catch (e) {
           print(e);

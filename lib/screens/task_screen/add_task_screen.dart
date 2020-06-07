@@ -20,7 +20,8 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
   int _iconIndex = 0;
   int indexColor = 0;
-  List<bool> _catagoryItems = List.generate(9, (index) => false);
+  List<bool> _catagoryItems =
+      List.generate(catagories.length, (index) => false);
   Duration timer = const Duration(hours: 0, minutes: 0);
   final List<String> _achieveLists = [];
   final List<bool> _isDoneAchieveLists = [];
@@ -107,15 +108,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                   timestamp: Timestamp.now().toDate(),
                   onDoing: false,
                   color: indexColor,
-                  catagories: _catagoryItems.toString(),
+                  catagories: _catagoryItems,
                   icon: _iconIndex,
                   taskName: _taskNameTextController.text,
                   percent: 0,
                   timer: timer.toString(),
                   completeTimer:
                       const Duration(hours: 0, minutes: 0).toString(),
-                  achieve: _achieveLists.toString(),
-                  isDoneAchieve: _isDoneAchieveLists.toString(),
+                  achieve: _achieveLists,
+                  isDoneAchieve: _isDoneAchieveLists,
                 );
                 _taskBloc.add(AddTaskEvent(task: _task));
                 if (await checkConnection()) {
@@ -139,7 +140,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                     style: kNormalStyle.copyWith(color: Colors.grey),
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 3),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: LimitedBox(
@@ -153,108 +154,116 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
                 _buildTitle('Color'),
+                const SizedBox(height: 3),
                 _buildColorPicker(),
                 const SizedBox(height: 10),
                 _buildTitle('Catagory'),
-                _buildCatagoriesPicker(),
+                const SizedBox(height: 3),
+                _buildCatagoriesPicker(context),
                 _buildTitle('Achievment'),
-                const SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: SizedBox(
-                    height: 60,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Color(int.parse(colors[indexColor])),
-                                width: 1,
-                              ),
-                            ),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(10),
-                                labelText: 'Achieve goal',
-                                labelStyle:
-                                    kNormalStyle.copyWith(color: Colors.grey),
-                                border: InputBorder.none,
-                              ),
-                              controller: _achieveTextController,
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            if (_achieveTextController.text != '' &&
-                                _achieveTextController != null) {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              setState(() {
-                                _achieveLists.add(_achieveTextController.text);
-                                _isDoneAchieveLists.add(false);
-                                _achieveTextController.clear();
-                              });
-                            }
-                          },
-                          child: Material(
-                            elevation: 1,
-                            color: Color(int.parse(colors[indexColor])),
-                            borderRadius: BorderRadiusDirectional.circular(10),
-                            child: Container(
-                              height: 60,
-                              width: 60,
-                              child: Icon(
-                                Ionicons.ios_add,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 3),
+                _buildAchievment(context),
                 const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: StreamBuilder<List<String>>(
-                    initialData: _achieveLists,
-                    stream: _achieveController.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData == false) {
-                        return const Center(
-                          child: Text(
-                            'Empty achieve.',
-                            style: kNormalSmallStyle,
-                          ),
-                        );
-                      }
-                      if (snapshot.data.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'Empty achieve.',
-                            style: kNormalSmallStyle,
-                          ),
-                        );
-                      }
-                      return Column(
-                        children: List.generate(
-                          snapshot.data.length,
-                          (index) => _buildAchieve(snapshot, index),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                _buildListAchievment(),
                 const SizedBox(height: 20),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Padding _buildListAchievment() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: StreamBuilder<List<String>>(
+        initialData: _achieveLists,
+        stream: _achieveController.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData == false) {
+            return const Center(
+              child: Text(
+                'Empty achieve.',
+                style: kNormalSmallStyle,
+              ),
+            );
+          }
+          if (snapshot.data.isEmpty) {
+            return const Center(
+              child: Text(
+                'Empty achieve.',
+                style: kNormalSmallStyle,
+              ),
+            );
+          }
+          return Column(
+            children: List.generate(
+              snapshot.data.length,
+              (index) => _buildAchieve(snapshot, index),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAchievment(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 17),
+      child: SizedBox(
+        height: 52,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Color(int.parse(colors[indexColor])),
+                    width: 1.2,
+                  ),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(10),
+                    labelText: 'Achieve goal',
+                    labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+                    border: InputBorder.none,
+                  ),
+                  controller: _achieveTextController,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                if (_achieveTextController.text != '' &&
+                    _achieveTextController != null) {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  setState(() {
+                    _achieveLists.add(_achieveTextController.text);
+                    _isDoneAchieveLists.add(false);
+                    _achieveTextController.clear();
+                  });
+                }
+              },
+              child: Material(
+                elevation: 1,
+                color: Color(int.parse(colors[indexColor])),
+                borderRadius: BorderRadiusDirectional.circular(10),
+                child: Container(
+                  height: 52,
+                  width: 52,
+                  child: Icon(
+                    Ionicons.ios_add,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -272,7 +281,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
 
   Widget _buildRename() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 17),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         decoration: BoxDecoration(
@@ -295,74 +304,83 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
     );
   }
 
-  Widget _buildCatagoriesPicker() {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 10,
-        top: 5,
-      ),
-      child: Wrap(
-        children: List.generate(
-          catagories.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _catagoryItems[index] = !_catagoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _catagoryItems[index] == false
-                      ? Color(
-                          int.parse(
-                            colors[indexColor],
-                          ),
-                        )
-                      : Colors.white,
-                ),
-                color: _catagoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : Colors.white,
-              ),
-              padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(
-                bottom: 5,
-                right: 5,
-              ),
-              child: FittedBox(
-                child: Row(
-                  children: <Widget>[
-                    Icon(
-                      catagoryIcons[index],
-                      size: 15,
+  Widget _buildCatagoriesPicker(BuildContext context) {
+    return SizedBox(
+      height: 46.0 * 4 - 10,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 15,
+          ),
+          child: GridView(
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: MediaQuery.of(context).size.width / 92,
+            ),
+            children: List.generate(
+              catagories.length,
+              (index) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _catagoryItems[index] = !_catagoryItems[index];
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
                       color: _catagoryItems[index] == false
                           ? Color(
                               int.parse(
                                 colors[indexColor],
                               ),
                             )
-                          : Colors.white,
+                          : TodoColors.scaffoldWhite,
+                      width: 1.2,
                     ),
-                    Text(
-                      ' ${catagories[index]}',
-                      style: TextStyle(
+                    color: _catagoryItems[index]
+                        ? Color(
+                            int.parse(
+                              colors[indexColor],
+                            ),
+                          )
+                        : TodoColors.scaffoldWhite,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  margin: const EdgeInsets.all(2.5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Icon(
+                        catagories[index]["iconData"],
+                        size: 17,
                         color: _catagoryItems[index] == false
                             ? Color(
                                 int.parse(
                                   colors[indexColor],
                                 ),
                               )
-                            : Colors.white,
+                            : TodoColors.scaffoldWhite,
                       ),
-                    ),
-                  ],
+                      Text(
+                        '${catagories[index]["name"]}',
+                        style: TextStyle(
+                          fontFamily: 'Source_Sans_Pro',
+                          fontSize: 16,
+                          color: _catagoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[indexColor],
+                                  ),
+                                )
+                              : TodoColors.scaffoldWhite,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -372,66 +390,66 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
     );
   }
 
-  Future _buildIconPicker(BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: TodoColors.scaffoldWhite,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
-        ),
-        height: (MediaQuery.of(context).size.width - 5 * 13) / 7 * 4.6,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const SizedBox(height: 5),
-            const Text(
-              'Icon',
-              style: const TextStyle(fontFamily: 'Montserrat', fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 5),
-            const Divider(
-              height: 4,
-            ),
-            Wrap(
-              direction: Axis.horizontal,
-              children: List.generate(
-                icons.length,
-                (index) => InkWell(
-                  onTap: () {
-                    setState(() {
-                      _iconIndex = index;
-                      Navigator.pop(context);
-                    });
-                  },
-                  child: Container(
-                    height: (MediaQuery.of(context).size.width - 5 * 13) / 7,
-                    width: (MediaQuery.of(context).size.width - 5 * 13) / 7,
-                    decoration: BoxDecoration(
-                      color: Color(int.parse(colors[indexColor])),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    margin: const EdgeInsets.all(4),
-                    padding: const EdgeInsets.all(3),
-                    child: Icon(
-                      getIconUsingPrefix(
-                        name: icons[index],
-                      ),
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+  Future _buildIconPicker(BuildContext context) => showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: TodoColors.scaffoldWhite,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
+            height: 200,
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 5),
+                  Text(
+                    'Icon',
+                    style: TextStyle(fontFamily: 'Alata', fontSize: 20),
+                    textAlign: TextAlign.center,
+                  ),
+                  Divider(),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    children: List.generate(
+                      icons.length,
+                      (index) {
+                        return Padding(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _iconIndex = index;
+                                Navigator.pop(context);
+                              });
+                            },
+                            child: Material(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  getIconUsingPrefix(
+                                    name: icons[index],
+                                  ),
+                                  color: Colors.white,
+                                ),
+                              ),
+                              color: Color(int.parse(colors[indexColor])),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
 
   Future _buildWarningDialog(BuildContext context) {
     return showDialog(
@@ -501,6 +519,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Color(int.parse(colors[indexColor])).withOpacity(0.1),
+              blurRadius: 3,
+              spreadRadius: 1,
+            ),
+          ],
         ),
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.only(left: 10),
@@ -511,7 +536,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
             children: <Widget>[
               Text(
                 StringFormatter.format(snapshot.data[index]),
-                style: kNormalStyle,
+                style: kNormalSuperSmallStyle,
               ),
               GestureDetector(
                 child: Icon(
@@ -530,45 +555,52 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
       );
 
   Widget _buildColorPicker() => Padding(
-        padding: const EdgeInsets.only(left: 10, top: 8, bottom: 8),
-        child: Wrap(
-          direction: Axis.horizontal,
-          children: List.generate(
-            colors.length,
-            (index) {
-              if (indexColor == index) {
-                return Container(
-                  margin: const EdgeInsets.all(3),
-                  height: (MediaQuery.of(context).size.width - 59) / 6,
-                  width: (MediaQuery.of(context).size.width - 59) / 6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(
-                      int.parse(colors[index]),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: SizedBox(
+          height: 50 * 2.0 + 25,
+          child: GridView(
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 6,
+              childAspectRatio: 1,
+            ),
+            children: List.generate(
+              colors.length,
+              (index) {
+                if (indexColor == index) {
+                  return Container(
+                    margin: const EdgeInsets.all(3),
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(
+                        int.parse(colors[index]),
+                      ),
+                    ),
+                    child: Icon(Icons.check, color: Colors.white),
+                  );
+                }
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      indexColor = index;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(3),
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(
+                        int.parse(colors[index]),
+                      ),
                     ),
                   ),
-                  child: Icon(Icons.check, color: Colors.white),
                 );
-              }
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    indexColor = index;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(3),
-                  height: (MediaQuery.of(context).size.width - 59) / 6,
-                  width: (MediaQuery.of(context).size.width - 59) / 6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(
-                      int.parse(colors[index]),
-                    ),
-                  ),
-                ),
-              );
-            },
+              },
+            ),
           ),
         ),
       );
