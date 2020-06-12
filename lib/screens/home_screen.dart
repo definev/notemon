@@ -362,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen>
                     children: <Widget>[
                       _buildOfflineHeader(),
                       _buildOfflinePetCollection(),
-                      _buildOfflineTaskTitle(),
+                      _buildOfflineTaskHeader(),
                       _buildOfflineTask(),
                       _buildOfflineTodoHeader(),
                       _buildOfflineTodo(),
@@ -373,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen>
                     children: <Widget>[
                       _buildOnlineHeader(),
                       _buildOnlinePetCollection(),
-                      _buildOnlineTaskTitle(),
+                      _buildOnlineTaskHeader(),
                       _buildOnlineTask(),
                       _buildOnlineTodoHeader(),
                       _buildOnlineTodo(),
@@ -763,139 +763,142 @@ class _HomeScreenState extends State<HomeScreen>
               'To-do list',
               style: kTitleStyle,
             ),
-            Row(
-              children: [
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          priorityList[_todoFilterMap['priority'].index],
-                          style: kBigTitleStyle.copyWith(
-                            fontFamily: "Source_Sans_Pro",
-                            fontSize: 18,
-                            color: setPriorityColor(
-                                priorityList[_todoFilterMap['priority'].index]),
-                          ),
-                        ),
-                        Container(
-                          height: 25,
-                          width: 1,
-                          margin: const EdgeInsets.only(left: 8),
-                          color: setPriorityColor(
-                              priorityList[_todoFilterMap['priority'].index]),
-                        ),
-                      ],
-                    ),
-                    if (_todoFilterMap['todoFilter'].contains(true))
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: SizedBox(
-                          width: 60,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(
-                              _todoFilterMap['todoFilter'].length,
-                              (index) {
-                                if (_todoFilterMap['todoFilter'][index]) {
-                                  return Container(
-                                    height: 20,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          height: 10,
-                                          width: 3,
-                                          color: TodoColors.lightGreen,
-                                        ),
-                                        Container(
-                                          height: 10,
-                                          width: 3,
-                                          color: TodoColors.scaffoldWhite,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                                return Container(
-                                  height: 20,
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 10,
-                                        width: 3,
-                                        color: TodoColors.scaffoldWhite,
-                                      ),
-                                      Container(
-                                        height: 10,
-                                        width: 3,
-                                        color: TodoColors.groundPink,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    AnimatedContainer(
-                      duration: Duration(milliseconds: 600),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[500],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      margin: const EdgeInsets.only(left: 10, right: 5),
-                      child: InkWell(
-                        child: SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: Icon(
-                            (!_todoFilterMap['todoFilter'].contains(true))
-                                ? Icons.filter_list
-                                : Icons.edit,
-                            color: Colors.white,
-                            size: 17,
-                          ),
-                        ),
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (_) => FilterPicker(
-                              nameFilter: "Todo",
-                              priority: _todoFilterMap['priority'],
-                              initCatagory: _todoFilterMap['todoFilter'],
-                              onCompeleted: (catagories, priority) =>
-                                  setState(() {
-                                _todoFilterMap['todoFilter'] = catagories;
-                                _todoFilterMap['priority'] = priority;
-                              }),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 15),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.deepPurple,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    onPressed: _modalBottomSheetMenu,
-                  ),
-                ),
-              ],
-            ),
+            _todoFilter(),
           ],
         ),
       );
+
+  Row _todoFilter() {
+    return Row(
+      children: [
+        Row(
+          children: [
+            Row(
+              children: [
+                Text(
+                  priorityList[_todoFilterMap['priority'].index],
+                  style: kBigTitleStyle.copyWith(
+                    fontFamily: "Source_Sans_Pro",
+                    fontSize: 18,
+                    color: setPriorityColor(
+                        priorityList[_todoFilterMap['priority'].index]),
+                  ),
+                ),
+                Container(
+                  height: 25,
+                  width: 1,
+                  margin: const EdgeInsets.only(left: 8),
+                  color: setPriorityColor(
+                      priorityList[_todoFilterMap['priority'].index]),
+                ),
+              ],
+            ),
+            if (_todoFilterMap['todoFilter'].contains(true))
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: SizedBox(
+                  width: 60,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      _todoFilterMap['todoFilter'].length,
+                      (index) {
+                        if (_todoFilterMap['todoFilter'][index]) {
+                          return Container(
+                            height: 20,
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 10,
+                                  width: 3,
+                                  color: TodoColors.lightGreen,
+                                ),
+                                Container(
+                                  height: 10,
+                                  width: 3,
+                                  color: TodoColors.scaffoldWhite,
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container(
+                          height: 20,
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 10,
+                                width: 3,
+                                color: TodoColors.scaffoldWhite,
+                              ),
+                              Container(
+                                height: 10,
+                                width: 3,
+                                color: TodoColors.groundPink,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            AnimatedContainer(
+              duration: Duration(milliseconds: 600),
+              decoration: BoxDecoration(
+                color: Colors.grey[500],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              margin: const EdgeInsets.only(left: 10, right: 5),
+              child: InkWell(
+                child: SizedBox(
+                  height: 25,
+                  width: 25,
+                  child: Icon(
+                    (!_todoFilterMap['todoFilter'].contains(true))
+                        ? Icons.filter_list
+                        : Icons.edit,
+                    color: Colors.white,
+                    size: 17,
+                  ),
+                ),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => FilterPicker(
+                      nameFilter: "Todo",
+                      priority: _todoFilterMap['priority'],
+                      initCatagory: _todoFilterMap['todoFilter'],
+                      onCompeleted: (catagories, priority) => setState(() {
+                        _todoFilterMap['todoFilter'] = catagories;
+                        _todoFilterMap['priority'] = priority;
+                      }),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        Container(
+          width: 25,
+          height: 25,
+          margin: const EdgeInsets.only(right: 15),
+          child: RawMaterialButton(
+            fillColor: TodoColors.deepPurple,
+            shape: const CircleBorder(),
+            elevation: 0.5,
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            onPressed: _modalBottomSheetMenu,
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildOnlineTodo() => Expanded(
         child: StreamBuilder<QuerySnapshot>(
@@ -909,7 +912,7 @@ class _HomeScreenState extends State<HomeScreen>
             if (snapshots.connectionState == ConnectionState.waiting ||
                 _isLoading['todo'] == true) {
               return SizedBox(
-                height: kListViewHeight + 2,
+                height: kListViewHeight + 10,
                 width: double.infinity,
                 child: Center(
                   child: LoadingJumpingLine.circle(
@@ -939,7 +942,7 @@ class _HomeScreenState extends State<HomeScreen>
                   padding: EdgeInsets.zero,
                   itemCount: _todoList.length,
                   itemBuilder: (context, index) => TodoTile(
-                    task: _todoList[index],
+                    todo: _todoList[index],
                     key: UniqueKey(),
                   ),
                 );
@@ -956,7 +959,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
 
-  Widget _buildOnlineTaskTitle() => Padding(
+  Widget _buildOnlineTaskHeader() => Padding(
         padding: const EdgeInsets.only(
           left: 15,
           top: 10,
@@ -970,146 +973,149 @@ class _HomeScreenState extends State<HomeScreen>
               'Task list',
               style: kTitleStyle,
             ),
-            Row(
-              children: [
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          priorityList[_taskFilterMap['priority'].index],
-                          style: kBigTitleStyle.copyWith(
-                            fontFamily: "Source_Sans_Pro",
-                            fontSize: 18,
-                            color: setPriorityColor(
-                                priorityList[_taskFilterMap['priority'].index]),
-                          ),
-                        ),
-                        Container(
-                          height: 25,
-                          width: 1,
-                          margin: const EdgeInsets.only(left: 8),
-                          color: setPriorityColor(
-                              priorityList[_taskFilterMap['priority'].index]),
-                        ),
-                      ],
-                    ),
-                    if (_taskFilterMap['taskFilter'].contains(true))
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: SizedBox(
-                          width: 60,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(
-                              _taskFilterMap['taskFilter'].length,
-                              (index) {
-                                if (_taskFilterMap['taskFilter'][index]) {
-                                  return Container(
-                                    height: 20,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          height: 10,
-                                          width: 3,
-                                          color: TodoColors.lightGreen,
-                                        ),
-                                        Container(
-                                          height: 10,
-                                          width: 3,
-                                          color: TodoColors.scaffoldWhite,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                                return Container(
-                                  height: 20,
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 10,
-                                        width: 3,
-                                        color: TodoColors.scaffoldWhite,
-                                      ),
-                                      Container(
-                                        height: 10,
-                                        width: 3,
-                                        color: TodoColors.groundPink,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    AnimatedContainer(
-                      duration: Duration(milliseconds: 600),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[500],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      margin: const EdgeInsets.only(left: 10, right: 5),
-                      child: InkWell(
-                        child: SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: Icon(
-                            (!_taskFilterMap['taskFilter'].contains(true))
-                                ? Icons.filter_list
-                                : Icons.edit,
-                            color: Colors.white,
-                            size: 17,
-                          ),
-                        ),
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (_) => FilterPicker(
-                              nameFilter: "Task",
-                              priority: _taskFilterMap['priority'],
-                              initCatagory: _taskFilterMap['taskFilter'],
-                              onCompeleted: (catagories, priority) =>
-                                  setState(() {
-                                _taskFilterMap['taskFilter'] = catagories;
-                                _taskFilterMap['priority'] = priority;
-                              }),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 15),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.deepPurple,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddTaskScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+            _taskFilter(),
           ],
         ),
       );
+
+  Row _taskFilter() {
+    return Row(
+      children: [
+        Row(
+          children: [
+            Row(
+              children: [
+                Text(
+                  priorityList[_taskFilterMap['priority'].index],
+                  style: kBigTitleStyle.copyWith(
+                    fontFamily: "Source_Sans_Pro",
+                    fontSize: 18,
+                    color: setPriorityColor(
+                        priorityList[_taskFilterMap['priority'].index]),
+                  ),
+                ),
+                Container(
+                  height: 25,
+                  width: 1,
+                  margin: const EdgeInsets.only(left: 8),
+                  color: setPriorityColor(
+                      priorityList[_taskFilterMap['priority'].index]),
+                ),
+              ],
+            ),
+            if (_taskFilterMap['taskFilter'].contains(true))
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: SizedBox(
+                  width: 60,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      _taskFilterMap['taskFilter'].length,
+                      (index) {
+                        if (_taskFilterMap['taskFilter'][index]) {
+                          return Container(
+                            height: 20,
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 10,
+                                  width: 3,
+                                  color: TodoColors.lightGreen,
+                                ),
+                                Container(
+                                  height: 10,
+                                  width: 3,
+                                  color: TodoColors.scaffoldWhite,
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container(
+                          height: 20,
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 10,
+                                width: 3,
+                                color: TodoColors.scaffoldWhite,
+                              ),
+                              Container(
+                                height: 10,
+                                width: 3,
+                                color: TodoColors.groundPink,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            AnimatedContainer(
+              duration: Duration(milliseconds: 600),
+              decoration: BoxDecoration(
+                color: Colors.grey[500],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              margin: const EdgeInsets.only(left: 10, right: 5),
+              child: InkWell(
+                child: SizedBox(
+                  height: 25,
+                  width: 25,
+                  child: Icon(
+                    (!_taskFilterMap['taskFilter'].contains(true))
+                        ? Icons.filter_list
+                        : Icons.edit,
+                    color: Colors.white,
+                    size: 17,
+                  ),
+                ),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => FilterPicker(
+                      nameFilter: "Task",
+                      priority: _taskFilterMap['priority'],
+                      initCatagory: _taskFilterMap['taskFilter'],
+                      onCompeleted: (catagories, priority) => setState(() {
+                        _taskFilterMap['taskFilter'] = catagories;
+                        _taskFilterMap['priority'] = priority;
+                      }),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        Container(
+          width: 25,
+          height: 25,
+          margin: const EdgeInsets.only(right: 15),
+          child: RawMaterialButton(
+            fillColor: TodoColors.deepPurple,
+            shape: const CircleBorder(),
+            elevation: 0.5,
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddTaskScreen(),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildOnlineTask() {
     return StreamBuilder<QuerySnapshot>(
@@ -1117,13 +1123,13 @@ class _HomeScreenState extends State<HomeScreen>
           .collection('databases')
           .document(_repository.user.uid)
           .collection('tasks')
-          .orderBy('timestamp', descending: false)
+          .orderBy('priority')
           .snapshots(),
       builder: (context, snapshots) {
         if (snapshots.connectionState == ConnectionState.waiting ||
             _isLoading['task'] == true) {
           return SizedBox(
-            height: kListViewHeight + 2,
+            height: kListViewHeight + 10,
             width: double.infinity,
             child: Center(
               child: LoadingJumpingLine.circle(
@@ -1136,7 +1142,7 @@ class _HomeScreenState extends State<HomeScreen>
         if (snapshots.data == null) {
           _repository.uploadAllTaskToFirebase(_taskBloc.taskList);
           return SizedBox(
-            height: kListViewHeight + 2,
+            height: kListViewHeight + 10,
             width: double.infinity,
             child: const Center(
               child: Text(
@@ -1148,7 +1154,7 @@ class _HomeScreenState extends State<HomeScreen>
         } else {
           if (snapshots.data.documents.isEmpty) {
             return SizedBox(
-              height: kListViewHeight + 2,
+              height: kListViewHeight + 10,
               width: double.infinity,
               child: const Center(
                 child: Text(
@@ -1161,9 +1167,11 @@ class _HomeScreenState extends State<HomeScreen>
             List<Task> _taskList = [];
             snapshots.data.documents.forEach(
                 (maps) => _taskList.add(Task.fromFirebaseMap(maps.data)));
+            _taskList = taskFilterProcess(_taskList);
+
             if (!_isLoading['task']) _updateTasksWhenbackToOnline(_taskList);
             return SizedBox(
-              height: kListViewHeight + 2,
+              height: kListViewHeight + 10,
               width: double.infinity,
               child: ListView.builder(
                 physics: BouncingScrollPhysics(),
@@ -1205,9 +1213,11 @@ class _HomeScreenState extends State<HomeScreen>
                   if (index == 0) {
                     return Padding(
                       padding: const EdgeInsets.only(left: 10),
-                      child: TaskTile(
-                        task: _taskList[index],
-                        key: UniqueKey(),
+                      child: Center(
+                        child: TaskTile(
+                          task: _taskList[index],
+                          key: UniqueKey(),
+                        ),
                       ),
                     );
                   }
@@ -1502,59 +1512,7 @@ class _HomeScreenState extends State<HomeScreen>
               'To-do list',
               style: kTitleStyle,
             ),
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[400],
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  margin: const EdgeInsets.only(
-                    right: 10,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 2,
-                  ),
-                  child: InkWell(
-                    child: Text('Bộ lọc'),
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (_) => FilterPicker(
-                          nameFilter: "Todo",
-                          priority: _todoFilterMap['priority'],
-                          initCatagory: _todoFilterMap['todoFilter'],
-                          onCompeleted: (catagories, priority) {
-                            setState(() {
-                              _todoFilterMap['todoFilter'] = catagories;
-                            });
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 15),
-                  child: RawMaterialButton(
-                    fillColor: TodoColors.deepPurple,
-                    shape: const CircleBorder(),
-                    elevation: 0.5,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    onPressed: _modalBottomSheetMenu,
-                  ),
-                ),
-              ],
-            ),
+            _todoFilter(),
           ],
         ),
       );
@@ -1575,7 +1533,7 @@ class _HomeScreenState extends State<HomeScreen>
                 List<Todo> _todoList = state.todo;
 
                 /// Sort todo by priority
-                _todoList = prioritySort(_todoList);
+                _todoList = todoPrioritySort(_todoList);
                 _todoList = todoFilterProcess(_todoList);
 
                 if (_todoList.length == 0) {
@@ -1592,7 +1550,7 @@ class _HomeScreenState extends State<HomeScreen>
                   padding: EdgeInsets.zero,
                   itemCount: _todoList.length,
                   itemBuilder: (context, index) => TodoTile(
-                    task: _todoList[index],
+                    todo: _todoList[index],
                     key: UniqueKey(),
                   ),
                 );
@@ -1608,7 +1566,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
 
-  Widget _buildOfflineTaskTitle() => Padding(
+  Widget _buildOfflineTaskHeader() => Padding(
         padding: const EdgeInsets.only(
           left: 15,
           top: 10,
@@ -1622,29 +1580,7 @@ class _HomeScreenState extends State<HomeScreen>
               'Task list',
               style: kTitleStyle,
             ),
-            const SizedBox(width: 10),
-            Container(
-              width: 25,
-              height: 25,
-              margin: const EdgeInsets.only(right: 15),
-              child: RawMaterialButton(
-                fillColor: TodoColors.deepPurple,
-                shape: const CircleBorder(),
-                elevation: 0.5,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddTaskScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
+            _taskFilter(),
           ],
         ),
       );
@@ -1655,7 +1591,7 @@ class _HomeScreenState extends State<HomeScreen>
           if (state is TaskLoaded) {
             if (state.task.isEmpty) {
               return SizedBox(
-                height: kListViewHeight + 2,
+                height: kListViewHeight + 10,
                 width: double.infinity,
                 child: const Center(
                   child: Text(
@@ -1665,15 +1601,30 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               );
             } else {
+              List<Task> _taskList = state.task;
+              _taskList = taskPrioritySort(_taskList);
+              _taskList = taskFilterProcess(_taskList);
+              if (_taskList.length == 0) {
+                return SizedBox(
+                  height: kListViewHeight + 10,
+                  width: double.infinity,
+                  child: const Center(
+                    child: Text(
+                      'Empty task',
+                      style: kNormalStyle,
+                    ),
+                  ),
+                );
+              }
               return SizedBox(
-                height: kListViewHeight + 2,
+                height: kListViewHeight + 10,
                 width: double.infinity,
                 child: ListView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: state.task.length + 1,
+                  itemCount: _taskList.length + 1,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    if (index == state.task.length) {
+                    if (index == _taskList.length) {
                       return Center(
                         child: GestureDetector(
                           onTap: () {
@@ -1709,16 +1660,18 @@ class _HomeScreenState extends State<HomeScreen>
                     if (index == 0) {
                       return Padding(
                         padding: const EdgeInsets.only(left: 10),
-                        child: TaskTile(
-                          task: state.task[index],
-                          key: UniqueKey(),
+                        child: Center(
+                          child: TaskTile(
+                            task: _taskList[index],
+                            key: UniqueKey(),
+                          ),
                         ),
                       );
                     }
 
                     return Center(
                       child: TaskTile(
-                        task: state.task[index],
+                        task: _taskList[index],
                         key: UniqueKey(),
                       ),
                     );
@@ -1728,7 +1681,7 @@ class _HomeScreenState extends State<HomeScreen>
             }
           }
           return SizedBox(
-            height: kListViewHeight + 2,
+            height: kListViewHeight + 10,
             width: double.infinity,
             child: const Center(
               child: Text(
@@ -1741,27 +1694,46 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   /// [Shared]
+  List<Task> taskPrioritySort(List<Task> taskList) {
+    List<Task> _newList = [];
+    for (int i = 0; i <= 2; i++) {
+      for (Task task in taskList) {
+        if (task.priority.index == i) {
+          _newList.add(task);
+        }
+      }
+    }
+    return _newList;
+  }
+
   List<Task> taskFilterProcess(List<Task> taskList) {
     List<Task> _taskList = taskList;
 
     if (_taskFilterMap['taskFilter'].contains(true)) {
+      /// Save position true value in taskFilterMap
+      List<int> _filterCatagoryPosition = [];
       List<Task> _filterTaskList = [];
+
+      /// Process
       for (int i = 0; i < _taskFilterMap['taskFilter'].length; i++) {
         if (_taskFilterMap['taskFilter'][i]) {
-          _taskList.forEach((task) {
-            if (task.catagories[i] == true) {
-              bool _isAdd = true;
-              for (int j = 0; j < _filterTaskList.length; j++) {
-                if (_filterTaskList[j] == task) {
-                  _isAdd = false;
-                  break;
-                }
-              }
-              if (_isAdd) _filterTaskList.add(task);
-            }
-          });
+          _filterCatagoryPosition.add(i);
         }
       }
+
+      _taskList.forEach((task) {
+        bool _isAdd = true;
+
+        for (int i = 0; i < _filterCatagoryPosition.length; i++) {
+          if (!task.catagories[_filterCatagoryPosition[i]]) {
+            _isAdd = false;
+            break;
+          }
+        }
+
+        if (_isAdd) _filterTaskList.add(task);
+      });
+
       _taskList = _filterTaskList;
     }
 
@@ -1779,7 +1751,7 @@ class _HomeScreenState extends State<HomeScreen>
     return _taskList;
   }
 
-  List<Todo> prioritySort(List<Todo> todoList) {
+  List<Todo> todoPrioritySort(List<Todo> todoList) {
     List<Todo> _newList = [];
     for (int i = 0; i <= 2; i++) {
       for (Todo todo in todoList) {
@@ -1795,20 +1767,25 @@ class _HomeScreenState extends State<HomeScreen>
     List<Todo> _todoList = todoList;
 
     if (_todoFilterMap['todoFilter'].contains(true)) {
+      List<int> _filterCatagoryPosition = [];
+
+      for (int i = 0; i < _todoFilterMap['todoFilter'].length; i++) {
+        if (_todoFilterMap['todoFilter'][i]) {
+          _filterCatagoryPosition.add(i);
+        }
+      }
+
       List<Todo> _filterTodoList = [];
       _todoList.forEach((todo) {
         bool _isAdd = true;
 
-        for (int i = 0; i < _todoFilterMap['todoFilter'].length; i++) {
-          if ((_todoFilterMap['todoFilter'][i] == true) &&
-              (_todoFilterMap['todoFilter'][i] == todo.catagories[i])) {
-          } else {
+        for (int i = 0; i < _filterCatagoryPosition.length; i++) {
+          if (!todo.catagories[_filterCatagoryPosition[i]]) {
             _isAdd = false;
             break;
           }
         }
 
-        print(_isAdd);
         if (_isAdd) _filterTodoList.add(todo);
       });
 

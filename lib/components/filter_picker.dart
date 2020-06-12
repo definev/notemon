@@ -266,49 +266,50 @@ class _FilterPickerState extends State<FilterPicker>
   Widget _header(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 20,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${widget.nameFilter} filter',
-                style: kBigTitleStyle.copyWith(
-                  fontFamily: 'Tomorrow',
-                  fontSize: 30,
+        SizedBox(
+          height: 58,
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 17),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${widget.nameFilter} filter',
+                  style: kBigTitleStyle.copyWith(
+                    fontFamily: 'Tomorrow',
+                    fontSize: 25,
+                  ),
                 ),
-              ),
-              (_catagories.contains(true))
-                  ? InkWell(
-                      onTap: () {
-                        setState(() {
-                          _catagories = List.generate(
-                              catagories.length, (index) => false);
-                          priority = PriorityState.All;
-                        });
-                      },
-                      child: Container(
-                        width: (MediaQuery.of(context).size.width - 60) / 3,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Clear",
-                            style: kNormalStyle.copyWith(
-                              color: Colors.white,
+                (_catagories.contains(true))
+                    ? InkWell(
+                        onTap: () {
+                          setState(() {
+                            _catagories = List.generate(
+                                catagories.length, (index) => false);
+                            priority = PriorityState.All;
+                          });
+                        },
+                        child: Container(
+                          width: (MediaQuery.of(context).size.width - 60) / 3,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Clear",
+                              style: kNormalStyle.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  : Container(),
-            ],
+                      )
+                    : Container(),
+              ],
+            ),
           ),
         ),
         Divider(

@@ -1,7 +1,7 @@
 export './clip_digit.dart';
 export './countdown_clock.dart';
 export './digit.dart';
-export './habit_tile.dart';
+export './task_tile.dart';
 export './image_viewer.dart';
 export './pet_tag.dart';
 export './pet_tag_custom.dart';

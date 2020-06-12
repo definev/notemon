@@ -81,6 +81,14 @@ class TaskTable {
 
   static Future<int> updateTask(Task task) {
     final Database db = TaskDatabase.instance.database;
+    List<String> _processAchieve = [];
+    for (String achieve in task.achieve) {
+      if (achieve != "") {
+        _processAchieve.add(achieve);
+      }
+    }
+    task.achieve = _processAchieve;
+
     return db.update(
       TABLE_NAME,
       task.toMap(),

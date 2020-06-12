@@ -50,8 +50,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   StarBloc _starBloc;
   FirebaseRepository _repository;
   TextEditingController _achieveTextController = TextEditingController();
+  PageController _pageController = PageController();
 
-  FocusNode myFocusNode;
+  FocusNode achieveFocusNode;
   IncallManager _incallManager = IncallManager();
   bool isProcess = true;
   AudioCache audioCache = AudioCache();
@@ -151,7 +152,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       FirebaseAdMob.instance.initialize(appId: appId);
       myInterstitial = _interstitialAds();
 
-      myFocusNode = FocusNode();
+      achieveFocusNode = FocusNode();
       _catagoryItems = widget.task.catagories;
 
       _achievelists = widget.task.achieve;
@@ -310,7 +311,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   @override
   void dispose() {
-    if (myFocusNode != null) myFocusNode.dispose();
+    if (achieveFocusNode != null) achieveFocusNode.dispose();
     _incallManager.enableProximitySensor(false);
     _incallManager.turnScreenOn();
     super.dispose();
@@ -345,7 +346,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  _clockWheel(context),
+                  _buildNote(context),
                   _buildCatagories(context),
                 ],
               ),
@@ -426,9 +427,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     );
   }
 
-  Widget _clockWheel(BuildContext context) {
+  Widget _buildNote(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 185,
+      height: MediaQuery.of(context).size.height - 140,
       child: Column(
         children: <Widget>[
           SizedBox(height: 15),
@@ -504,8 +505,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           ),
           if (_achievelists.length != 0)
             Expanded(
-              child: ListView.builder(
+              child: PageView.builder(
                 physics: BouncingScrollPhysics(),
+                controller: _pageController,
                 scrollDirection: Axis.horizontal,
                 itemCount: _achievelists.length + 1,
                 itemBuilder: (context, index) {
@@ -563,198 +565,89 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   Widget _buildCatagories(BuildContext context) {
     return Column(
       children: <Widget>[
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Row(
-              children: List.generate(
-                _catagoryItems.length,
-                (index) {
-                  if (index == _catagoryItems.length - 1) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 4.5),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() =>
-                              _catagoryItems[index] = !_catagoryItems[index]);
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 200),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _catagoryItems[index] == false
-                                  ? Color(
-                                      int.parse(
-                                        colors[widget.task.color],
-                                      ),
-                                    )
-                                  : Colors.white,
-                              width: 1.3,
-                            ),
-                            color: _catagoryItems[index]
-                                ? Color(
-                                    int.parse(colors[widget.task.color]),
-                                  )
-                                : Colors.white,
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.only(
-                            right: 5,
-                          ),
-                          child: FittedBox(
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  catagories[index]["iconData"],
-                                  size: 15,
-                                  color: _catagoryItems[index] == false
-                                      ? Color(
-                                          int.parse(
-                                            colors[widget.task.color],
-                                          ),
-                                        )
-                                      : Colors.white,
-                                ),
-                                Text(
-                                  ' ${catagories[index]["name"]}',
-                                  style: TextStyle(
-                                    color: _catagoryItems[index] == false
-                                        ? Color(
-                                            int.parse(
-                                                colors[widget.task.color]),
-                                          )
-                                        : Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  return GestureDetector(
-                    onTap: () {
-                      setState(
-                          () => _catagoryItems[index] = !_catagoryItems[index]);
-                    },
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _catagoryItems[index] == false
-                              ? Color(
-                                  int.parse(
-                                    colors[widget.task.color],
-                                  ),
-                                )
-                              : Colors.white,
-                          width: 1.3,
-                        ),
-                        color: _catagoryItems[index]
-                            ? Color(
-                                int.parse(colors[widget.task.color]),
-                              )
-                            : Colors.white,
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.only(
-                        right: 5,
-                      ),
-                      child: FittedBox(
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              catagories[index]["iconData"],
-                              size: 15,
-                              color: _catagoryItems[index] == false
-                                  ? Color(
-                                      int.parse(
-                                        colors[widget.task.color],
-                                      ),
-                                    )
-                                  : Colors.white,
-                            ),
-                            Text(
-                              ' ${catagories[index]["name"]}',
-                              style: TextStyle(
-                                color: _catagoryItems[index] == false
-                                    ? Color(
-                                        int.parse(colors[widget.task.color]),
-                                      )
-                                    : Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
         Container(
           height: 50,
           width: MediaQuery.of(context).size.width,
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          margin: EdgeInsets.only(
+            bottom: 10,
+            left: 8,
+            right: 8,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
-                height: 60,
-                width: MediaQuery.of(context).size.width - 80,
-                margin: EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color(int.parse(colors[widget.task.color])),
-                    width: 1.3,
-                  ),
-                ),
-                child: TextField(
-                  focusNode: myFocusNode,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(10),
-                    labelText: 'Achieve goal',
-                    labelStyle: kNormalSuperSmallStyle.copyWith(
-                      color: Colors.grey[600],
+              SizedBox(
+                height: 50,
+                width: MediaQuery.of(context).size.width - 16,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Color(int.parse(colors[widget.task.color])),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: TextField(
+                          focusNode: achieveFocusNode,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            labelText: 'Achieve goal',
+                            labelStyle:
+                                kNormalStyle.copyWith(color: Colors.grey),
+                            border: InputBorder.none,
+                          ),
+                          controller: _achieveTextController,
+                          style: kNormalStyle.copyWith(
+                            fontFamily: "Source_Sans_Pro",
+                          ),
+                        ),
+                      ),
                     ),
-                    border: InputBorder.none,
-                  ),
-                  controller: _achieveTextController,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (_achieveTextController.text != '' &&
-                      _achieveTextController != null) {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    setState(() {
-                      _achievelists.add(_achieveTextController.text
-                          .replaceAll(RegExp(r','), 'String.fromCharCode(44)'));
-                      _isDoneAchieve.add(false);
-                      _achieveTextController.clear();
-                    });
-                  }
-                },
-                child: Material(
-                  elevation: 1,
-                  color: Color(int.parse(colors[widget.task.color])),
-                  borderRadius: BorderRadiusDirectional.circular(10),
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    child: Icon(
-                      Ionicons.ios_add,
-                      color: Colors.white,
+                    InkWell(
+                      onTap: () {
+                        if (_achieveTextController.text != '' &&
+                            _achieveTextController != null) {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          setState(() {
+                            _achievelists.add(_achieveTextController.text
+                                .replaceAll(
+                                    RegExp(r','), 'String.fromCharCode(44)'));
+                            _isDoneAchieve.add(false);
+                            _achieveTextController.clear();
+                            _pageController
+                                .jumpToPage(_pageController.page.toInt() + 1);
+                            _pageController.animateToPage(
+                              0,
+                              duration: Duration(
+                                  milliseconds:
+                                      (_pageController.page.toInt()) * 200),
+                              curve: Curves.fastOutSlowIn,
+                            );
+                          });
+                        }
+                      },
+                      child: Material(
+                        elevation: 1,
+                        color: Color(int.parse(colors[widget.task.color])),
+                        borderRadius: BorderRadiusDirectional.circular(10),
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          child: Icon(
+                            Ionicons.ios_add,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -863,7 +756,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   Widget _buildAchieveTile(int index) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width / 1.5,
+      width: MediaQuery.of(context).size.width / 1.3,
       child: Stack(
         children: <Widget>[
           Padding(
@@ -873,9 +766,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 topRight: Radius.circular(15),
                 bottomLeft: Radius.circular(15),
                 bottomRight: Radius.circular(15),
+                topLeft: Radius.circular(15),
               ),
               color: Color(int.parse(colors[widget.task.color])),
-              elevation: 5,
+              elevation: 3,
               shadowColor:
                   Color(int.parse(colors[widget.task.color])).withOpacity(0.3),
               child: Center(
@@ -899,11 +793,11 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
               ),
             ),
           ),
-          Icon(
-            AntDesign.pushpin,
-            color: Colors.red.shade900,
-            size: 20,
-          ),
+          // Icon(
+          //   AntDesign.pushpin,
+          //   color: Colors.red.shade900,
+          //   size: 20,
+          // ),
           Align(
             alignment: FractionalOffset.bottomRight,
             child: Padding(
@@ -955,30 +849,34 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     );
   }
 
-  Container _buildAddAchieve() {
-    return Container(
-      width: MediaQuery.of(context).size.width / 1.5,
-      margin: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.shade400,
-          width: 1.5,
-          style: BorderStyle.solid,
+  Widget _buildAddAchieve() {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(achieveFocusNode);
+      },
+      child: Container(
+        // width: MediaQuery.of(context).size.width / 1.5,
+        margin: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(
+            color: Colors.grey.shade400,
+            width: 1.5,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(15),
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+            topLeft: Radius.circular(15),
+          ),
         ),
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(15),
-          bottomLeft: Radius.circular(15),
-          bottomRight: Radius.circular(15),
-        ),
-      ),
-      child: Center(
-        child: IconButton(
-          iconSize: 60,
-          icon: Icon(
+        child: Center(
+          child: Icon(
             Icons.add,
             color: Colors.grey.shade400,
+            size: 60,
           ),
-          onPressed: () => FocusScope.of(context).requestFocus(myFocusNode),
         ),
       ),
     );

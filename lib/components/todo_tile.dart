@@ -6,32 +6,31 @@ import 'package:gottask/models/model.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/todo_screen/todo_screen.dart';
-import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 
 class TodoTile extends StatefulWidget {
-  final Todo task;
+  final Todo todo;
   const TodoTile({
     Key key,
-    this.task,
+    this.todo,
   }) : super(key: key);
 
   @override
   _TodoTileState createState() => _TodoTileState();
 }
 
-class _TodoTileState extends State<TodoTile> with BlocCreator {
+class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
   bool _isChecked;
   bool _isDone = false;
   TodoBloc _todoBloc;
   StarBloc _starBloc;
   FirebaseRepository _repository;
-  Todo _currentTask;
+  Todo _currentTodo;
 
   @override
   void initState() {
     super.initState();
-    if (widget.task.state == "done")
+    if (widget.todo.state == "done")
       _isChecked = true;
     else
       _isChecked = false;
@@ -42,7 +41,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
     _todoBloc = findBloc<TodoBloc>();
     _starBloc = findBloc<StarBloc>();
     _repository = findBloc<FirebaseRepository>();
-    _currentTask = widget.task;
+    _currentTodo = widget.todo;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -56,14 +55,23 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
         fastThreshold: 20,
         child: Container(
           height: 50,
-          color: Colors.white,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 10,
+                color: Color(int.parse(colors[widget.todo.color]))
+                    .withOpacity(0.1),
+              ),
+            ],
+          ),
           child: InkWell(
             onTap: () {
               if (_isDone != true) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TodoScreen(todo: _currentTask),
+                    builder: (context) => TodoScreen(todo: _currentTodo),
                   ),
                 );
               }
@@ -75,11 +83,11 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                   onTap: () async {
                     if (_isDone != true) {
                       setState(() => _isChecked = !_isChecked);
-                      _currentTask = _currentTask.copyWith(
+                      _currentTodo = _currentTodo.copyWith(
                           state: _isChecked ? "done" : "notDone");
-                      _todoBloc.add(EditTodoEvent(todo: _currentTask));
+                      _todoBloc.add(EditTodoEvent(todo: _currentTodo));
                       if (await checkConnection()) {
-                        await _repository.updateTodoToFirebase(_currentTask);
+                        await _repository.updateTodoToFirebase(_currentTodo);
                       }
                     }
                   },
@@ -92,7 +100,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                             width: 25,
                             decoration: BoxDecoration(
                               color:
-                                  Color(int.parse(colors[widget.task.color])),
+                                  Color(int.parse(colors[widget.todo.color])),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
@@ -110,7 +118,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                 color:
-                                    Color(int.parse(colors[widget.task.color])),
+                                    Color(int.parse(colors[widget.todo.color])),
                                 width: 2,
                               ),
                             ),
@@ -119,14 +127,14 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 ),
                 Expanded(
                   child: Text(
-                    widget.task.content,
+                    widget.todo.content,
                     overflow: TextOverflow.ellipsis,
                     style: kNormalSmallStyle.copyWith(
                       decoration: _isChecked
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
                       color: _isChecked
-                          ? Color(int.parse(colors[widget.task.color]))
+                          ? Color(int.parse(colors[widget.todo.color]))
                           : Colors.black,
                     ),
                   ),
@@ -134,15 +142,17 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
-                    priorityList[widget.task.priority.index],
+                    priorityList[widget.todo.priority.index],
                     style: kNormalStyle.copyWith(
-                        color: Color(int.parse(colors[widget.task.color]))),
+                      color: setPriorityColor(
+                          priorityList[widget.todo.priority.index]),
+                    ),
                   ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(left: 10),
                   width: 2,
-                  color: Color(int.parse(colors[widget.task.color])),
+                  color: Color(int.parse(colors[widget.todo.color])),
                 ),
               ],
             ),
@@ -154,22 +164,22 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
               if (_isChecked == false) {
                 Future.delayed(Duration(milliseconds: 300), () async {
                   setState(() => _isChecked = !_isChecked);
-                  _currentTask = _currentTask.copyWith(
+                  _currentTodo = _currentTodo.copyWith(
                       state: _isChecked ? "done" : "notDone");
-                  _todoBloc.add(EditTodoEvent(todo: _currentTask));
+                  _todoBloc.add(EditTodoEvent(todo: _currentTodo));
                   if (await checkConnection()) {
-                    await _repository.updateTodoToFirebase(_currentTask);
+                    await _repository.updateTodoToFirebase(_currentTodo);
                   }
                 });
               } else if (_isChecked == true) {
                 _isDone = true;
                 Future.delayed(Duration(milliseconds: 350), () async {
                   _todoBloc.add(DeleteTodoEvent(
-                    todo: widget.task,
+                    todo: widget.todo,
                     addDeleteKey: true,
                   ));
                   if (await checkConnection()) {
-                    await _repository.deleteTodoOnFirebase(_currentTask);
+                    await _repository.deleteTodoOnFirebase(_currentTodo);
                   }
                   _starBloc.add(AddStarEvent(point: 1));
                 });
@@ -179,13 +189,20 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
             decoration: BoxDecoration(
               color: _isChecked == false
                   ? Colors.lightGreen
-                  : Color(int.parse(colors[widget.task.color])),
+                  : Color(int.parse(colors[widget.todo.color])),
               borderRadius: _isChecked
                   ? BorderRadius.only(
                       topRight: Radius.circular(10),
                       bottomRight: Radius.circular(10),
                     )
                   : null,
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 10,
+                  color: Color(int.parse(colors[widget.todo.color]))
+                      .withOpacity(0.1),
+                ),
+              ],
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -216,11 +233,11 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                 bool connection = await checkConnection();
                 Future.delayed(Duration(milliseconds: 350), () async {
                   _todoBloc.add(DeleteTodoEvent(
-                    todo: widget.task,
+                    todo: widget.todo,
                     addDeleteKey: true,
                   ));
                   if (connection) {
-                    _repository.deleteTodoOnFirebase(widget.task);
+                    _repository.deleteTodoOnFirebase(widget.todo);
                   }
                 });
               },
@@ -231,6 +248,13 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                   topRight: Radius.circular(10),
                   bottomRight: Radius.circular(10),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 10,
+                    color: Color(int.parse(colors[widget.todo.color]))
+                        .withOpacity(0.1),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
