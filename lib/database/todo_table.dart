@@ -1,4 +1,5 @@
 import 'package:gottask/database/todo_database.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -15,7 +16,8 @@ class TodoTable {
       color INTEGER,
       audioPath TEXT,
       audioCode TEXT,
-      catagories TEXT
+      catagories TEXT,
+      priority INTEGER
     );   
   ''';
   static const CREATE_DELETE_TABLE_QUERY = '''
@@ -142,6 +144,7 @@ class TodoTable {
       audioPath: map[1]['audioPath'],
       audioCode: map[1]['audioCode'],
       catagories: _catagoriesItems,
+      priority: PriorityState.values[map[1]['priority']],
     );
   }
 
@@ -166,6 +169,7 @@ class TodoTable {
         audioPath: maps[index]['audioPath'],
         audioCode: maps[index]['audioCode'],
         catagories: _catagoriesItems,
+        priority: PriorityState.values[maps[index]['priority']],
       );
     });
   }

@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/task/bloc/task_bloc.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/helper.dart';
-import 'package:icons_helper/icons_helper.dart';
 import 'package:uuid/uuid.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -17,14 +17,17 @@ class AddTaskScreen extends StatefulWidget {
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
 
-class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
-  int _iconIndex = 0;
+class _AddTaskScreenState extends State<AddTaskScreen>
+    with BlocCreator, FilterMixin {
   int indexColor = 0;
   List<bool> _catagoryItems =
       List.generate(catagories.length, (index) => false);
   Duration timer = const Duration(hours: 0, minutes: 0);
+
   final List<String> _achieveLists = [];
   final List<bool> _isDoneAchieveLists = [];
+  PriorityState _priority = PriorityState.Low;
+
   final StreamController<List<String>> _achieveController =
       StreamController<List<String>>();
 
@@ -59,17 +62,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 color: Colors.white,
               ),
             ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  getIconUsingPrefix(name: icons[_iconIndex]),
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  _buildIconPicker(context);
-                },
-              ),
-            ],
           ),
           bottomNavigationBar: GestureDetector(
             child: AnimatedContainer(
@@ -109,7 +101,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                   onDoing: false,
                   color: indexColor,
                   catagories: _catagoryItems,
-                  icon: _iconIndex,
+                  priority: _priority,
                   taskName: _taskNameTextController.text,
                   percent: 0,
                   timer: timer.toString(),
@@ -127,46 +119,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
             },
           ),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(
+              top: 20,
+              left: 15,
+              right: 15,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _buildRename(),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Time',
-                    style: kNormalStyle.copyWith(color: Colors.grey),
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: LimitedBox(
-                    maxHeight: 100,
-                    child: CupertinoTimerPicker(
-                      onTimerDurationChanged: (duration) {
-                        timer = duration;
-                      },
-                      mode: CupertinoTimerPickerMode.hm,
-                      minuteInterval: 5,
-                    ),
-                  ),
-                ),
+                _buildTitle('Time'),
+                _buildTimePicker(),
                 _buildTitle('Color'),
-                const SizedBox(height: 3),
                 _buildColorPicker(),
-                const SizedBox(height: 10),
+                _buildTitle('Priority'),
+                _buildPriorityPicker(),
                 _buildTitle('Catagory'),
-                const SizedBox(height: 3),
                 _buildCatagoriesPicker(context),
                 _buildTitle('Achievment'),
-                const SizedBox(height: 3),
                 _buildAchievment(context),
-                const SizedBox(height: 20),
                 _buildListAchievment(),
-                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -175,9 +147,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
     );
   }
 
+  LimitedBox _buildTimePicker() {
+    return LimitedBox(
+      maxHeight: 100,
+      child: CupertinoTimerPicker(
+        onTimerDurationChanged: (duration) {
+          timer = duration;
+        },
+        mode: CupertinoTimerPickerMode.hm,
+        minuteInterval: 5,
+      ),
+    );
+  }
+
   Padding _buildListAchievment() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: StreamBuilder<List<String>>(
         initialData: _achieveLists,
         stream: _achieveController.stream,
@@ -211,9 +196,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
 
   Widget _buildAchievment(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 17),
+      padding: const EdgeInsets.only(
+        top: 5,
+      ),
       child: SizedBox(
-        height: 52,
+        height: 50,
         child: Row(
           children: <Widget>[
             Expanded(
@@ -228,12 +215,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 ),
                 child: TextField(
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     labelText: 'Achieve goal',
                     labelStyle: kNormalStyle.copyWith(color: Colors.grey),
                     border: InputBorder.none,
                   ),
                   controller: _achieveTextController,
+                  style: kNormalStyle.copyWith(
+                    fontFamily: "Source_Sans_Pro",
+                  ),
                 ),
               ),
             ),
@@ -254,8 +247,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                 color: Color(int.parse(colors[indexColor])),
                 borderRadius: BorderRadiusDirectional.circular(10),
                 child: Container(
-                  height: 52,
-                  width: 52,
+                  height: 50,
+                  width: 50,
                   child: Icon(
                     Ionicons.ios_add,
                     color: Colors.white,
@@ -271,7 +264,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
 
   Widget _buildTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Text(
         title,
         style: kNormalStyle.copyWith(color: Colors.grey),
@@ -280,67 +273,142 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
   }
 
   Widget _buildRename() {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Color(int.parse(colors[indexColor])),
+          width: 1,
+        ),
+      ),
+      child: TextField(
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(10),
+          labelText: 'Task name',
+          labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+          border: InputBorder.none,
+        ),
+        controller: _taskNameTextController,
+      ),
+    );
+  }
+
+  Widget _buildPriorityPicker() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 17),
+      padding: const EdgeInsets.only(
+        top: 5,
+      ),
+      child: Row(
+        children: [
+          _priorityTile(PriorityState.High.index),
+          SizedBox(width: 10),
+          _priorityTile(PriorityState.Medium.index),
+          SizedBox(width: 10),
+          _priorityTile(PriorityState.Low.index),
+        ],
+      ),
+    );
+  }
+
+  Widget _priorityTile(int value) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          if (_priority != PriorityState.values[value]) {
+            _priority = PriorityState.values[value];
+          }
+        });
+      },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
+        height: 45,
+        width: (MediaQuery.of(context).size.width - 50) / 3,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          color: _priority != PriorityState.values[value]
+              ? TodoColors.scaffoldWhite
+              : setPriorityColor(priorityList[value]),
           border: Border.all(
-            color: Color(int.parse(colors[indexColor])),
+            color: _priority == PriorityState.values[value]
+                ? TodoColors.scaffoldWhite
+                : setPriorityColor(priorityList[value]),
             width: 1,
           ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: TextField(
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(10),
-            labelText: 'Task name',
-            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
-            border: InputBorder.none,
+        child: Center(
+          child: Text(
+            priorityList[value],
+            style: kNormalStyle.copyWith(
+              color: _priority == PriorityState.values[value]
+                  ? TodoColors.scaffoldWhite
+                  : setPriorityColor(priorityList[value]),
+            ),
           ),
-          controller: _taskNameTextController,
         ),
       ),
     );
   }
 
+  setPriorityColor(String value) {
+    if (value == "Low") {
+      return TodoColors.lightGreen;
+    } else if (value == "Medium") {
+      return TodoColors.chocolate;
+    } else if (value == "High") {
+      return TodoColors.massiveRed;
+    } else
+      return TodoColors.blueAqua;
+  }
+
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return SizedBox(
-      height: 46.0 * 4 - 10,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-          ),
-          child: GridView(
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: MediaQuery.of(context).size.width / 92,
-            ),
-            children: List.generate(
-              catagories.length,
-              (index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _catagoryItems[index] = !_catagoryItems[index];
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: _catagoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
-                      width: 1.2,
-                    ),
-                    color: _catagoryItems[index]
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 5,
+      ),
+      child: Wrap(
+        direction: Axis.horizontal,
+        children: List.generate(
+          catagories.length,
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                _catagoryItems[index] = !_catagoryItems[index];
+              });
+            },
+            child: AnimatedContainer(
+              height: 45,
+              width: (MediaQuery.of(context).size.width - 50) / 3,
+              duration: Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _catagoryItems[index] == false
+                      ? Color(
+                          int.parse(
+                            colors[indexColor],
+                          ),
+                        )
+                      : TodoColors.scaffoldWhite,
+                  width: 1,
+                ),
+                color: _catagoryItems[index]
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+              ),
+              padding: paddingCatagory(),
+              margin: marginCatagory(index),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    catagories[index]["iconData"],
+                    size: iconSize(),
+                    color: _catagoryItems[index] == false
                         ? Color(
                             int.parse(
                               colors[indexColor],
@@ -348,40 +416,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  margin: const EdgeInsets.all(2.5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Icon(
-                        catagories[index]["iconData"],
-                        size: 17,
-                        color: _catagoryItems[index] == false
-                            ? Color(
-                                int.parse(
-                                  colors[indexColor],
-                                ),
-                              )
-                            : TodoColors.scaffoldWhite,
-                      ),
-                      Text(
-                        '${catagories[index]["name"]}',
-                        style: TextStyle(
-                          fontFamily: 'Source_Sans_Pro',
-                          fontSize: 16,
-                          color: _catagoryItems[index] == false
-                              ? Color(
-                                  int.parse(
-                                    colors[indexColor],
-                                  ),
-                                )
-                              : TodoColors.scaffoldWhite,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    '${catagories[index]["name"]}',
+                    style: TextStyle(
+                      fontFamily: 'Source_Sans_Pro',
+                      fontSize: fontSize(),
+                      color: _catagoryItems[index] == false
+                          ? Color(
+                              int.parse(
+                                colors[indexColor],
+                              ),
+                            )
+                          : TodoColors.scaffoldWhite,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
@@ -389,67 +438,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
       ),
     );
   }
-
-  Future _buildIconPicker(BuildContext context) => showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            decoration: BoxDecoration(
-              color: TodoColors.scaffoldWhite,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            height: 200,
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 5),
-                  Text(
-                    'Icon',
-                    style: TextStyle(fontFamily: 'Alata', fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
-                  Divider(),
-                  Wrap(
-                    direction: Axis.horizontal,
-                    children: List.generate(
-                      icons.length,
-                      (index) {
-                        return Padding(
-                          padding: EdgeInsets.all(5),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _iconIndex = index;
-                                Navigator.pop(context);
-                              });
-                            },
-                            child: Material(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  getIconUsingPrefix(
-                                    name: icons[index],
-                                  ),
-                                  color: Colors.white,
-                                ),
-                              ),
-                              color: Color(int.parse(colors[indexColor])),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
 
   Future _buildWarningDialog(BuildContext context) {
     return showDialog(
@@ -554,53 +542,50 @@ class _AddTaskScreenState extends State<AddTaskScreen> with BlocCreator {
         ),
       );
 
-  Widget _buildColorPicker() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: SizedBox(
-          height: 50 * 2.0 + 25,
-          child: GridView(
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 6,
-              childAspectRatio: 1,
-            ),
-            children: List.generate(
-              colors.length,
-              (index) {
-                if (indexColor == index) {
-                  return Container(
-                    margin: const EdgeInsets.all(3),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(
-                        int.parse(colors[index]),
-                      ),
-                    ),
-                    child: Icon(Icons.check, color: Colors.white),
-                  );
-                }
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      indexColor = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(3),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(
-                        int.parse(colors[index]),
-                      ),
+  Widget _buildColorPicker() => SizedBox(
+        height: 50 * 2.0 + 28,
+        child: GridView(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 6,
+            childAspectRatio: 1,
+          ),
+          children: List.generate(
+            colors.length,
+            (index) {
+              if (indexColor == index) {
+                return Container(
+                  margin: const EdgeInsets.all(3),
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Color(
+                      int.parse(colors[index]),
                     ),
                   ),
+                  child: Icon(Icons.check, color: Colors.white),
                 );
-              },
-            ),
+              }
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    indexColor = index;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(3),
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Color(
+                      int.parse(colors[index]),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );

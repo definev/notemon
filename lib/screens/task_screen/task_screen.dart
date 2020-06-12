@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audio_cache.dart';
@@ -8,15 +7,14 @@ import 'package:flutter_incall/flutter_incall.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/countdown_clock.dart';
 import 'package:gottask/components/parrallel_background.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/helper.dart';
-import 'package:icons_helper/icons_helper.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:vibration/vibration.dart';
 
 class MyBehavior extends ScrollBehavior {
@@ -37,9 +35,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   List<String> _achievelists;
   Duration _timer;
   int _percent;
-  int _iconIndex;
   int _maxTimer;
+
   bool _isInit = false;
+
   List<bool> _isDoneAchieve = [];
   List<bool> _catagoryItems =
       List.generate(catagories.length, (index) => false);
@@ -89,7 +88,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           achieve: _achievelists,
           catagories: _catagoryItems,
           completeTimer: _completeTimer.toString(),
-          icon: _iconIndex,
           isDoneAchieve: _isDoneAchieve,
           percent: _percent,
         ),
@@ -100,7 +98,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         achieve: _achievelists,
         catagories: _catagoryItems,
         completeTimer: _completeTimer.toString(),
-        icon: _iconIndex,
         isDoneAchieve: _isDoneAchieve,
         percent: _percent,
       ),
@@ -117,35 +114,35 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     return true;
   }
 
-  IconData _getTimerState() {
-    if (_timerState == TimerState.PAUSE)
-      return Icons.play_arrow;
-    else
-      return Icons.pause;
-  }
+  // IconData _getTimerState() {
+  //   if (_timerState == TimerState.PAUSE)
+  //     return Icons.play_arrow;
+  //   else
+  //     return Icons.pause;
+  // }
 
-  Widget _widgetInCircle() {
-    if (_timerState == TimerState.DONE) {
-      return Text(
-        'Done!',
-        style: TextStyle(
-          fontFamily: 'Alata',
-          fontSize: 30,
-          color: Color(int.parse(colors[widget.task.color])),
-        ),
-      );
-    } else {
-      return Icon(
-        _getTimerState(),
-        color: Color(
-          int.parse(
-            colors[widget.task.color],
-          ),
-        ),
-        size: 50,
-      );
-    }
-  }
+  // Widget _widgetInCircle() {
+  //   if (_timerState == TimerState.DONE) {
+  //     return Text(
+  //       'Done!',
+  //       style: TextStyle(
+  //         fontFamily: 'Alata',
+  //         fontSize: 30,
+  //         color: Color(int.parse(colors[widget.task.color])),
+  //       ),
+  //     );
+  //   } else {
+  //     return Icon(
+  //       _getTimerState(),
+  //       color: Color(
+  //         int.parse(
+  //           colors[widget.task.color],
+  //         ),
+  //       ),
+  //       size: 50,
+  //     );
+  //   }
+  // }
 
   @override
   void initState() {
@@ -174,7 +171,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             durTimerSecond[0],
           );
       _percent = widget.task.percent;
-      _iconIndex = widget.task.icon;
       if (_timer == Duration(hours: 0, minutes: 0, seconds: 0)) {
         _timerState = TimerState.DONE;
       }
@@ -212,7 +208,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                         achieve: _achievelists,
                         catagories: _catagoryItems,
                         completeTimer: _completeTimer.toString(),
-                        icon: _iconIndex,
                         isDoneAchieve: _isDoneAchieve,
                         percent: _percent,
                       ),
@@ -248,7 +243,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           achieve: _achievelists,
                           catagories: _catagoryItems,
                           completeTimer: _completeTimer.toString(),
-                          icon: _iconIndex,
                           isDoneAchieve: _isDoneAchieve,
                           percent: _percent,
                         ),
@@ -260,7 +254,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                         achieve: _achievelists,
                         catagories: _catagoryItems,
                         completeTimer: _completeTimer.toString(),
-                        icon: _iconIndex,
                         isDoneAchieve: _isDoneAchieve,
                         percent: _percent,
                       ),
@@ -340,11 +333,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   Theme _bodyOnDoingFalse(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        accentColor: Color(
-          int.parse(
-            colors[widget.task.color],
-          ),
-        ),
+        accentColor: Color(int.parse(colors[widget.task.color])),
       ),
       child: Scaffold(
         appBar: _appBar(context),
@@ -451,66 +440,67 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             ),
           ),
           countdownClock,
-          SizedBox(height: 20),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              SleekCircularSlider(
-                appearance: CircularSliderAppearance(
-                  animationEnabled: true,
-                  angleRange: 360,
-                  startAngle: 270,
-                  customWidths: CustomSliderWidths(
-                    progressBarWidth: 8,
-                    handlerSize: 0,
-                    shadowWidth: 0,
-                  ),
-                  customColors: CustomSliderColors(
-                    dotColor: Color(int.parse(colors[widget.task.color])),
-                    progressBarColor:
-                        Color(int.parse(colors[widget.task.color])),
-                    trackColor: Colors.white,
-                  ),
-                  size: (MediaQuery.of(context).size.height - 24) / 3.5,
+          Container(
+            height: MediaQuery.of(context).size.height / 4,
+            margin: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 15,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 3,
+                  color: Color(int.parse(colors[widget.task.color]))
+                      .withOpacity(0.1),
                 ),
-                initialValue: _percent.toDouble(),
-                min: 0,
-                max: _maxTimer.toDouble(),
-                innerWidget: (percentage) {
-                  return Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (Platform.isIOS) {
-                          setState(() {
-                            if (_timerState == TimerState.PLAY) {
-                              _timerState = TimerState.PAUSE;
-                              countdownClock.onPause = !countdownClock.onPause;
-                            } else if (_timerState == TimerState.PAUSE) {
-                              _timerState = TimerState.PLAY;
-                              countdownClock.onPause = !countdownClock.onPause;
-                            }
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: (MediaQuery.of(context).size.height - 24) / 3.5 -
-                            20,
-                        height:
-                            (MediaQuery.of(context).size.height - 24) / 3.5 -
-                                20,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(160),
-                          color: Colors.white,
-                        ),
-                        child: Center(
-                          child: _widgetInCircle(),
+              ],
+            ),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(15),
+                  ),
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 5,
+                        color: Color(int.parse(colors[widget.task.color]))
+                            .withOpacity(0.5),
+                      ),
+                      AnimatedContainer(
+                        height: 5,
+                        width: 100,
+                        duration: Duration(seconds: 2),
+                        color: Color(int.parse(colors[widget.task.color])),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 20,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "“The purpose of our lives is to be happy.”",
+                        style: kMediumStyle,
+                      ),
+                      Text(
+                        "— Dalai Lama",
+                        style: GoogleFonts.getFont(
+                          'Dancing Script',
+                          fontSize: 20,
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           if (_achievelists.length != 0)
             Expanded(
@@ -566,12 +556,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   Navigator.pop(context);
                 },
               ),
-        IconButton(
-          icon: Icon(getIconUsingPrefix(name: icons[_iconIndex])),
-          onPressed: () {
-            _buildIconPicker(context);
-          },
-        ),
       ],
     );
   }
@@ -607,14 +591,14 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                                         colors[widget.task.color],
                                       ),
                                     )
-                                  : TodoColors.scaffoldWhite,
+                                  : Colors.white,
                               width: 1.3,
                             ),
                             color: _catagoryItems[index]
                                 ? Color(
                                     int.parse(colors[widget.task.color]),
                                   )
-                                : TodoColors.scaffoldWhite,
+                                : Colors.white,
                           ),
                           padding: const EdgeInsets.all(8),
                           margin: const EdgeInsets.only(
@@ -632,7 +616,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                                             colors[widget.task.color],
                                           ),
                                         )
-                                      : TodoColors.scaffoldWhite,
+                                      : Colors.white,
                                 ),
                                 Text(
                                   ' ${catagories[index]["name"]}',
@@ -642,7 +626,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                                             int.parse(
                                                 colors[widget.task.color]),
                                           )
-                                        : TodoColors.scaffoldWhite,
+                                        : Colors.white,
                                   ),
                                 ),
                               ],
@@ -970,68 +954,6 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       ),
     );
   }
-
-  Future _buildIconPicker(BuildContext context) => showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            decoration: BoxDecoration(
-              color: TodoColors.scaffoldWhite,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            height: 200,
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 5),
-                  Text(
-                    'Icon',
-                    style: TextStyle(fontFamily: 'Alata', fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
-                  Divider(),
-                  Wrap(
-                    direction: Axis.horizontal,
-                    children: List.generate(
-                      icons.length,
-                      (index) {
-                        return Padding(
-                          padding: EdgeInsets.all(5),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _iconIndex = index;
-                                Navigator.pop(context);
-                              });
-                            },
-                            child: Material(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  getIconUsingPrefix(
-                                    name: icons[index],
-                                  ),
-                                  color: Colors.white,
-                                ),
-                              ),
-                              color:
-                                  Color(int.parse(colors[widget.task.color])),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
 
   Container _buildAddAchieve() {
     return Container(

@@ -40,6 +40,15 @@ class _MyAppState extends State<MyApp> {
     return '/splash';
   }
 
+  Widget currentRoute() {
+    if (_isLogin == false) {
+      return SignInScreen();
+    } else if (_isStart == true) {
+      return HomeScreen();
+    }
+    return Container();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -78,6 +87,7 @@ class _MyAppState extends State<MyApp> {
                     accentColor: TodoColors.deepPurple,
                     primaryColor: TodoColors.deepPurple,
                   ),
+                  home: currentRoute(),
                   initialRoute: getRoute(),
                   routes: {
                     '/splash': (context) => SplashScreen(),

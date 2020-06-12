@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/todo_screen/todo_screen.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/helper.dart';
 
 class TodoTile extends StatefulWidget {
   final Todo task;
@@ -130,8 +131,16 @@ class _TodoTileState extends State<TodoTile> with BlocCreator {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    priorityList[widget.task.priority.index],
+                    style: kNormalStyle.copyWith(
+                        color: Color(int.parse(colors[widget.task.color]))),
+                  ),
+                ),
                 Container(
-                  margin: const EdgeInsets.only(left: 5),
+                  margin: const EdgeInsets.only(left: 10),
                   width: 2,
                   color: Color(int.parse(colors[widget.task.color])),
                 ),

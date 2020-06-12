@@ -3,6 +3,7 @@
 //     final task = taskFromMap(jsonString);
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gottask/models/model.dart';
 import 'package:meta/meta.dart';
 
 class Task {
@@ -10,12 +11,12 @@ class Task {
     @required this.id,
     @required this.timestamp,
     this.onDoing = false,
-    @required this.icon,
     @required this.taskName,
     @required this.timer,
     @required this.percent,
     @required this.color,
     @required this.achieve,
+    @required this.priority,
     @required this.completeTimer,
     @required this.isDoneAchieve,
     @required this.catagories,
@@ -24,12 +25,12 @@ class Task {
   String id;
   DateTime timestamp;
   bool onDoing;
-  int icon;
   String taskName;
   String timer;
   int percent;
   int color;
   List<String> achieve;
+  PriorityState priority;
   String completeTimer;
   List<bool> isDoneAchieve;
   List<bool> catagories;
@@ -38,7 +39,6 @@ class Task {
     String id,
     DateTime timestamp,
     bool onDoing,
-    int icon,
     String taskName,
     String timer,
     int percent,
@@ -47,12 +47,12 @@ class Task {
     String completeTimer,
     List<bool> isDoneAchieve,
     List<bool> catagories,
+    PriorityState priority,
   }) =>
       Task(
         id: id ?? this.id,
         timestamp: timestamp ?? this.timestamp,
         onDoing: onDoing ?? this.onDoing,
-        icon: icon ?? this.icon,
         taskName: taskName ?? this.taskName,
         timer: timer ?? this.timer,
         percent: percent ?? this.percent,
@@ -61,6 +61,7 @@ class Task {
         completeTimer: completeTimer ?? this.completeTimer,
         isDoneAchieve: isDoneAchieve ?? this.isDoneAchieve,
         catagories: catagories ?? this.catagories,
+        priority: priority ?? this.priority,
       );
 
   factory Task.fromFirebaseMap(Map<String, dynamic> json) {
@@ -81,12 +82,12 @@ class Task {
       id: json["id"],
       timestamp: json["timestamp"].toDate(),
       onDoing: json["onDoing"],
-      icon: json["icon"],
       taskName: json["taskName"],
       timer: json["timer"],
       percent: json["percent"],
       color: json["color"],
       achieve: achieve,
+      priority: PriorityState.values[json["priority"]],
       completeTimer: json["completeTimer"],
       isDoneAchieve: isDoneAchieve,
       catagories: catagory,
@@ -97,12 +98,12 @@ class Task {
         "id": id,
         "timestamp": Timestamp.fromDate(timestamp),
         "onDoing": onDoing ?? false,
-        "icon": icon,
         "taskName": taskName,
         "timer": timer,
         "percent": percent,
         "color": color,
         "achieve": achieve,
+        "priority": priority.index,
         "completeTimer": completeTimer,
         "isDoneAchieve": isDoneAchieve,
         "catagories": catagories,
@@ -111,12 +112,12 @@ class Task {
   Map<String, dynamic> toMap() => {
         "id": id,
         "timestamp": timestamp.toIso8601String(),
-        "icon": icon,
         "taskName": taskName,
         "timer": timer,
         "percent": percent,
         "color": color,
         "achieve": achieve.toString(),
+        "priority": priority.index,
         "completeTimer": completeTimer,
         "isDoneAchieve": isDoneAchieve.toString(),
         "catagories": catagories.toString(),

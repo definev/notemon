@@ -4,8 +4,8 @@ import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/database.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/helper.dart';
 import 'package:gottask/screens/option_screen/about_me_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +23,7 @@ class _SettingScreenState extends State<SettingScreen>
   AnimationController animationController;
   Animation animation;
 
+  FirebaseRepository _repository;
   HandSide _handSide;
   HandSideBloc _handsideBloc;
   AllPokemonBloc _allPokemonBloc;
@@ -83,6 +84,7 @@ class _SettingScreenState extends State<SettingScreen>
   Widget build(BuildContext context) {
     if (_isInit == false) {
       _handsideBloc = Provider.of<HandSideBloc>(widget.ctx);
+      _repository = Provider.of<FirebaseRepository>(context);
       initHandSide();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
@@ -159,14 +161,14 @@ class _SettingScreenState extends State<SettingScreen>
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
                   AuthServices _auth = AuthServices();
-                  _auth.signOut().then((_) async {
-                    updateLoginState(false);
-                    deleteAll();
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                    Navigator.popAndPushNamed(context, '/signIn');
-                  });
+                  await _auth.signOut();
+                  updateLoginState(false);
+                  deleteAll();
+                  _repository.initUser();
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                  Navigator.popAndPushNamed(context, '/signIn');
                 },
                 child: Padding(
                   padding: EdgeInsets.all(10),

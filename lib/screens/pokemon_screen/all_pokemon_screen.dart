@@ -10,8 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/helper.dart';
 import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/screens/option_screen/setting_screen.dart';
 import 'package:gottask/screens/pokemon_screen/pokemon_info.dart';
@@ -735,7 +735,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                     horizontal: 9,
                     vertical: MediaQuery.of(context).size.width / 40,
                   ),
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.only(left: 6, bottom: 6),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

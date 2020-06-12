@@ -21,22 +21,24 @@ class _SignInScreenState extends State<SignInScreen> {
 
   _loginSuccess() async {
     updateLoginState(true);
-    await _repository.initUser();
-    await _repository.getAllTodoAndLoadToDb(
-      Provider.of<TodoBloc>(context, listen: false),
-    );
-    await _repository.getAllTaskAndLoadToDb(
-      Provider.of<TaskBloc>(context, listen: false),
-    );
-    await _repository.getAllPokemonStateAndLoadToDb(
-      Provider.of<AllPokemonBloc>(context, listen: false),
-    );
-    await _repository.getFavouritePokemonStateAndLoadToDb(
-      Provider.of<FavouritePokemonBloc>(context, listen: false),
-    );
-    await _repository.getStarpoint(
-      Provider.of<StarBloc>(context, listen: false),
-    );
+    await _repository.initUser().then((_) async {
+      await _repository.getAllTodoAndLoadToDb(
+        Provider.of<TodoBloc>(context, listen: false),
+      );
+      await _repository.getAllTaskAndLoadToDb(
+        Provider.of<TaskBloc>(context, listen: false),
+      );
+      await _repository.getAllPokemonStateAndLoadToDb(
+        Provider.of<AllPokemonBloc>(context, listen: false),
+      );
+      await _repository.getFavouritePokemonStateAndLoadToDb(
+        Provider.of<FavouritePokemonBloc>(context, listen: false),
+      );
+      await _repository.getStarpoint(
+        Provider.of<StarBloc>(context, listen: false),
+      );
+    });
+
     Navigator.pushReplacementNamed(context, '/home');
   }
 

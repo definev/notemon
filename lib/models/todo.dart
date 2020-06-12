@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gottask/models/shared.dart';
 import 'package:meta/meta.dart';
 
 class Todo {
@@ -13,6 +14,7 @@ class Todo {
     @required this.audioPath,
     @required this.audioCode,
     @required this.catagories,
+    @required this.priority,
   });
 
   String id;
@@ -24,6 +26,7 @@ class Todo {
   String audioPath;
   String audioCode;
   List<bool> catagories;
+  PriorityState priority;
 
   Todo copyWith({
     String id,
@@ -35,6 +38,7 @@ class Todo {
     String audioPath,
     String audioCode,
     List<bool> catagories,
+    PriorityState priority,
   }) =>
       Todo(
         id: id ?? this.id,
@@ -46,6 +50,7 @@ class Todo {
         audioPath: audioPath ?? this.audioPath,
         audioCode: audioCode ?? this.audioCode,
         catagories: catagories ?? this.catagories,
+        priority: priority ?? this.priority,
       );
 
   @override
@@ -59,6 +64,7 @@ class Todo {
         this.audioPath,
         this.audioCode,
         this.catagories.toString(),
+        this.priority,
       );
   bool operator ==(other) {
     if (other is Todo && other.id == this.id) {
@@ -83,6 +89,7 @@ class Todo {
       audioPath: json["audioPath"],
       audioCode: json["audioCode"],
       catagories: catagory,
+      priority: PriorityState.values[json["priority"]],
     );
   }
 
@@ -96,6 +103,7 @@ class Todo {
         "audioPath": audioPath,
         "audioCode": audioCode,
         "catagories": catagories.toString(),
+        "priority": priority.index,
       };
 
   Map<String, dynamic> toFirebaseMap() => {
@@ -108,5 +116,6 @@ class Todo {
         "audioPath": audioPath,
         "audioCode": audioCode,
         "catagories": catagories,
+        "priority": priority.index,
       };
 }

@@ -1,4 +1,5 @@
 import 'package:gottask/database/task_database.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/models/task.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -10,10 +11,10 @@ class TaskTable {
     CREATE TABLE $TABLE_NAME (
       id TEXT PRIMARY KEY,
       timestamp TEXT,
-      TaskName TEXT,
-      icon INTEGER,
+      taskName TEXT,
       color INTEGER,
       catagories TEXT,
+      priority INTEGER,
       isDoneAchieve TEXT,
       timer TEXT,
       completeTimer TEXT,
@@ -95,7 +96,7 @@ class TaskTable {
       columns: [
         'id',
         'icon',
-        'TaskName',
+        'taskName',
         'timer',
         'completeTimer',
         'percent',
@@ -120,11 +121,11 @@ class TaskTable {
     return Task(
       id: map[1]['id'],
       timestamp: DateTime.parse(map[1]['timestamp']),
-      taskName: map[1]['TaskName'],
+      taskName: map[1]['taskName'],
       color: map[1]['color'],
-      icon: map[1]['icon'],
       catagories: map[1]['catagories'],
       achieve: achieveList,
+      priority: PriorityState.values[map[1]['priority']],
       timer: map[1]['timer'],
       completeTimer: map[1]['completeTimer'],
       percent: map[1]['percent'],
@@ -159,10 +160,10 @@ class TaskTable {
       return Task(
         id: maps[index]['id'],
         timestamp: DateTime.parse(maps[index]['timestamp']),
-        taskName: maps[index]['TaskName'],
+        taskName: maps[index]['taskName'],
         color: maps[index]['color'],
         catagories: catagoriesList,
-        icon: maps[index]['icon'],
+        priority: PriorityState.values[maps[index]['priority']],
         achieve: achieveList,
         timer: maps[index]['timer'],
         completeTimer: maps[index]['completeTimer'],

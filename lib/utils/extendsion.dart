@@ -21,3 +21,4 @@ extension PokemonExt on List<PokemonState> {
 extension FileName on File {
   String get name => path.split('/').last;
 }
+

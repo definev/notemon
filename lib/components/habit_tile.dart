@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:icons_helper/icons_helper.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TaskTile extends StatefulWidget {
@@ -14,7 +14,7 @@ class TaskTile extends StatefulWidget {
   _TaskTileState createState() => _TaskTileState();
 }
 
-class _TaskTileState extends State<TaskTile> {
+class _TaskTileState extends State<TaskTile> with FilterMixin {
   int maxTimer;
   int starValue;
 
@@ -42,7 +42,12 @@ class _TaskTileState extends State<TaskTile> {
         },
         child: Container(
           margin: const EdgeInsets.only(right: 15),
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.only(
+            left: 15,
+            right: 15,
+            top: 15,
+            bottom: 14.5,
+          ),
           height: kListViewHeight,
           width: kListViewHeight,
           decoration: BoxDecoration(
@@ -53,22 +58,43 @@ class _TaskTileState extends State<TaskTile> {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Material(
-                    borderRadius: BorderRadius.circular(100),
-                    color: Colors.white.withOpacity(0.35),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Icon(
-                        getIconUsingPrefix(
-                          name: icons[widget.task.icon],
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(5),
+                      bottomLeft: Radius.circular(5),
+                      bottomRight: Radius.circular(15),
+                    ),
+                    color: Colors.white.withOpacity(0.95),
+                    child: Container(
+                      height: 34,
+                      width: 55.0131556175,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 15,
+                              width: 1.5,
+                              color: setPriorityColor(
+                                  priorityList[widget.task.priority.index]),
+                            ),
+                            Text(
+                              shortPriorityList[widget.task.priority.index],
+                              style: kNormalStyle.copyWith(
+                                fontFamily: "Source_Sans_Pro",
+                                color: setPriorityColor(
+                                    priorityList[widget.task.priority.index]),
+                              ),
+                            ),
+                          ],
                         ),
-                        size: 20,
-                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -96,13 +122,14 @@ class _TaskTileState extends State<TaskTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   LinearPercentIndicator(
-                    padding: const EdgeInsets.only(right: 0, top: 10),
+                    padding:
+                        const EdgeInsets.only(right: 0, top: 10, bottom: 10),
                     lineHeight: 4.5,
                     progressColor: Colors.white,
                     backgroundColor: Colors.black54,
                     percent: widget.task.percent.toDouble() / maxTimer,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Text(
                     durationFormat(widget.task.completeTimer),
                     style: kNormalSmallStyle.copyWith(

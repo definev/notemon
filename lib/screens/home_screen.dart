@@ -10,15 +10,13 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/bloc/bloc.dart';
-import 'package:gottask/components/habit_tile.dart';
-import 'package:gottask/components/todo_tile.dart';
-import 'package:gottask/helper.dart';
-import 'package:gottask/models/filter_picker.dart';
+import 'package:gottask/components/component.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
 import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -31,8 +29,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   bool _isInit = false;
-  List<bool> _todoFilter = List.generate(8, (index) => false);
-  List<bool> _taskFilter = List.generate(8, (index) => false);
+
+  Map<String, dynamic> _todoFilterMap = {
+    "priority": PriorityState.All,
+    "todoFilter": List.generate(catagories.length, (index) => false),
+  };
+
+  Map<String, dynamic> _taskFilterMap = {
+    "priority": PriorityState.All,
+    "taskFilter": List.generate(catagories.length, (index) => false),
+  };
+
   Map<String, bool> _isLoading = {
     'todo': false,
     'task': false,
@@ -41,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   ConnectionStatusSingleton connectionStatus;
   StreamController<bool> _connectionChangeStream;
+  StreamSubscription<bool> _intenetStreamSubscription;
 
   TodoBloc _todoBloc;
   TaskBloc _taskBloc;
@@ -259,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen>
     connectionStatus = ConnectionStatusSingleton.getInstance();
     connectionStatus.initialize();
     _connectionChangeStream = connectionStatus.connectionChangeController;
-    _connectionChangeStream.stream.listen(
+    _intenetStreamSubscription = _connectionChangeStream.stream.listen(
       (hasInternet) async {
         if (hasInternet) {
           await _updateDatabase();
@@ -270,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _connectionChangeStream.close();
+    _intenetStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -700,7 +708,7 @@ class _HomeScreenState extends State<HomeScreen>
                               top: 3,
                             )
                           : const EdgeInsets.only(
-                              right: 3,
+                              right: 1,
                               bottom: 3,
                               top: 3,
                             ),
@@ -746,7 +754,7 @@ class _HomeScreenState extends State<HomeScreen>
         padding: const EdgeInsets.only(
           top: 10,
           bottom: 10,
-          left: 20,
+          left: 15,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -755,20 +763,135 @@ class _HomeScreenState extends State<HomeScreen>
               'To-do list',
               style: kTitleStyle,
             ),
-            Container(
-              width: 25,
-              height: 25,
-              margin: const EdgeInsets.only(right: 20),
-              child: RawMaterialButton(
-                fillColor: TodoColors.deepPurple,
-                shape: const CircleBorder(),
-                elevation: 0.5,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          priorityList[_todoFilterMap['priority'].index],
+                          style: kBigTitleStyle.copyWith(
+                            fontFamily: "Source_Sans_Pro",
+                            fontSize: 18,
+                            color: setPriorityColor(
+                                priorityList[_todoFilterMap['priority'].index]),
+                          ),
+                        ),
+                        Container(
+                          height: 25,
+                          width: 1,
+                          margin: const EdgeInsets.only(left: 8),
+                          color: setPriorityColor(
+                              priorityList[_todoFilterMap['priority'].index]),
+                        ),
+                      ],
+                    ),
+                    if (_todoFilterMap['todoFilter'].contains(true))
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: SizedBox(
+                          width: 60,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(
+                              _todoFilterMap['todoFilter'].length,
+                              (index) {
+                                if (_todoFilterMap['todoFilter'][index]) {
+                                  return Container(
+                                    height: 20,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: 10,
+                                          width: 3,
+                                          color: TodoColors.lightGreen,
+                                        ),
+                                        Container(
+                                          height: 10,
+                                          width: 3,
+                                          color: TodoColors.scaffoldWhite,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return Container(
+                                  height: 20,
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: 10,
+                                        width: 3,
+                                        color: TodoColors.scaffoldWhite,
+                                      ),
+                                      Container(
+                                        height: 10,
+                                        width: 3,
+                                        color: TodoColors.groundPink,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 600),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[500],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      margin: const EdgeInsets.only(left: 10, right: 5),
+                      child: InkWell(
+                        child: SizedBox(
+                          height: 25,
+                          width: 25,
+                          child: Icon(
+                            (!_todoFilterMap['todoFilter'].contains(true))
+                                ? Icons.filter_list
+                                : Icons.edit,
+                            color: Colors.white,
+                            size: 17,
+                          ),
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (_) => FilterPicker(
+                              nameFilter: "Todo",
+                              priority: _todoFilterMap['priority'],
+                              initCatagory: _todoFilterMap['todoFilter'],
+                              onCompeleted: (catagories, priority) =>
+                                  setState(() {
+                                _todoFilterMap['todoFilter'] = catagories;
+                                _todoFilterMap['priority'] = priority;
+                              }),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed: _modalBottomSheetMenu,
-              ),
+                Container(
+                  width: 25,
+                  height: 25,
+                  margin: const EdgeInsets.only(right: 15),
+                  child: RawMaterialButton(
+                    fillColor: TodoColors.deepPurple,
+                    shape: const CircleBorder(),
+                    elevation: 0.5,
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    onPressed: _modalBottomSheetMenu,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -780,7 +903,7 @@ class _HomeScreenState extends State<HomeScreen>
               .collection('databases')
               .document(_repository.user.uid)
               .collection('todos')
-              .orderBy('timestamp', descending: false)
+              .orderBy('priority')
               .snapshots(),
           builder: (context, snapshots) {
             if (snapshots.connectionState == ConnectionState.waiting ||
@@ -800,6 +923,7 @@ class _HomeScreenState extends State<HomeScreen>
               List<Todo> _todoList = [];
               snapshots.data.documents.forEach(
                   (todo) => _todoList.add(Todo.fromFirebaseMap(todo.data)));
+              _todoList = todoFilterProcess(_todoList);
 
               if (!_isLoading['todo']) _updateTodosWhenbackToOnline(_todoList);
               if (_todoList.isEmpty) {
@@ -834,7 +958,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTaskTitle() => Padding(
         padding: const EdgeInsets.only(
-          left: 20,
+          left: 15,
           top: 10,
           bottom: 10,
         ),
@@ -846,28 +970,142 @@ class _HomeScreenState extends State<HomeScreen>
               'Task list',
               style: kTitleStyle,
             ),
-            const SizedBox(width: 10),
-            Container(
-              width: 25,
-              height: 25,
-              margin: const EdgeInsets.only(right: 20),
-              child: RawMaterialButton(
-                fillColor: TodoColors.deepPurple,
-                shape: const CircleBorder(),
-                elevation: 0.5,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddTaskScreen(),
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          priorityList[_taskFilterMap['priority'].index],
+                          style: kBigTitleStyle.copyWith(
+                            fontFamily: "Source_Sans_Pro",
+                            fontSize: 18,
+                            color: setPriorityColor(
+                                priorityList[_taskFilterMap['priority'].index]),
+                          ),
+                        ),
+                        Container(
+                          height: 25,
+                          width: 1,
+                          margin: const EdgeInsets.only(left: 8),
+                          color: setPriorityColor(
+                              priorityList[_taskFilterMap['priority'].index]),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                    if (_taskFilterMap['taskFilter'].contains(true))
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: SizedBox(
+                          width: 60,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(
+                              _taskFilterMap['taskFilter'].length,
+                              (index) {
+                                if (_taskFilterMap['taskFilter'][index]) {
+                                  return Container(
+                                    height: 20,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: 10,
+                                          width: 3,
+                                          color: TodoColors.lightGreen,
+                                        ),
+                                        Container(
+                                          height: 10,
+                                          width: 3,
+                                          color: TodoColors.scaffoldWhite,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return Container(
+                                  height: 20,
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: 10,
+                                        width: 3,
+                                        color: TodoColors.scaffoldWhite,
+                                      ),
+                                      Container(
+                                        height: 10,
+                                        width: 3,
+                                        color: TodoColors.groundPink,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 600),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[500],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      margin: const EdgeInsets.only(left: 10, right: 5),
+                      child: InkWell(
+                        child: SizedBox(
+                          height: 25,
+                          width: 25,
+                          child: Icon(
+                            (!_taskFilterMap['taskFilter'].contains(true))
+                                ? Icons.filter_list
+                                : Icons.edit,
+                            color: Colors.white,
+                            size: 17,
+                          ),
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (_) => FilterPicker(
+                              nameFilter: "Task",
+                              priority: _taskFilterMap['priority'],
+                              initCatagory: _taskFilterMap['taskFilter'],
+                              onCompeleted: (catagories, priority) =>
+                                  setState(() {
+                                _taskFilterMap['taskFilter'] = catagories;
+                                _taskFilterMap['priority'] = priority;
+                              }),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 25,
+                  height: 25,
+                  margin: const EdgeInsets.only(right: 15),
+                  child: RawMaterialButton(
+                    fillColor: TodoColors.deepPurple,
+                    shape: const CircleBorder(),
+                    elevation: 0.5,
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddTaskScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -1011,6 +1249,8 @@ class _HomeScreenState extends State<HomeScreen>
                             return Container();
                           }
                           if (state is FavouritePokemonLoaded) {
+                            if (state.pokemon == null) return Container();
+
                             if (state.pokemon != -1) {
                               return GestureDetector(
                                 onTap: () async {
@@ -1158,6 +1398,7 @@ class _HomeScreenState extends State<HomeScreen>
               bloc: _allPokemonBloc,
               builder: (context, state) {
                 if (state is AllPokemonLoaded) {
+                  if (state.pokemonStateList == null) Container();
                   return ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     addRepaintBoundaries: true,
@@ -1203,7 +1444,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   top: 3,
                                 )
                               : const EdgeInsets.only(
-                                  right: 3,
+                                  right: 1,
                                   bottom: 3,
                                   top: 3,
                                 ),
@@ -1252,7 +1493,7 @@ class _HomeScreenState extends State<HomeScreen>
         padding: const EdgeInsets.only(
           top: 10,
           bottom: 10,
-          left: 20,
+          left: 15,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1284,10 +1525,12 @@ class _HomeScreenState extends State<HomeScreen>
                       showModalBottomSheet(
                         context: context,
                         builder: (_) => FilterPicker(
-                          initCatagory: _todoFilter,
+                          nameFilter: "Todo",
+                          priority: _todoFilterMap['priority'],
+                          initCatagory: _todoFilterMap['todoFilter'],
                           onCompeleted: (catagories, priority) {
                             setState(() {
-                              _todoFilter = catagories;
+                              _todoFilterMap['todoFilter'] = catagories;
                             });
                           },
                         ),
@@ -1298,7 +1541,7 @@ class _HomeScreenState extends State<HomeScreen>
                 Container(
                   width: 25,
                   height: 25,
-                  margin: const EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(right: 15),
                   child: RawMaterialButton(
                     fillColor: TodoColors.deepPurple,
                     shape: const CircleBorder(),
@@ -1330,26 +1573,10 @@ class _HomeScreenState extends State<HomeScreen>
                 );
               } else {
                 List<Todo> _todoList = state.todo;
-                if (_todoFilter.contains(true)) {
-                  List<Todo> _filterTodoList = [];
-                  for (int i = 0; i < _todoFilter.length; i++) {
-                    if (_todoFilter[i]) {
-                      _todoList.forEach((todo) {
-                        if (todo.catagories[i] == true) {
-                          bool _isAdd = true;
-                          for (int j = 0; j < _filterTodoList.length; j++) {
-                            if (_filterTodoList[j] == todo) {
-                              _isAdd = false;
-                              break;
-                            }
-                          }
-                          if (_isAdd) _filterTodoList.add(todo);
-                        }
-                      });
-                    }
-                  }
-                  _todoList = _filterTodoList;
-                }
+
+                /// Sort todo by priority
+                _todoList = prioritySort(_todoList);
+                _todoList = todoFilterProcess(_todoList);
 
                 if (_todoList.length == 0) {
                   return const Center(
@@ -1383,7 +1610,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOfflineTaskTitle() => Padding(
         padding: const EdgeInsets.only(
-          left: 20,
+          left: 15,
           top: 10,
           bottom: 10,
         ),
@@ -1399,7 +1626,7 @@ class _HomeScreenState extends State<HomeScreen>
             Container(
               width: 25,
               height: 25,
-              margin: const EdgeInsets.only(right: 20),
+              margin: const EdgeInsets.only(right: 15),
               child: RawMaterialButton(
                 fillColor: TodoColors.deepPurple,
                 shape: const CircleBorder(),
@@ -1514,6 +1741,93 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   /// [Shared]
+  List<Task> taskFilterProcess(List<Task> taskList) {
+    List<Task> _taskList = taskList;
+
+    if (_taskFilterMap['taskFilter'].contains(true)) {
+      List<Task> _filterTaskList = [];
+      for (int i = 0; i < _taskFilterMap['taskFilter'].length; i++) {
+        if (_taskFilterMap['taskFilter'][i]) {
+          _taskList.forEach((task) {
+            if (task.catagories[i] == true) {
+              bool _isAdd = true;
+              for (int j = 0; j < _filterTaskList.length; j++) {
+                if (_filterTaskList[j] == task) {
+                  _isAdd = false;
+                  break;
+                }
+              }
+              if (_isAdd) _filterTaskList.add(task);
+            }
+          });
+        }
+      }
+      _taskList = _filterTaskList;
+    }
+
+    if (priorityList[_taskFilterMap['priority'].index] != "All") {
+      List<Task> _filterTaskList = [];
+
+      _taskList.forEach((task) {
+        if (task.priority == _taskFilterMap['priority']) {
+          _filterTaskList.add(task);
+        }
+      });
+      _taskList = _filterTaskList;
+    }
+
+    return _taskList;
+  }
+
+  List<Todo> prioritySort(List<Todo> todoList) {
+    List<Todo> _newList = [];
+    for (int i = 0; i <= 2; i++) {
+      for (Todo todo in todoList) {
+        if (todo.priority.index == i) {
+          _newList.add(todo);
+        }
+      }
+    }
+    return _newList;
+  }
+
+  List<Todo> todoFilterProcess(List<Todo> todoList) {
+    List<Todo> _todoList = todoList;
+
+    if (_todoFilterMap['todoFilter'].contains(true)) {
+      List<Todo> _filterTodoList = [];
+      _todoList.forEach((todo) {
+        bool _isAdd = true;
+
+        for (int i = 0; i < _todoFilterMap['todoFilter'].length; i++) {
+          if ((_todoFilterMap['todoFilter'][i] == true) &&
+              (_todoFilterMap['todoFilter'][i] == todo.catagories[i])) {
+          } else {
+            _isAdd = false;
+            break;
+          }
+        }
+
+        print(_isAdd);
+        if (_isAdd) _filterTodoList.add(todo);
+      });
+
+      _todoList = _filterTodoList;
+    }
+
+    if (_todoFilterMap['priority'] != PriorityState.All) {
+      List<Todo> _filterTodoList = [];
+
+      _todoList.forEach((todo) {
+        if (todo.priority == _todoFilterMap['priority']) {
+          _filterTodoList.add(todo);
+        }
+      });
+      _todoList = _filterTodoList;
+    }
+
+    return _todoList;
+  }
 
   Color colorStateOfPokemon(int state) {
     if (state == 0) {
@@ -1563,5 +1877,16 @@ class _HomeScreenState extends State<HomeScreen>
     } else {
       return 'Good evening,';
     }
+  }
+
+  setPriorityColor(String value) {
+    if (value == "Low") {
+      return TodoColors.lightGreen;
+    } else if (value == "Medium") {
+      return TodoColors.chocolate;
+    } else if (value == "High") {
+      return TodoColors.massiveRed;
+    } else
+      return TodoColors.blueAqua;
   }
 }

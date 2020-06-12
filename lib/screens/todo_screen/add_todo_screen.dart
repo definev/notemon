@@ -10,10 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
+import 'package:gottask/models/model.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
-import 'package:gottask/helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
@@ -26,7 +27,7 @@ class AddTodoScreen extends StatefulWidget {
 }
 
 class _AddTodoScreenState extends State<AddTodoScreen>
-    with SingleTickerProviderStateMixin, BlocCreator {
+    with SingleTickerProviderStateMixin, BlocCreator, FilterMixin {
   AnimationController animationController;
   Animation animation;
   Animation opacityAnimation;
@@ -47,6 +48,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
 
   String _audioPath = '';
   String _audioCode = '';
+  PriorityState _priority = PriorityState.Low;
 
   Directory appDocDirectory;
   FlutterAudioRecorder _recorder;
@@ -317,6 +319,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                     children: <Widget>[
                       _buildTitle('Color'),
                       _buildColorPicker(),
+                      _buildTitle('Priority'),
+                      _buildPriorityPicker(),
                       _buildTitle('Catagory'),
                       _buildCatagoriesPicker(context),
                     ],
@@ -371,7 +375,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                       opacity: animation.value,
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        margin: const EdgeInsets.symmetric(vertical: 7),
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
@@ -404,7 +408,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                       duration: animationController.duration,
                       opacity: animation.value,
                       child: Container(
-                        margin: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(7),
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
@@ -427,12 +431,16 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             imageFileList.isEmpty
                 ? isExpandCamera == true
                     ? Container()
-                    : AnimatedOpacity(
-                        opacity: opacityAnimation.value,
-                        duration: animationController.duration,
-                        child: Text(
-                          'Empty',
-                          style: kTitleStyle.copyWith(color: Colors.grey),
+                    : Expanded(
+                        child: Center(
+                          child: AnimatedOpacity(
+                            opacity: opacityAnimation.value,
+                            duration: animationController.duration,
+                            child: Text(
+                              'No files',
+                              style: kTitleStyle.copyWith(color: Colors.grey),
+                            ),
+                          ),
                         ),
                       )
                 : isExpandCamera == true
@@ -462,7 +470,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 }
               },
               child: Container(
-                margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                margin: const EdgeInsets.only(left: 7, right: 7, top: 5),
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
@@ -576,9 +584,16 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                       ],
                     ),
                   )
-                : Text(
-                    'Empty',
-                    style: kTitleStyle.copyWith(color: Colors.grey),
+                : Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'No files',
+                          style: kTitleStyle.copyWith(color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
           ],
         ),
@@ -586,41 +601,117 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     );
   }
 
+  Widget _buildPriorityPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
+      child: Row(
+        children: [
+          _priorityTile(PriorityState.High.index),
+          SizedBox(width: 10),
+          _priorityTile(PriorityState.Medium.index),
+          SizedBox(width: 10),
+          _priorityTile(PriorityState.Low.index),
+        ],
+      ),
+    );
+  }
+
+  Widget _priorityTile(int value) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          if (_priority != PriorityState.values[value]) {
+            _priority = PriorityState.values[value];
+          }
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        height: 45,
+        width: (MediaQuery.of(context).size.width - 50) / 3,
+        decoration: BoxDecoration(
+          color: _priority != PriorityState.values[value]
+              ? TodoColors.scaffoldWhite
+              : setPriorityColor(priorityList[value]),
+          border: Border.all(
+            color: _priority == PriorityState.values[value]
+                ? TodoColors.scaffoldWhite
+                : setPriorityColor(priorityList[value]),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            priorityList[value],
+            style: kNormalStyle.copyWith(
+              color: _priority == PriorityState.values[value]
+                  ? TodoColors.scaffoldWhite
+                  : setPriorityColor(priorityList[value]),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  setPriorityColor(String value) {
+    if (value == "Low") {
+      return TodoColors.lightGreen;
+    } else if (value == "Medium") {
+      return TodoColors.chocolate;
+    } else if (value == "High") {
+      return TodoColors.massiveRed;
+    } else
+      return TodoColors.blueAqua;
+  }
+
   Widget _buildCatagoriesPicker(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2),
-      child: SizedBox(
-        height: 46.0 * 4 - 10,
-        child: Center(
-          child: GridView(
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: MediaQuery.of(context).size.width / 92,
-            ),
-            children: List.generate(
-              catagories.length,
-              (index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _catagoryItems[index] = !_catagoryItems[index];
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: _catagoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
-                      width: 1.3,
-                    ),
-                    color: _catagoryItems[index]
+      padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
+      child: Wrap(
+        direction: Axis.horizontal,
+        children: List.generate(
+          catagories.length,
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                _catagoryItems[index] = !_catagoryItems[index];
+              });
+            },
+            child: AnimatedContainer(
+              height: 45,
+              width: (MediaQuery.of(context).size.width - 50) / 3,
+              duration: Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _catagoryItems[index] == false
+                      ? Color(
+                          int.parse(
+                            colors[indexColor],
+                          ),
+                        )
+                      : TodoColors.scaffoldWhite,
+                  width: 1,
+                ),
+                color: _catagoryItems[index]
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+              ),
+              padding: paddingCatagory(),
+              margin: marginCatagory(index),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    catagories[index]["iconData"],
+                    size: iconSize(),
+                    color: _catagoryItems[index] == false
                         ? Color(
                             int.parse(
                               colors[indexColor],
@@ -628,40 +719,21 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  margin: const EdgeInsets.all(2.5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Icon(
-                        catagories[index]["iconData"],
-                        size: 17,
-                        color: _catagoryItems[index] == false
-                            ? Color(
-                                int.parse(
-                                  colors[indexColor],
-                                ),
-                              )
-                            : TodoColors.scaffoldWhite,
-                      ),
-                      Text(
-                        '${catagories[index]["name"]}',
-                        style: TextStyle(
-                          fontFamily: 'Source_Sans_Pro',
-                          fontSize: 16,
-                          color: _catagoryItems[index] == false
-                              ? Color(
-                                  int.parse(
-                                    colors[indexColor],
-                                  ),
-                                )
-                              : TodoColors.scaffoldWhite,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    '${catagories[index]["name"]}',
+                    style: TextStyle(
+                      fontFamily: 'Source_Sans_Pro',
+                      fontSize: fontSize(),
+                      color: _catagoryItems[index] == false
+                          ? Color(
+                              int.parse(
+                                colors[indexColor],
+                              ),
+                            )
+                          : TodoColors.scaffoldWhite,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
@@ -783,7 +855,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
       );
 
   Container _cameraButton() => Container(
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(7),
         width: 100,
         height: 100,
         decoration: BoxDecoration(
@@ -861,8 +933,11 @@ class _AddTodoScreenState extends State<AddTodoScreen>
               audioPath: _haveRecord ? _audioPath : '',
               audioCode: _haveRecord ? _audioCode : '',
               catagories: _catagoryItems,
+              priority: _priority,
             );
             _todoBloc.add(AddTodoEvent(todo: _todo));
+
+            print(_todo.toMap().toString());
 
             if (await checkConnection())
               _repository.updateTodoToFirebase(_todo);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:gottask/utils/constant.dart';
 import 'package:moor/moor.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -31,17 +30,9 @@ class _ImageViewerState extends State<ImageViewer> {
         data: Theme.of(context)
             .copyWith(accentColor: widget.color.withOpacity(0.5)),
         child: Scaffold(
-          backgroundColor: TodoColors.scaffoldWhite,
           body: Stack(
             children: <Widget>[
               PhotoViewGallery.builder(
-                backgroundDecoration: BoxDecoration(
-                  color: TodoColors.scaffoldWhite,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
                 scrollPhysics: AlwaysScrollableScrollPhysics(),
                 pageController: pageController,
                 itemCount: widget.imageLinkList.length,
@@ -55,8 +46,8 @@ class _ImageViewerState extends State<ImageViewer> {
                 alignment: FractionalOffset.bottomLeft,
                 child: SafeArea(
                   child: Container(
-                    width: 50,
-                    height: 50,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(10),
@@ -70,9 +61,7 @@ class _ImageViewerState extends State<ImageViewer> {
                           color: Colors.white,
                           size: 35,
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ),

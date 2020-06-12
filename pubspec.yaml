@@ -24,7 +24,6 @@ dependencies:
   path_provider: ^1.6.0
   flutter_audio_recorder: any
   audioplayers: any
-  icons_helper: any
   font_awesome_flutter: ^8.5.0
   sleek_circular_slider: ^1.0.7
   dotted_border: ^1.0.4
@@ -44,7 +43,7 @@ dependencies:
   connectivity: ^0.4.8+6
   uuid: ^2.0.4
   loading_animations: ^2.1.0
-
+  google_fonts: any
 flutter_icons:
   android: true
   ios: true

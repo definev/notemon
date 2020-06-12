@@ -22,7 +22,7 @@ enum HandSide {
 class TodoColors {
   static const deepPurple = Color(0xFF44427D);
   static const lightOrange = Color(0xFF12947f);
-  static const pastelPink = Color(0xFFf7b71d);
+  static const deepYellow = Color(0xFFEEB902);
   static const scaffoldWhite = Color(0xFFF6F5F4);
   static const chocolate = Color(0xFFD2691E);
   static const grassOld = Color(0xFF535F2D);
@@ -91,43 +91,43 @@ const String bannerId = "ca-app-pub-8520565961626834/2808677078";
 
 const String rewardId = "ca-app-pub-8520565961626834/9794007386";
 
-List<String> icons = [
-  "Icons.star_border",
-  "Icons.airline_seat_individual_suite",
-  "Icons.library_books",
-  "Icons.library_music",
-  "Icons.wallpaper",
-  "Icons.warning",
-  "Icons.wifi",
-  "Icons.work",
-  "Icons.wb_incandescent",
-  "Icons.hot_tub",
-  "Icons.import_contacts",
-  "Icons.important_devices",
-  "Icons.screen_lock_portrait",
-  "Icons.rowing",
-  "Icons.description",
-  "Icons.directions_bike",
-  "Icons.email",
-  "Icons.fastfood",
-  "fa.heart",
-  "fa.heartbeat",
-  "fa.dog",
-];
+// List<String> icons = [
+//   "Icons.star_border",
+//   "Icons.airline_seat_individual_suite",
+//   "Icons.library_books",
+//   "Icons.library_music",
+//   "Icons.wallpaper",
+//   "Icons.warning",
+//   "Icons.wifi",
+//   "Icons.work",
+//   "Icons.wb_incandescent",
+//   "Icons.hot_tub",
+//   "Icons.import_contacts",
+//   "Icons.important_devices",
+//   "Icons.screen_lock_portrait",
+//   "Icons.rowing",
+//   "Icons.description",
+//   "Icons.directions_bike",
+//   "Icons.email",
+//   "Icons.fastfood",
+//   "fa.heart",
+//   "fa.heartbeat",
+//   "fa.dog",
+// ];
 
 List<String> colors = [
-  TodoColors.blueMoon.toString().substring(6, 16), // 1
-  TodoColors.deepPurple.toString().substring(6, 16), // 3
-  TodoColors.massiveRed.toString().substring(6, 16), // 2
-  TodoColors.grassOld.toString().substring(6, 16), // 4
-  TodoColors.blueAqua.toString().substring(6, 16), // 12
-  TodoColors.chocolate.toString().substring(6, 16), // 5
-  TodoColors.spaceGrey.toString().substring(6, 16), // 6
-  TodoColors.spiritBlue.toString().substring(6, 16), // 8
-  TodoColors.groundPink.toString().substring(6, 16), // 7
-  TodoColors.lightGreen.toString().substring(6, 16), // 10
-  TodoColors.lightOrange.toString().substring(6, 16), // 9
-  TodoColors.pastelPink.toString().substring(6, 16), // 11
+  TodoColors.blueMoon.toString().substring(6, 16),
+  TodoColors.deepPurple.toString().substring(6, 16),
+  TodoColors.massiveRed.toString().substring(6, 16),
+  TodoColors.grassOld.toString().substring(6, 16),
+  TodoColors.blueAqua.toString().substring(6, 16),
+  TodoColors.chocolate.toString().substring(6, 16),
+  TodoColors.spaceGrey.toString().substring(6, 16),
+  TodoColors.spiritBlue.toString().substring(6, 16),
+  TodoColors.groundPink.toString().substring(6, 16),
+  TodoColors.lightGreen.toString().substring(6, 16),
+  TodoColors.lightOrange.toString().substring(6, 16),
+  TodoColors.deepYellow.toString().substring(6, 16),
 ];
 
 List<Map<String, dynamic>> catagories = [
@@ -162,6 +162,10 @@ List<Map<String, dynamic>> catagories = [
   {
     "name": "Reminder",
     "iconData": Icons.edit,
+  },
+  {
+    "name": "Planing",
+    "iconData": Icons.calendar_today,
   },
 ];
 
