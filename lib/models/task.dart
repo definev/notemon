@@ -3,6 +3,7 @@
 //     final task = taskFromMap(jsonString);
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:gottask/models/model.dart';
 import 'package:meta/meta.dart';
 
@@ -34,6 +35,27 @@ class Task {
   String completeTimer;
   List<bool> isDoneAchieve;
   List<bool> catagories;
+
+  @override
+  int get hashCode => hashValues(
+        this.id,
+        this.timestamp,
+        this.taskName,
+        this.timer,
+        this.percent,
+        this.color,
+        this.achieve.toString(),
+        this.priority,
+        this.completeTimer,
+        this.isDoneAchieve.toString(),
+        this.catagories.toString(),
+      );
+  bool operator ==(other) {
+    if (other is Task && other.id == this.id) {
+      return true;
+    }
+    return false;
+  }
 
   Task copyWith({
     String id,
@@ -70,11 +92,11 @@ class Task {
       catagory.add(data);
     });
     List<String> achieve = [];
-    json["achieve"].forEach((data) {
+    json["achieve"]?.forEach((data) {
       achieve.add(data);
     });
     List<bool> isDoneAchieve = [];
-    json["isDoneAchieve"].forEach((data) {
+    json["isDoneAchieve"]?.forEach((data) {
       isDoneAchieve.add(data);
     });
 
@@ -94,20 +116,22 @@ class Task {
     );
   }
 
-  Map<String, dynamic> toFirebaseMap() => {
-        "id": id,
-        "timestamp": Timestamp.fromDate(timestamp),
-        "onDoing": onDoing ?? false,
-        "taskName": taskName,
-        "timer": timer,
-        "percent": percent,
-        "color": color,
-        "achieve": achieve,
-        "priority": priority.index,
-        "completeTimer": completeTimer,
-        "isDoneAchieve": isDoneAchieve,
-        "catagories": catagories,
-      };
+  Map<String, dynamic> toFirebaseMap() {
+    return {
+      "id": id,
+      "timestamp": Timestamp.fromDate(timestamp),
+      "onDoing": onDoing ?? false,
+      "taskName": taskName,
+      "timer": timer,
+      "percent": percent,
+      "color": color,
+      "achieve": achieve,
+      "priority": priority.index,
+      "completeTimer": completeTimer,
+      "isDoneAchieve": isDoneAchieve,
+      "catagories": catagories,
+    };
+  }
 
   Map<String, dynamic> toMap() => {
         "id": id,

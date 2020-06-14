@@ -63,11 +63,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   FirebaseRepository _repository;
 
   Future _openGallery() async {
-    File imageFile = await ImagePicker.pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 100,
-      maxWidth: 100,
-    );
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (imageFile != null) {
       images.add(base64Encode(imageFile.readAsBytesSync()));
       imageFileList.add(imageFile.readAsBytesSync());
@@ -281,10 +277,10 @@ class _AddTodoScreenState extends State<AddTodoScreen>
 
   Widget _buildTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10, top: 5),
+      padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
         title,
-        style: kNormalStyle.copyWith(color: Colors.grey),
+        style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -303,9 +299,9 @@ class _AddTodoScreenState extends State<AddTodoScreen>
           .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
       child: Scaffold(
         resizeToAvoidBottomPadding: false,
-        bottomNavigationBar: _buildAddTaskButton(context),
+        bottomNavigationBar: _buildAddTodoButton(context),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -313,20 +309,15 @@ class _AddTodoScreenState extends State<AddTodoScreen>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _buildTaskNameTextField(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _buildTitle('Color'),
-                      _buildColorPicker(),
-                      _buildTitle('Priority'),
-                      _buildPriorityPicker(),
-                      _buildTitle('Catagory'),
-                      _buildCatagoriesPicker(context),
-                    ],
-                  ),
+                  _buildTodoNameTextField(),
+                  _buildTitle('Color'),
+                  _buildColorPicker(),
+                  _buildTitle('Priority'),
+                  _buildPriorityPicker(),
+                  _buildTitle('Catagory'),
+                  _buildCatagoriesPicker(context),
                   _buildTitle('File'),
-                  _buildCameraPicker(context),
+                  _buildFilePicker(context),
                 ],
               ),
             ],
@@ -337,282 +328,271 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   }
 
   @deprecated
-  Column _buildCameraPicker(BuildContext context) {
+  Column _buildFilePicker(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                if (isExpandCamera == false) {
-                  animationController.forward();
-                  setState(() {
-                    isExpandCamera = true;
-                  });
-                } else {
-                  animationController.reverse();
-                  setState(() {
-                    isExpandCamera = false;
-                  });
-                }
-              },
-              child: _cameraButton(),
-            ),
-            isExpandCamera == true
-                ? GestureDetector(
-                    onTap: () async {
-                      animationController.reverse();
-                      await _openCamera();
-                      setState(() {
-                        isExpandCamera = false;
-                      });
-                    },
-                    child: AnimatedOpacity(
-                      duration: animationController.duration,
-                      opacity: animation.value,
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(vertical: 7),
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Color(int.parse(colors[indexColor])),
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: Icon(
-                          SimpleLineIcons.camera,
-                          color: Color(int.parse(colors[indexColor])),
-                          size: 50,
-                        ),
-                      ),
-                    ),
-                  )
-                : Container(height: 0, width: 0),
-            isExpandCamera == true
-                ? GestureDetector(
-                    onTap: () async {
-                      animationController.reverse();
-                      await _openGallery();
-                      setState(() {
-                        isExpandCamera = false;
-                      });
-                    },
-                    child: AnimatedOpacity(
-                      duration: animationController.duration,
-                      opacity: animation.value,
-                      child: Container(
-                        margin: const EdgeInsets.all(7),
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Color(int.parse(colors[indexColor])),
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: Icon(
-                          SimpleLineIcons.picture,
-                          color: Color(int.parse(colors[indexColor])),
-                          size: 50,
-                        ),
-                      ),
-                    ),
-                  )
-                : Container(height: 0, width: 0),
-            imageFileList.isEmpty
-                ? isExpandCamera == true
-                    ? Container()
-                    : Expanded(
-                        child: Center(
-                          child: AnimatedOpacity(
-                            opacity: opacityAnimation.value,
-                            duration: animationController.duration,
-                            child: Text(
-                              'No files',
-                              style: kTitleStyle.copyWith(color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      )
-                : isExpandCamera == true
-                    ? Container()
-                    : LimitedBox(
-                        maxHeight: 100,
-                        maxWidth: MediaQuery.of(context).size.width - 140,
-                        child: StreamBuilder<List<Uint8List>>(
-                          initialData: imageFileList,
-                          builder: (context, snapshot) =>
-                              _buildListImages(snapshot),
-                        ),
-                      ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () async {
-                if (await FlutterAudioRecorder.hasPermissions) {
-                  if (_isRecording == false) {
-                    _start();
-                  } else {
-                    _stop();
-                  }
-                }
-              },
-              child: Container(
-                margin: const EdgeInsets.only(left: 7, right: 7, top: 5),
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Color(int.parse(colors[indexColor])),
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                child: Icon(
-                  _isRecording == false
-                      ? SimpleLineIcons.microphone
-                      : Icons.stop,
-                  size: 50,
-                  color: Color(int.parse(colors[indexColor])),
-                ),
-              ),
-            ),
-            _haveRecord
-                ? LimitedBox(
-                    maxHeight: 100,
-                    maxWidth: MediaQuery.of(context).size.width - 140,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        const SizedBox(height: 10),
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            activeTrackColor:
-                                Color(int.parse(colors[indexColor])),
-                            inactiveTrackColor: Colors.grey[350],
-                            trackHeight: 3,
-                            thumbColor: Color(int.parse(colors[indexColor])),
-                            thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 4,
-                            ),
-                            overlayColor: Color(int.parse(colors[indexColor]))
-                                .withOpacity(0.3),
-                            overlayShape: const RoundSliderOverlayShape(
-                              overlayRadius: 4,
-                            ),
-                          ),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width - 150,
-                            child: Slider(
-                              value: _position.inMilliseconds.toDouble(),
-                              onChanged: (value) {},
-                              min: 0,
-                              max: _duration.inMilliseconds.toDouble(),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            InkWell(
-                              onTap: () {
-                                if (_isRecording == false) {
-                                  if (_playerState == PlayerState.PLAY) {
-                                    onPauseAudio();
-                                  } else {
-                                    if (_playerState == PlayerState.READY ||
-                                        _playerState == PlayerState.PAUSE) {
-                                      onPlayAudio();
-                                    }
-                                  }
-                                }
-                              },
-                              child: Icon(
-                                _playerState == PlayerState.PLAY
-                                    ? Icons.pause
-                                    : Icons.play_arrow,
-                                size: 30,
-                                color: Color(int.parse(colors[indexColor])),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                if (_isRecording == false) {
-                                  if (_playerState == PlayerState.PLAY ||
-                                      _playerState == PlayerState.PAUSE) {
-                                    audioPlayer.stop();
-                                    final dir = Directory(
-                                        "${appDocDirectory.path}$_audioPath");
-                                    dir.deleteSync(recursive: true);
-                                  }
-                                  _audioPath = '';
-                                  _audioCode = '';
-
-                                  setState(() {
-                                    _duration = const Duration();
-                                    _position = const Duration();
-                                  });
-
-                                  _init();
-                                  setState(() {
-                                    _haveRecord = false;
-                                  });
-                                }
-                              },
-                              child: Icon(
-                                Icons.delete_outline,
-                                size: 30,
-                                color: Color(int.parse(colors[indexColor])),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                : Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'No files',
-                          style: kTitleStyle.copyWith(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-          ],
-        ),
+        _buildCameraPicker(context),
+        _buildMicrophonePicker(context),
       ],
     );
   }
 
-  Widget _buildPriorityPicker() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
-      child: Row(
-        children: [
-          _priorityTile(PriorityState.High.index),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Medium.index),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Low.index),
-        ],
+  @deprecated
+  Row _buildMicrophonePicker(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () async {
+            if (await FlutterAudioRecorder.hasPermissions) {
+              if (_isRecording == false) {
+                _start();
+              } else {
+                _stop();
+              }
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.only(top: 10),
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: Color(int.parse(colors[indexColor])),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Icon(
+              _isRecording == false ? SimpleLineIcons.microphone : Icons.stop,
+              size: 50,
+              color: Color(int.parse(colors[indexColor])),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        _haveRecord
+            ? LimitedBox(
+                maxHeight: 100,
+                maxWidth: MediaQuery.of(context).size.width - 140,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    const SizedBox(height: 10),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Color(int.parse(colors[indexColor])),
+                        inactiveTrackColor: Colors.grey[350],
+                        trackHeight: 3,
+                        thumbColor: Color(int.parse(colors[indexColor])),
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 4,
+                        ),
+                        overlayColor: Color(int.parse(colors[indexColor]))
+                            .withOpacity(0.3),
+                        overlayShape: const RoundSliderOverlayShape(
+                          overlayRadius: 4,
+                        ),
+                      ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 140,
+                        child: Slider(
+                          value: _position.inMilliseconds.toDouble(),
+                          onChanged: (value) {},
+                          min: 0,
+                          max: _duration.inMilliseconds.toDouble(),
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        InkWell(
+                          onTap: () {
+                            if (_isRecording == false) {
+                              if (_playerState == PlayerState.PLAY) {
+                                onPauseAudio();
+                              } else {
+                                if (_playerState == PlayerState.READY ||
+                                    _playerState == PlayerState.PAUSE) {
+                                  onPlayAudio();
+                                }
+                              }
+                            }
+                          },
+                          child: Icon(
+                            _playerState == PlayerState.PLAY
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            size: 30,
+                            color: Color(int.parse(colors[indexColor])),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if (_isRecording == false) {
+                              if (_playerState == PlayerState.PLAY ||
+                                  _playerState == PlayerState.PAUSE) {
+                                audioPlayer.stop();
+                                final dir = Directory(
+                                    "${appDocDirectory.path}$_audioPath");
+                                dir.deleteSync(recursive: true);
+                              }
+                              _audioPath = '';
+                              _audioCode = '';
+
+                              setState(() {
+                                _duration = const Duration();
+                                _position = const Duration();
+                              });
+
+                              _init();
+                              setState(() {
+                                _haveRecord = false;
+                              });
+                            }
+                          },
+                          child: Icon(
+                            Icons.delete_outline,
+                            size: 30,
+                            color: Color(int.parse(colors[indexColor])),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            : Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'No files',
+                      style: kTitleStyle.copyWith(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+      ],
+    );
+  }
+
+  Row _buildCameraPicker(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        _cameraButton(
+          onTap: () {
+            if (isExpandCamera == false) {
+              animationController.forward();
+              setState(() => isExpandCamera = true);
+            } else {
+              animationController.reverse();
+              setState(() => isExpandCamera = false);
+            }
+          },
+        ),
+        const SizedBox(width: 10),
+        isExpandCamera == true
+            ? _functionCameraButton(
+                onTap: () async {
+                  animationController.reverse();
+                  await _openCamera();
+                  setState(() {
+                    isExpandCamera = false;
+                  });
+                },
+                iconData: SimpleLineIcons.camera,
+              )
+            : Container(),
+        isExpandCamera == true
+            ? _functionCameraButton(
+                onTap: () async {
+                  animationController.reverse();
+                  await _openGallery();
+                  setState(() {
+                    isExpandCamera = false;
+                  });
+                },
+                iconData: SimpleLineIcons.picture,
+              )
+            : Container(),
+        imageFileList.isEmpty
+            ? isExpandCamera == true
+                ? Container()
+                : Expanded(
+                    child: Center(
+                      child: AnimatedOpacity(
+                        opacity: opacityAnimation.value,
+                        duration: animationController.duration,
+                        child: Text(
+                          'No files',
+                          style: kTitleStyle.copyWith(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  )
+            : isExpandCamera == true
+                ? Container()
+                : LimitedBox(
+                    maxHeight: 100,
+                    maxWidth: MediaQuery.of(context).size.width - 140,
+                    child: StreamBuilder<List<Uint8List>>(
+                      initialData: imageFileList,
+                      builder: (context, snapshot) =>
+                          _buildListImages(snapshot),
+                    ),
+                  ),
+      ],
+    );
+  }
+
+  Widget _functionCameraButton({
+    VoidCallback onTap,
+    IconData iconData,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedOpacity(
+        duration: animationController.duration,
+        opacity: animation.value,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 200),
+          width: 100,
+          height: 100,
+          margin: EdgeInsets.only(right: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(int.parse(colors[indexColor])),
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Icon(
+            iconData,
+            color: Color(int.parse(colors[indexColor])),
+            size: 50,
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildPriorityPicker() {
+    return Row(
+      children: [
+        _priorityTile(PriorityState.High.index),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Medium.index),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Low.index),
+      ],
     );
   }
 
@@ -667,25 +647,48 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
-      child: Wrap(
-        direction: Axis.horizontal,
-        children: List.generate(
-          catagories.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _catagoryItems[index] = !_catagoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
+    return Wrap(
+      direction: Axis.horizontal,
+      children: List.generate(
+        catagories.length,
+        (index) => GestureDetector(
+          onTap: () {
+            setState(() {
+              _catagoryItems[index] = !_catagoryItems[index];
+            });
+          },
+          child: AnimatedContainer(
+            height: 45,
+            width: (MediaQuery.of(context).size.width - 50) / 3,
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _catagoryItems[index] == false
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+                width: 1,
+              ),
+              color: _catagoryItems[index]
+                  ? Color(
+                      int.parse(
+                        colors[indexColor],
+                      ),
+                    )
+                  : TodoColors.scaffoldWhite,
+            ),
+            padding: paddingCatagory(),
+            margin: marginCatagory(index),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Icon(
+                  catagories[index]["iconData"],
+                  size: iconSize(),
                   color: _catagoryItems[index] == false
                       ? Color(
                           int.parse(
@@ -693,24 +696,12 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                           ),
                         )
                       : TodoColors.scaffoldWhite,
-                  width: 1,
                 ),
-                color: _catagoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: paddingCatagory(),
-              margin: marginCatagory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
+                Text(
+                  '${catagories[index]["name"]}',
+                  style: TextStyle(
+                    fontFamily: 'Source_Sans_Pro',
+                    fontSize: fontSize(),
                     color: _catagoryItems[index] == false
                         ? Color(
                             int.parse(
@@ -719,22 +710,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                  Text(
-                    '${catagories[index]["name"]}',
-                    style: TextStyle(
-                      fontFamily: 'Source_Sans_Pro',
-                      fontSize: fontSize(),
-                      color: _catagoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -742,120 +719,196 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     );
   }
 
-  Widget _buildColorPicker() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1.5),
-        child: SizedBox(
-          height: 50 * 2.0 + 28,
-          child: GridView(
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 6,
-              childAspectRatio: 1,
-            ),
+  Widget _buildColorPicker() {
+    return SizedBox(
+      height: (MediaQuery.of(context).size.width - 60) / 3 + 5,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
-              colors.length,
+              colors.length ~/ 2,
               (index) {
                 if (indexColor == index) {
-                  return Container(
-                    margin: const EdgeInsets.all(3),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(
-                        int.parse(colors[index]),
-                      ),
-                    ),
+                  return _colorTile(
+                    index,
                     child: Icon(Icons.check, color: Colors.white),
                   );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => indexColor = index);
+                    },
+                    child: _colorTile(index),
+                  );
                 }
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      indexColor = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(3),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(
-                        int.parse(colors[index]),
-                      ),
-                    ),
-                  ),
-                );
               },
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              colors.length ~/ 2,
+              (newIndex) {
+                int index = newIndex + colors.length ~/ 2;
+                if (indexColor == index) {
+                  return _colorTile(
+                    index,
+                    child: Icon(Icons.check, color: Colors.white),
+                  );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => indexColor = index);
+                    },
+                    child: _colorTile(index),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _colorTile(int index, {Widget child}) {
+    return Container(
+      height: (MediaQuery.of(context).size.width - 60) / 6,
+      width: (MediaQuery.of(context).size.width - 60) / 6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Color(
+          int.parse(colors[index]),
         ),
-      );
+      ),
+      child: child ?? null,
+    );
+  }
 
   ListView _buildListImages(AsyncSnapshot<List<Uint8List>> snapshot) =>
       ListView.builder(
+        physics: BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: snapshot.data.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 100,
-            width: 100,
-            child: Stack(
-              children: <Widget>[
-                SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ImageViewer(
-                            color: Color(int.parse(colors[indexColor])),
-                            imageLinkList: snapshot.data,
-                            imageLinkIndex: index,
+        itemBuilder: (context, index) {
+          if (index == snapshot.data.length - 1) {
+            return SizedBox(
+              height: 100,
+              width: 100,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageViewer(
+                              color: Color(int.parse(colors[indexColor])),
+                              imageLinkList: snapshot.data,
+                              imageLinkIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Image.memory(
+                        snapshot.data[index],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Align(
+                      alignment: FractionalOffset.topRight,
+                      child: GestureDetector(
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white38,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white.withOpacity(0.5),
+                            size: 20,
                           ),
                         ),
-                      );
-                    },
-                    child: Image.memory(
-                      snapshot.data[index],
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Align(
-                    alignment: FractionalOffset.topRight,
-                    child: GestureDetector(
-                      child: Material(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white38,
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.white.withOpacity(0.5),
-                          size: 20,
-                        ),
+                        onTap: () {
+                          images.removeAt(index);
+                          setState(() => snapshot.data.removeAt(index));
+                        },
                       ),
-                      onTap: () {
-                        images.removeAt(index);
-                        setState(() => snapshot.data.removeAt(index));
-                      },
                     ),
                   ),
-                ),
-                Container(),
-              ],
+                  Container(),
+                ],
+              ),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageViewer(
+                              color: Color(int.parse(colors[indexColor])),
+                              imageLinkList: snapshot.data,
+                              imageLinkIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Image.memory(
+                        snapshot.data[index],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Align(
+                      alignment: FractionalOffset.topRight,
+                      child: GestureDetector(
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white38,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white.withOpacity(0.5),
+                            size: 20,
+                          ),
+                        ),
+                        onTap: () {
+                          images.removeAt(index);
+                          setState(() => snapshot.data.removeAt(index));
+                        },
+                      ),
+                    ),
+                  ),
+                  Container(),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       );
 
-  Container _cameraButton() => Container(
-        margin: const EdgeInsets.all(7),
+  Widget _cameraButton({VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
         width: 100,
         height: 100,
         decoration: BoxDecoration(
@@ -894,11 +947,12 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             ),
           ],
         ),
-      );
+      ),
+    );
+  }
 
-  Widget _buildTaskNameTextField() => AnimatedContainer(
+  Widget _buildTodoNameTextField() => AnimatedContainer(
         duration: Duration(milliseconds: 100),
-        margin: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -918,7 +972,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         ),
       );
 
-  Widget _buildAddTaskButton(BuildContext context) => GestureDetector(
+  Widget _buildAddTodoButton(BuildContext context) => GestureDetector(
         onTap: () async {
           if (_isRecording == false) {
             isCreate = true;

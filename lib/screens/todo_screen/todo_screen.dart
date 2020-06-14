@@ -77,11 +77,7 @@ class _TodoScreenState extends State<TodoScreen>
   Todo _currentTask;
 
   Future _openGallery() async {
-    File imageFile = await ImagePicker.pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 100,
-      maxWidth: 100,
-    );
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (imageFile != null) {
       images.add(base64Encode(imageFile.readAsBytesSync()));
       imageFileList.add(imageFile.readAsBytesSync());
@@ -295,17 +291,17 @@ class _TodoScreenState extends State<TodoScreen>
         _subAudioPath != null &&
         _subAudioPath != '') {
       var dir = File(appDocDirectory.path + _subAudioPath);
-      dir.deleteSync(recursive: true);
+      if (dir.existsSync()) dir.deleteSync(recursive: true);
     }
     await _contentStreamController.close();
   }
 
   Widget _buildTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10, top: 5),
+      padding: const EdgeInsets.only(left: 3, top: 2, bottom: 5),
       child: Text(
         title,
-        style: kNormalStyle.copyWith(color: Colors.black87),
+        style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -417,7 +413,7 @@ class _TodoScreenState extends State<TodoScreen>
           ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -433,133 +429,7 @@ class _TodoScreenState extends State<TodoScreen>
                   _buildTitle('Catagory'),
                   _buildCatagoriesPicker(context),
                   _buildTitle('File'),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          GestureDetector(
-                            onTap: () {
-                              if (isExpandCamera == false) {
-                                animationController.forward();
-                                setState(() => isExpandCamera = true);
-                              } else {
-                                animationController.reverse();
-                                setState(() => isExpandCamera = false);
-                              }
-                            },
-                            child: _cameraButton(),
-                          ),
-                          isExpandCamera == true
-                              ? GestureDetector(
-                                  onTap: () async {
-                                    animationController.reverse();
-                                    await _openCamera();
-                                    setState(() {
-                                      isExpandCamera = false;
-                                    });
-                                  },
-                                  child: AnimatedOpacity(
-                                    duration: animationController.duration,
-                                    opacity: animation.value,
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 10),
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: Color(
-                                              int.parse(colors[indexColor])),
-                                          width: 1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                      child: Icon(
-                                        SimpleLineIcons.camera,
-                                        color: Color(
-                                            int.parse(colors[indexColor])),
-                                        size: 50,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(height: 0, width: 0),
-                          isExpandCamera == true
-                              ? GestureDetector(
-                                  onTap: () async {
-                                    animationController.reverse();
-                                    await _openGallery();
-                                    setState(() => isExpandCamera = false);
-                                  },
-                                  child: AnimatedOpacity(
-                                    duration: animationController.duration,
-                                    opacity: animation.value,
-                                    child: Container(
-                                      margin: const EdgeInsets.all(10),
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: Color(
-                                              int.parse(colors[indexColor])),
-                                          width: 1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                      child: Icon(
-                                        SimpleLineIcons.picture,
-                                        color: Color(
-                                            int.parse(colors[indexColor])),
-                                        size: 50,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(height: 0, width: 0),
-                          imageFileList.isEmpty
-                              ? isExpandCamera == true
-                                  ? Container()
-                                  : Expanded(
-                                      child: AnimatedOpacity(
-                                        opacity: opacityAnimation.value,
-                                        duration: animationController.duration,
-                                        child: Center(
-                                          child: AnimatedOpacity(
-                                            opacity: opacityAnimation.value,
-                                            duration:
-                                                animationController.duration,
-                                            child: Text(
-                                              'No files',
-                                              style: kTitleStyle.copyWith(
-                                                  color: Colors.grey),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                              : isExpandCamera == true
-                                  ? Container()
-                                  : LimitedBox(
-                                      maxHeight: 100,
-                                      maxWidth:
-                                          MediaQuery.of(context).size.width -
-                                              140,
-                                      child: StreamBuilder<List<Uint8List>>(
-                                        initialData: imageFileList,
-                                        builder: (context, snapshot) =>
-                                            _buildListImages(snapshot),
-                                      ),
-                                    ),
-                        ],
-                      ),
-                      _buildMicrophone(context),
-                    ],
-                  ),
+                  _buildFilePicker(context),
                 ],
               ),
             ],
@@ -570,7 +440,124 @@ class _TodoScreenState extends State<TodoScreen>
   }
 
   @deprecated
-  Widget _buildMicrophone(BuildContext context) {
+  Column _buildFilePicker(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        _buildCameraPicker(context),
+        _buildMicrophonePicker(context),
+      ],
+    );
+  }
+
+  Row _buildCameraPicker(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () {
+            if (isExpandCamera == false) {
+              animationController.forward();
+              setState(() => isExpandCamera = true);
+            } else {
+              animationController.reverse();
+              setState(() => isExpandCamera = false);
+            }
+          },
+          child: _cameraButton(),
+        ),
+        const SizedBox(width: 10),
+        isExpandCamera == true
+            ? _functionCameraButton(
+                onTap: () async {
+                  animationController.reverse();
+                  await _openCamera();
+                  setState(() {
+                    isExpandCamera = false;
+                  });
+                },
+                iconData: SimpleLineIcons.camera,
+              )
+            : Container(),
+        isExpandCamera == true
+            ? _functionCameraButton(
+                onTap: () async {
+                  animationController.reverse();
+                  await _openGallery();
+                  setState(() => isExpandCamera = false);
+                },
+                iconData: SimpleLineIcons.picture,
+              )
+            : Container(),
+        imageFileList.isEmpty
+            ? isExpandCamera == true
+                ? Container()
+                : Expanded(
+                    child: AnimatedOpacity(
+                      opacity: opacityAnimation.value,
+                      duration: animationController.duration,
+                      child: Center(
+                        child: AnimatedOpacity(
+                          opacity: opacityAnimation.value,
+                          duration: animationController.duration,
+                          child: Text(
+                            'No files',
+                            style: kTitleStyle.copyWith(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+            : isExpandCamera == true
+                ? Container()
+                : LimitedBox(
+                    maxHeight: 100,
+                    maxWidth: MediaQuery.of(context).size.width - 140,
+                    child: StreamBuilder<List<Uint8List>>(
+                      initialData: imageFileList,
+                      builder: (context, snapshot) =>
+                          _buildListImages(snapshot),
+                    ),
+                  ),
+      ],
+    );
+  }
+
+  Widget _functionCameraButton({
+    VoidCallback onTap,
+    IconData iconData,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedOpacity(
+        duration: animationController.duration,
+        opacity: animation.value,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 200),
+          width: 100,
+          height: 100,
+          margin: EdgeInsets.only(right: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(int.parse(colors[indexColor])),
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Icon(
+            iconData,
+            color: Color(int.parse(colors[indexColor])),
+            size: 50,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @deprecated
+  Widget _buildMicrophonePicker(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -583,7 +570,7 @@ class _TodoScreenState extends State<TodoScreen>
           },
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200),
-            margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+            margin: const EdgeInsets.only(top: 10),
             width: 100,
             height: 100,
             decoration: BoxDecoration(
@@ -604,6 +591,7 @@ class _TodoScreenState extends State<TodoScreen>
             ),
           ),
         ),
+        const SizedBox(width: 10),
         _haveRecord
             ? LimitedBox(
                 maxHeight: 100,
@@ -721,68 +709,124 @@ class _TodoScreenState extends State<TodoScreen>
 
   ListView _buildListImages(AsyncSnapshot<List<Uint8List>> snapshot) =>
       ListView.builder(
+        physics: BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: snapshot.data.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 100,
-            width: 100,
-            child: Stack(
-              children: <Widget>[
-                SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ImageViewer(
-                            color: Color(int.parse(colors[indexColor])),
-                            imageLinkList: snapshot.data,
-                            imageLinkIndex: index,
+        itemBuilder: (context, index) {
+          if (index == snapshot.data.length - 1) {
+            return SizedBox(
+              height: 100,
+              width: 100,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageViewer(
+                              color: Color(int.parse(colors[indexColor])),
+                              imageLinkList: snapshot.data,
+                              imageLinkIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Image.memory(
+                        snapshot.data[index],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Align(
+                      alignment: FractionalOffset.topRight,
+                      child: GestureDetector(
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white38,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white54,
+                            size: 20,
                           ),
                         ),
-                      );
-                    },
-                    child: Image.memory(
-                      snapshot.data[index],
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Align(
-                    alignment: FractionalOffset.topRight,
-                    child: GestureDetector(
-                      child: Material(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white38,
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.white54,
-                          size: 20,
-                        ),
+                        onTap: () {
+                          images.removeAt(index);
+                          setState(() => snapshot.data.removeAt(index));
+                        },
                       ),
-                      onTap: () {
-                        images.removeAt(index);
-                        setState(() => snapshot.data.removeAt(index));
-                      },
                     ),
                   ),
-                ),
-                Container(),
-              ],
+                  Container(),
+                ],
+              ),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageViewer(
+                              color: Color(int.parse(colors[indexColor])),
+                              imageLinkList: snapshot.data,
+                              imageLinkIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Image.memory(
+                        snapshot.data[index],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Align(
+                      alignment: FractionalOffset.topRight,
+                      child: GestureDetector(
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white38,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white54,
+                            size: 20,
+                          ),
+                        ),
+                        onTap: () {
+                          images.removeAt(index);
+                          setState(() => snapshot.data.removeAt(index));
+                        },
+                      ),
+                    ),
+                  ),
+                  Container(),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       );
 
   Widget _cameraButton() => AnimatedContainer(
         duration: Duration(milliseconds: 200),
-        margin: const EdgeInsets.all(10),
         width: 100,
         height: 100,
         decoration: BoxDecoration(
@@ -827,7 +871,6 @@ class _TodoScreenState extends State<TodoScreen>
       );
 
   Container _buildTaskNameTextField() => Container(
-        margin: const EdgeInsets.all(5.5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -971,17 +1014,14 @@ class _TodoScreenState extends State<TodoScreen>
       );
 
   Widget _buildPriorityPicker() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5, top: 5),
-      child: Row(
-        children: [
-          _priorityTile(PriorityState.High.index),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Medium.index),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Low.index),
-        ],
-      ),
+    return Row(
+      children: [
+        _priorityTile(PriorityState.High.index),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Medium.index),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Low.index),
+      ],
     );
   }
 
@@ -1036,29 +1076,48 @@ class _TodoScreenState extends State<TodoScreen>
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 5,
-        left: 5,
-        right: 5,
-      ),
-      child: Wrap(
-        direction: Axis.horizontal,
-        children: List.generate(
-          catagories.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _catagoryItems[index] = !_catagoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
+    return Wrap(
+      direction: Axis.horizontal,
+      children: List.generate(
+        catagories.length,
+        (index) => GestureDetector(
+          onTap: () {
+            setState(() {
+              _catagoryItems[index] = !_catagoryItems[index];
+            });
+          },
+          child: AnimatedContainer(
+            height: 45,
+            width: (MediaQuery.of(context).size.width - 50) / 3,
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _catagoryItems[index] == false
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+                width: 1,
+              ),
+              color: _catagoryItems[index]
+                  ? Color(
+                      int.parse(
+                        colors[indexColor],
+                      ),
+                    )
+                  : TodoColors.scaffoldWhite,
+            ),
+            padding: paddingCatagory(),
+            margin: marginCatagory(index),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Icon(
+                  catagories[index]["iconData"],
+                  size: iconSize(),
                   color: _catagoryItems[index] == false
                       ? Color(
                           int.parse(
@@ -1066,24 +1125,12 @@ class _TodoScreenState extends State<TodoScreen>
                           ),
                         )
                       : TodoColors.scaffoldWhite,
-                  width: 1,
                 ),
-                color: _catagoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: paddingCatagory(),
-              margin: marginCatagory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
+                Text(
+                  '${catagories[index]["name"]}',
+                  style: TextStyle(
+                    fontFamily: 'Source_Sans_Pro',
+                    fontSize: fontSize(),
                     color: _catagoryItems[index] == false
                         ? Color(
                             int.parse(
@@ -1092,22 +1139,8 @@ class _TodoScreenState extends State<TodoScreen>
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                  Text(
-                    '${catagories[index]["name"]}',
-                    style: TextStyle(
-                      fontFamily: 'Source_Sans_Pro',
-                      fontSize: fontSize(),
-                      color: _catagoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -1115,54 +1148,71 @@ class _TodoScreenState extends State<TodoScreen>
     );
   }
 
-  Widget _buildColorPicker() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1.5),
-        child: SizedBox(
-          height: 50 * 2.0 + 28,
-          child: GridView(
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 6,
-              childAspectRatio: 1,
-            ),
+  Widget _buildColorPicker() {
+    return SizedBox(
+      height: (MediaQuery.of(context).size.width - 60) / 3 + 5,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
-              colors.length,
+              colors.length ~/ 2,
               (index) {
                 if (indexColor == index) {
-                  return Container(
-                    margin: const EdgeInsets.all(3),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(
-                        int.parse(colors[index]),
-                      ),
-                    ),
+                  return _colorTile(
+                    index,
                     child: Icon(Icons.check, color: Colors.white),
                   );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => indexColor = index);
+                    },
+                    child: _colorTile(index),
+                  );
                 }
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      indexColor = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(3),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(
-                        int.parse(colors[index]),
-                      ),
-                    ),
-                  ),
-                );
               },
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              colors.length ~/ 2,
+              (newIndex) {
+                int index = newIndex + colors.length ~/ 2;
+                if (indexColor == index) {
+                  return _colorTile(
+                    index,
+                    child: Icon(Icons.check, color: Colors.white),
+                  );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => indexColor = index);
+                    },
+                    child: _colorTile(index),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _colorTile(int index, {Widget child}) {
+    return Container(
+      height: (MediaQuery.of(context).size.width - 60) / 6,
+      width: (MediaQuery.of(context).size.width - 60) / 6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Color(
+          int.parse(colors[index]),
         ),
-      );
+      ),
+      child: child ?? null,
+    );
+  }
 }

@@ -10,35 +10,44 @@ part 'star_event.dart';
 part 'star_state.dart';
 
 class StarBloc extends Bloc<StarEvent, StarState> {
+  int addStar = 0;
+  int loseStar = 0;
   int currentStarPoint = 0;
   FirebaseRepository _repository = FirebaseRepository();
   @override
   StarState get initialState => StarInitial();
 
   _initStarBloc() async {
-    currentStarPoint = await currentStar();
+    addStar = await getAddStar();
+    loseStar = await getLoseStar();
+    currentStarPoint = addStar - loseStar;
     await _repository.initUser();
   }
 
   _addEvent(int point) async {
-    await getStar(point);
-    currentStarPoint += point;
+    addStar += point;
+    await setAddStar(addStar);
+    currentStarPoint = addStar - loseStar;
     if (await checkConnection()) {
-      _repository.updateStarpoint(currentStarPoint);
+      _repository.updateStarpoint(addStar, loseStar);
     }
   }
 
-  _buyEvent(int cost) async {
-    await loseStar(cost);
-    currentStarPoint -= cost;
+  _buyEvent(int point) async {
+    loseStar += point;
+    await setLoseStar(loseStar);
+    currentStarPoint = addStar - loseStar;
     if (await checkConnection()) {
-      _repository.updateStarpoint(currentStarPoint);
+      _repository.updateStarpoint(addStar, loseStar);
     }
   }
 
-  _setStarEvent(int star) async {
-    await setStar(star);
-    currentStarPoint = star;
+  _setStarEvent(int addStar, int loseStar) async {
+    await setAddStar(addStar);
+    await setLoseStar(loseStar);
+    this.addStar = addStar;
+    this.loseStar = loseStar;
+    currentStarPoint = addStar - loseStar;
   }
 
   @override
@@ -49,7 +58,7 @@ class StarBloc extends Bloc<StarEvent, StarState> {
       await _initStarBloc();
     }
     if (event is SetStarEvent) {
-      await _setStarEvent(event.point);
+      await _setStarEvent(event.starMap["addStar"], event.starMap["loseStar"]);
     }
     if (event is AddStarEvent) {
       await _addEvent(event.point);

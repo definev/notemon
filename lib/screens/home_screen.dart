@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
     'todo': false,
     'task': false,
     'pokemonState': false,
+    'starPoint': false,
   };
 
   ConnectionStatusSingleton connectionStatus;
@@ -174,14 +175,39 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  _updateStarpoint() async {
+    Map<String, int> _onlineStarpoint = await _repository.getOnlineStarpoint();
+    Map<String, int> _finalStarpoint = {
+      "addStar": _starBloc.addStar,
+      "loseStar": _starBloc.loseStar,
+    };
+
+    if (_onlineStarpoint["addStar"] != _finalStarpoint["addStar"] &&
+        _onlineStarpoint["loseStar"] != _finalStarpoint["loseStar"]) {
+      _onlineStarpoint.forEach((key, value) {
+        if (_finalStarpoint[key] < value) {
+          _finalStarpoint[key] = value;
+        }
+      });
+
+      _starBloc.add(
+        SetStarEvent(starMap: _finalStarpoint),
+      );
+    }
+
+    setState(() => _isLoading['starPoint'] = false);
+  }
+
   _updateDatabase() async {
     setState(() {
       _isLoading['todo'] = true;
       _isLoading['task'] = true;
       _isLoading['pokemonState'] = true;
+      _isLoading['starPoint'] = true;
     });
     await _updateTodo();
     await _updateTask();
+    await _updateStarpoint();
   }
 
   _updateTodosWhenbackToOnline(List<Todo> todoList) async {
@@ -250,12 +276,27 @@ class _HomeScreenState extends State<HomeScreen>
     for (Task task in _taskListLocal) {
       if (_deleteKey.contains(task.id)) {
         _taskBloc.add(
-          DeleteTaskEvent(
-            task: task,
-            addDeleteKey: true,
-          ),
+          DeleteTaskEvent(task: task, addDeleteKey: true),
         );
       }
+    }
+  }
+
+  _updateStarpointWhenbackToOnline(Map<String, dynamic> _onlineStarpoint) {
+    Map<String, int> _finalStarpoint = {
+      "addStar": _starBloc.addStar,
+      "loseStar": _starBloc.loseStar,
+    };
+
+    if (_onlineStarpoint["addStar"] != _finalStarpoint["addStar"] ||
+        _onlineStarpoint["loseStar"] != _finalStarpoint["loseStar"]) {
+      _onlineStarpoint.forEach((key, value) {
+        if (_finalStarpoint[key] < value) {
+          _finalStarpoint[key] = value;
+        }
+      });
+
+      _starBloc.add(SetStarEvent(starMap: _finalStarpoint));
     }
   }
 
@@ -269,9 +310,7 @@ class _HomeScreenState extends State<HomeScreen>
     _connectionChangeStream = connectionStatus.connectionChangeController;
     _intenetStreamSubscription = _connectionChangeStream.stream.listen(
       (hasInternet) async {
-        if (hasInternet) {
-          await _updateDatabase();
-        }
+        if (hasInternet) await _updateDatabase();
       },
     );
   }
@@ -354,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 );
               }
-              print(snapshot.data);
+              // print("SNAPSHOT:///${snapshot.data}");
               return IndexedStack(
                 children: [
                   Column(
@@ -371,12 +410,12 @@ class _HomeScreenState extends State<HomeScreen>
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      _buildOnlineHeader(),
+                      _buildOnlineHeader(snapshot.data),
                       _buildOnlinePetCollection(),
                       _buildOnlineTaskHeader(),
-                      _buildOnlineTask(),
+                      _buildOnlineTask(snapshot.data),
                       _buildOnlineTodoHeader(),
-                      _buildOnlineTodo(),
+                      _buildOnlineTodo(snapshot.data),
                     ],
                   ),
                 ],
@@ -391,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   /// [Online]
 
-  Widget _buildOnlineHeader() {
+  Widget _buildOnlineHeader(bool isOnline) {
     return Padding(
       padding: const EdgeInsets.only(
         right: 15,
@@ -470,7 +509,8 @@ class _HomeScreenState extends State<HomeScreen>
 
                         FavouritePokemon _favouritePokemon =
                             FavouritePokemon.fromMap(
-                                snapshot.data.documents[0].data);
+                          snapshot.data.documents[0].data,
+                        );
 
                         if (_favouritePokemon.pokemon != -1) {
                           return GestureDetector(
@@ -557,7 +597,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     );
                                   }
                                   if (snapshot.data.data == null) {
-                                    _repository.updateStarpoint(0);
+                                    _repository.updateStarpoint(0, 0);
                                     return Text(
                                       '0 ',
                                       style: kNormalStyle,
@@ -565,7 +605,9 @@ class _HomeScreenState extends State<HomeScreen>
                                   }
                                   Starpoint _starPoint =
                                       Starpoint.fromMap(snapshot.data.data);
-
+                                  if (isOnline)
+                                    _updateStarpointWhenbackToOnline(
+                                        snapshot.data.data);
                                   return Text(
                                     '${_starPoint.star} ',
                                     style: kNormalStyle,
@@ -864,16 +906,26 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 onTap: () {
+                  List<bool> _filterCatagoryClone = List.generate(
+                    _todoFilterMap['todoFilter'].length,
+                    (index) => _todoFilterMap['todoFilter'][index],
+                  );
+                  PriorityState _priorityStateClone =
+                      _todoFilterMap['priority'];
+
                   showModalBottomSheet(
                     context: context,
-                    builder: (_) => FilterPicker(
+                    builder: (context) => FilterPicker(
                       nameFilter: "Todo",
-                      priority: _todoFilterMap['priority'],
-                      initCatagory: _todoFilterMap['todoFilter'],
-                      onCompeleted: (catagories, priority) => setState(() {
-                        _todoFilterMap['todoFilter'] = catagories;
-                        _todoFilterMap['priority'] = priority;
-                      }),
+                      priority: _priorityStateClone,
+                      initCatagory: _filterCatagoryClone,
+                      onCompeleted: (catagories, priority) {
+                        print("HEEYYYEYEEY!");
+                        setState(() {
+                          _todoFilterMap['todoFilter'] = catagories;
+                          _todoFilterMap['priority'] = priority;
+                        });
+                      },
                     ),
                   );
                 },
@@ -900,7 +952,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildOnlineTodo() => Expanded(
+  Widget _buildOnlineTodo(bool isOnline) => Expanded(
         child: StreamBuilder<QuerySnapshot>(
           stream: _repository.firestore
               .collection('databases')
@@ -912,7 +964,7 @@ class _HomeScreenState extends State<HomeScreen>
             if (snapshots.connectionState == ConnectionState.waiting ||
                 _isLoading['todo'] == true) {
               return SizedBox(
-                height: kListViewHeight + 10,
+                height: kListViewHeight + 2,
                 width: double.infinity,
                 child: Center(
                   child: LoadingJumpingLine.circle(
@@ -928,7 +980,8 @@ class _HomeScreenState extends State<HomeScreen>
                   (todo) => _todoList.add(Todo.fromFirebaseMap(todo.data)));
               _todoList = todoFilterProcess(_todoList);
 
-              if (!_isLoading['todo']) _updateTodosWhenbackToOnline(_todoList);
+              if (!_isLoading['todo'] && isOnline)
+                _updateTodosWhenbackToOnline(_todoList);
               if (_todoList.isEmpty) {
                 return const Center(
                   child: Text(
@@ -1074,12 +1127,20 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 onTap: () {
+                  List<bool> _filterCatagoryClone = List.generate(
+                    _taskFilterMap['taskFilter'].length,
+                    (index) => _taskFilterMap['taskFilter'][index],
+                  );
+                  PriorityState _priorityStateClone =
+                      _taskFilterMap['priority'];
+
                   showModalBottomSheet(
                     context: context,
-                    builder: (_) => FilterPicker(
+                    builder: (context) => FilterPicker(
+                      key: UniqueKey(),
                       nameFilter: "Task",
-                      priority: _taskFilterMap['priority'],
-                      initCatagory: _taskFilterMap['taskFilter'],
+                      priority: _priorityStateClone,
+                      initCatagory: _filterCatagoryClone,
                       onCompeleted: (catagories, priority) => setState(() {
                         _taskFilterMap['taskFilter'] = catagories;
                         _taskFilterMap['priority'] = priority;
@@ -1117,7 +1178,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildOnlineTask() {
+  Widget _buildOnlineTask(bool isOnline) {
     return StreamBuilder<QuerySnapshot>(
       stream: _repository.firestore
           .collection('databases')
@@ -1129,7 +1190,7 @@ class _HomeScreenState extends State<HomeScreen>
         if (snapshots.connectionState == ConnectionState.waiting ||
             _isLoading['task'] == true) {
           return SizedBox(
-            height: kListViewHeight + 10,
+            height: kListViewHeight + 2,
             width: double.infinity,
             child: Center(
               child: LoadingJumpingLine.circle(
@@ -1142,7 +1203,7 @@ class _HomeScreenState extends State<HomeScreen>
         if (snapshots.data == null) {
           _repository.uploadAllTaskToFirebase(_taskBloc.taskList);
           return SizedBox(
-            height: kListViewHeight + 10,
+            height: kListViewHeight + 2,
             width: double.infinity,
             child: const Center(
               child: Text(
@@ -1154,7 +1215,7 @@ class _HomeScreenState extends State<HomeScreen>
         } else {
           if (snapshots.data.documents.isEmpty) {
             return SizedBox(
-              height: kListViewHeight + 10,
+              height: kListViewHeight + 2,
               width: double.infinity,
               child: const Center(
                 child: Text(
@@ -1169,9 +1230,23 @@ class _HomeScreenState extends State<HomeScreen>
                 (maps) => _taskList.add(Task.fromFirebaseMap(maps.data)));
             _taskList = taskFilterProcess(_taskList);
 
-            if (!_isLoading['task']) _updateTasksWhenbackToOnline(_taskList);
+            if (!_isLoading['task'] && isOnline)
+              _updateTasksWhenbackToOnline(_taskList);
+
+            if (_taskList.isEmpty) {
+              return SizedBox(
+                height: kListViewHeight + 2,
+                width: double.infinity,
+                child: const Center(
+                  child: Text(
+                    'Empty task',
+                    style: kNormalStyle,
+                  ),
+                ),
+              );
+            }
             return SizedBox(
-              height: kListViewHeight + 10,
+              height: kListViewHeight + 2,
               width: double.infinity,
               child: ListView.builder(
                 physics: BouncingScrollPhysics(),
@@ -1591,7 +1666,7 @@ class _HomeScreenState extends State<HomeScreen>
           if (state is TaskLoaded) {
             if (state.task.isEmpty) {
               return SizedBox(
-                height: kListViewHeight + 10,
+                height: kListViewHeight + 2,
                 width: double.infinity,
                 child: const Center(
                   child: Text(
@@ -1604,9 +1679,10 @@ class _HomeScreenState extends State<HomeScreen>
               List<Task> _taskList = state.task;
               _taskList = taskPrioritySort(_taskList);
               _taskList = taskFilterProcess(_taskList);
+
               if (_taskList.length == 0) {
                 return SizedBox(
-                  height: kListViewHeight + 10,
+                  height: kListViewHeight + 2,
                   width: double.infinity,
                   child: const Center(
                     child: Text(
@@ -1617,7 +1693,7 @@ class _HomeScreenState extends State<HomeScreen>
                 );
               }
               return SizedBox(
-                height: kListViewHeight + 10,
+                height: kListViewHeight + 2,
                 width: double.infinity,
                 child: ListView.builder(
                   physics: BouncingScrollPhysics(),
@@ -1626,6 +1702,7 @@ class _HomeScreenState extends State<HomeScreen>
                   itemBuilder: (context, index) {
                     if (index == _taskList.length) {
                       return Center(
+                        key: UniqueKey(),
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -1661,18 +1738,18 @@ class _HomeScreenState extends State<HomeScreen>
                       return Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Center(
+                          key: UniqueKey(),
                           child: TaskTile(
                             task: _taskList[index],
-                            key: UniqueKey(),
                           ),
                         ),
                       );
                     }
 
                     return Center(
+                      key: UniqueKey(),
                       child: TaskTile(
                         task: _taskList[index],
-                        key: UniqueKey(),
                       ),
                     );
                   },
@@ -1681,7 +1758,7 @@ class _HomeScreenState extends State<HomeScreen>
             }
           }
           return SizedBox(
-            height: kListViewHeight + 10,
+            height: kListViewHeight + 2,
             width: double.infinity,
             child: const Center(
               child: Text(

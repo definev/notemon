@@ -81,6 +81,8 @@ class FirebaseRepository {
   /// [Starpoint] methods
   Future<void> getStarpoint(StarBloc starBloc) =>
       _firebaseMethods.getStarpoint(starBloc);
-  Future<void> updateStarpoint(int currentStar) =>
-      _firebaseMethods.updateStarpoint(currentStar);
+  Future<Map<String, int>> getOnlineStarpoint() =>
+      _firebaseMethods.getOnlineStarpoint();
+  Future<void> updateStarpoint(int addStar, int loseStar) =>
+      _firebaseMethods.updateStarpoint(addStar, loseStar);
 }

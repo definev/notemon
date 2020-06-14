@@ -195,79 +195,74 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   }
 
   Widget _buildAchievment(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 5,
-      ),
-      child: SizedBox(
-        height: 50,
-        child: Row(
-          children: <Widget>[
-            Expanded(
+    return SizedBox(
+      height: 50,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(int.parse(colors[indexColor])),
+                  width: 1.2,
+                ),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  labelText: 'Achieve goal',
+                  labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+                  border: InputBorder.none,
+                ),
+                controller: _achieveTextController,
+                style: kNormalStyle.copyWith(
+                  fontFamily: "Source_Sans_Pro",
+                ),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              if (_achieveTextController.text != '' &&
+                  _achieveTextController != null) {
+                FocusScope.of(context).requestFocus(FocusNode());
+                setState(() {
+                  _achieveLists.add(_achieveTextController.text);
+                  _isDoneAchieveLists.add(false);
+                  _achieveTextController.clear();
+                });
+              }
+            },
+            child: Material(
+              elevation: 1,
+              color: Color(int.parse(colors[indexColor])),
+              borderRadius: BorderRadiusDirectional.circular(10),
               child: Container(
-                margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color(int.parse(colors[indexColor])),
-                    width: 1.2,
-                  ),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    labelText: 'Achieve goal',
-                    labelStyle: kNormalStyle.copyWith(color: Colors.grey),
-                    border: InputBorder.none,
-                  ),
-                  controller: _achieveTextController,
-                  style: kNormalStyle.copyWith(
-                    fontFamily: "Source_Sans_Pro",
-                  ),
+                height: 50,
+                width: 50,
+                child: Icon(
+                  Ionicons.ios_add,
+                  color: Colors.white,
                 ),
               ),
             ),
-            InkWell(
-              onTap: () {
-                if (_achieveTextController.text != '' &&
-                    _achieveTextController != null) {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  setState(() {
-                    _achieveLists.add(_achieveTextController.text);
-                    _isDoneAchieveLists.add(false);
-                    _achieveTextController.clear();
-                  });
-                }
-              },
-              child: Material(
-                elevation: 1,
-                color: Color(int.parse(colors[indexColor])),
-                borderRadius: BorderRadiusDirectional.circular(10),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Icon(
-                    Ionicons.ios_add,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
         title,
-        style: kNormalStyle.copyWith(color: Colors.grey),
+        style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -295,19 +290,14 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   }
 
   Widget _buildPriorityPicker() {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 5,
-      ),
-      child: Row(
-        children: [
-          _priorityTile(PriorityState.High.index),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Medium.index),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Low.index),
-        ],
-      ),
+    return Row(
+      children: [
+        _priorityTile(PriorityState.High.index),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Medium.index),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Low.index),
+      ],
     );
   }
 
@@ -362,27 +352,48 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 5,
-      ),
-      child: Wrap(
-        direction: Axis.horizontal,
-        children: List.generate(
-          catagories.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _catagoryItems[index] = !_catagoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
+    return Wrap(
+      direction: Axis.horizontal,
+      children: List.generate(
+        catagories.length,
+        (index) => GestureDetector(
+          onTap: () {
+            setState(() {
+              _catagoryItems[index] = !_catagoryItems[index];
+            });
+          },
+          child: AnimatedContainer(
+            height: 45,
+            width: (MediaQuery.of(context).size.width - 50) / 3,
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _catagoryItems[index] == false
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+                width: 1,
+              ),
+              color: _catagoryItems[index]
+                  ? Color(
+                      int.parse(
+                        colors[indexColor],
+                      ),
+                    )
+                  : TodoColors.scaffoldWhite,
+            ),
+            padding: paddingCatagory(),
+            margin: marginCatagory(index),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Icon(
+                  catagories[index]["iconData"],
+                  size: iconSize(),
                   color: _catagoryItems[index] == false
                       ? Color(
                           int.parse(
@@ -390,24 +401,12 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                           ),
                         )
                       : TodoColors.scaffoldWhite,
-                  width: 1,
                 ),
-                color: _catagoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: paddingCatagory(),
-              margin: marginCatagory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
+                Text(
+                  '${catagories[index]["name"]}',
+                  style: TextStyle(
+                    fontFamily: 'Source_Sans_Pro',
+                    fontSize: fontSize(),
                     color: _catagoryItems[index] == false
                         ? Color(
                             int.parse(
@@ -416,22 +415,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                  Text(
-                    '${catagories[index]["name"]}',
-                    style: TextStyle(
-                      fontFamily: 'Source_Sans_Pro',
-                      fontSize: fontSize(),
-                      color: _catagoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -509,9 +494,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Color(int.parse(colors[indexColor])).withOpacity(0.1),
-              blurRadius: 3,
-              spreadRadius: 1,
+              color: Color(int.parse(colors[indexColor])).withOpacity(0.05),
+              blurRadius: 5,
             ),
           ],
         ),
@@ -542,53 +526,73 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         ),
       );
 
-  Widget _buildColorPicker() => SizedBox(
-        height: 50 * 2.0 + 28,
-        child: GridView(
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 6,
-            childAspectRatio: 1,
+  Widget _buildColorPicker() {
+    return SizedBox(
+      height: (MediaQuery.of(context).size.width - 60) / 3 + 5,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              colors.length ~/ 2,
+              (index) {
+                if (indexColor == index) {
+                  return _colorTile(
+                    index,
+                    child: Icon(Icons.check, color: Colors.white),
+                  );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => indexColor = index);
+                    },
+                    child: _colorTile(index),
+                  );
+                }
+              },
+            ),
           ),
-          children: List.generate(
-            colors.length,
-            (index) {
-              if (indexColor == index) {
-                return Container(
-                  margin: const EdgeInsets.all(3),
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(
-                      int.parse(colors[index]),
-                    ),
-                  ),
-                  child: Icon(Icons.check, color: Colors.white),
-                );
-              }
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    indexColor = index;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(3),
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(
-                      int.parse(colors[index]),
-                    ),
-                  ),
-                ),
-              );
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(
+              colors.length ~/ 2,
+              (newIndex) {
+                int index = newIndex + colors.length ~/ 2;
+                if (indexColor == index) {
+                  return _colorTile(
+                    index,
+                    child: Icon(Icons.check, color: Colors.white),
+                  );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => indexColor = index);
+                    },
+                    child: _colorTile(index),
+                  );
+                }
+              },
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Container _colorTile(int index, {Widget child}) {
+    return Container(
+      height: (MediaQuery.of(context).size.width - 60) / 6,
+      width: (MediaQuery.of(context).size.width - 60) / 6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Color(
+          int.parse(colors[index]),
         ),
-      );
+      ),
+      child: child ?? null,
+    );
+  }
 
   @override
   void dispose() {

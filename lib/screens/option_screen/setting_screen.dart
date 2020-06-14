@@ -52,7 +52,12 @@ class _SettingScreenState extends State<SettingScreen>
     _taskList.forEach((task) =>
         _taskBloc.add(DeleteTaskEvent(task: task, addDeleteKey: false)));
     TaskTable.deleteAllDeleteKey();
-    _starBloc.add(SetStarEvent(point: null));
+    _starBloc.add(SetStarEvent(
+      starMap: {
+        "addStar": 0,
+        "loseStar": 0,
+      },
+    ));
     _favouritePokemonBloc.add(UpdateFavouritePokemonEvent(null));
   }
 

@@ -600,7 +600,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
 
   Widget _buyButton() => GestureDetector(
         onTap: () async {
-          if (await currentStar() >= 60) {
+          if (await getCurrentStar() >= 60) {
             _showBuyCheckDialog(context);
           }
         },

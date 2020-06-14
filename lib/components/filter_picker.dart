@@ -27,59 +27,54 @@ class _FilterPickerState extends State<FilterPicker>
   Color currentColor = TodoColors.blueAqua;
 
   Widget _buildCatagoryPicker(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: Wrap(
-        direction: Axis.horizontal,
-        children: List.generate(
-          catagories.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _catagories[index] = !_catagories[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 60) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
+    return Wrap(
+      direction: Axis.horizontal,
+      children: List.generate(
+        catagories.length,
+        (index) => GestureDetector(
+          onTap: () {
+            setState(() => _catagories[index] = !_catagories[index]);
+          },
+          child: AnimatedContainer(
+            height: 45,
+            width: (MediaQuery.of(context).size.width - 50) / 3,
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _catagories[index] == false
+                    ? setPriorityColor(priorityList[priority.index])
+                    : TodoColors.scaffoldWhite,
+                width: 1,
+              ),
+              color: _catagories[index]
+                  ? setPriorityColor(priorityList[priority.index])
+                  : TodoColors.scaffoldWhite,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            margin: marginCatagory(index),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Icon(
+                  catagories[index]["iconData"],
+                  size: iconSize(),
                   color: _catagories[index] == false
                       ? setPriorityColor(priorityList[priority.index])
                       : TodoColors.scaffoldWhite,
-                  width: 1,
                 ),
-                color: _catagories[index]
-                    ? setPriorityColor(priorityList[priority.index])
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              margin: marginCatagory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
+                Text(
+                  '${catagories[index]["name"]}',
+                  style: TextStyle(
+                    fontFamily: 'Source_Sans_Pro',
+                    fontSize: fontSize(),
+                    fontWeight: FontWeight.w500,
                     color: _catagories[index] == false
                         ? setPriorityColor(priorityList[priority.index])
                         : TodoColors.scaffoldWhite,
                   ),
-                  Text(
-                    '${catagories[index]["name"]}',
-                    style: TextStyle(
-                      fontFamily: 'Source_Sans_Pro',
-                      fontSize: fontSize(),
-                      fontWeight: FontWeight.w500,
-                      color: _catagories[index] == false
-                          ? setPriorityColor(priorityList[priority.index])
-                          : TodoColors.scaffoldWhite,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -88,19 +83,16 @@ class _FilterPickerState extends State<FilterPicker>
   }
 
   _buildPriority() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          _priorityTile(PriorityState.High),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Medium),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.Low),
-          SizedBox(width: 10),
-          _priorityTile(PriorityState.All),
-        ],
-      ),
+    return Row(
+      children: [
+        _priorityTile(PriorityState.High),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Medium),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.Low),
+        SizedBox(width: 10),
+        _priorityTile(PriorityState.All),
+      ],
     );
   }
 
@@ -119,7 +111,7 @@ class _FilterPickerState extends State<FilterPicker>
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         height: 45,
-        width: (MediaQuery.of(context).size.width - 70) / 4,
+        width: (MediaQuery.of(context).size.width - 60) / 4,
         decoration: BoxDecoration(
           color: priority != value
               ? TodoColors.scaffoldWhite
@@ -159,14 +151,10 @@ class _FilterPickerState extends State<FilterPicker>
 
   Widget _buildTitle(String text) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 5,
-        left: 20,
-        right: 20,
-      ),
+      padding: const EdgeInsets.only(bottom: 5, left: 3, top: 2),
       child: Text(
         text,
-        style: kMediumStyle,
+        style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -181,44 +169,40 @@ class _FilterPickerState extends State<FilterPicker>
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
+    return Scaffold(
+      bottomNavigationBar: _confirmButton(context),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
           color: TodoColors.scaffoldWhite,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _header(context),
-            _buildTitle('Catagory'),
-            _buildCatagoryPicker(context),
-            _buildTitle('Priority'),
-            _buildPriority(),
-            _confirmButton(context),
-          ],
+          padding: const EdgeInsets.only(left: 15, right: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _header(context),
+              _buildTitle('Catagory'),
+              _buildCatagoryPicker(context),
+              _buildTitle('Priority'),
+              _buildPriority(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Padding _confirmButton(BuildContext context) {
+  Widget _confirmButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.only(top: 15),
       child: Row(
         children: [
           Expanded(
             child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
+              onTap: () => Navigator.pop(context),
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 height: 45,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                color: Colors.grey[300],
                 child: Center(
                   child: Text(
                     'Cancel',
@@ -230,23 +214,19 @@ class _FilterPickerState extends State<FilterPicker>
               ),
             ),
           ),
-          SizedBox(width: 10),
           Expanded(
             child: InkWell(
               onTap: () {
+                Navigator.pop(context);
+
                 if (widget.onCompeleted != null) {
                   widget.onCompeleted(_catagories, priority);
-                  print(_catagories);
                 }
-                Navigator.pop(context);
               },
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 height: 45,
-                decoration: BoxDecoration(
-                  color: TodoColors.deepPurple,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                color: TodoColors.deepPurple,
                 child: Center(
                   child: Text(
                     'Ok',
@@ -267,10 +247,9 @@ class _FilterPickerState extends State<FilterPicker>
     return Column(
       children: [
         SizedBox(
-          height: 58,
+          height: 65,
           width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 17),
+          child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -291,8 +270,8 @@ class _FilterPickerState extends State<FilterPicker>
                           });
                         },
                         child: Container(
-                          width: (MediaQuery.of(context).size.width - 60) / 3,
-                          height: 42,
+                          width: (MediaQuery.of(context).size.width - 50) / 3,
+                          height: 45,
                           decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(10),

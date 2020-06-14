@@ -192,7 +192,7 @@ class FirebaseMethods {
   }
 
   Future<void> updateTaskToFirebase(Task task) async {
-    print(task.toFirebaseMap());
+    // print(task.toFirebaseMap());
     await _firestore
         .collection('databases')
         .document(user.uid)
@@ -308,11 +308,42 @@ class FirebaseMethods {
         .get();
 
     if (_starSnapshot.data != null)
-      starBloc.add(SetStarEvent(point: _starSnapshot.data['star'] ?? 0));
+      starBloc.add(
+        SetStarEvent(
+          starMap: {
+            "addStar": _starSnapshot.data['addStar'] ?? 0,
+            "loseStar": _starSnapshot.data['loseStar'] ?? 0,
+          },
+        ),
+      );
   }
 
-  Future<void> updateStarpoint(int currentStar) async {
-    Map<String, int> _star = {"star": currentStar};
+  Future<Map<String, int>> getOnlineStarpoint() async {
+    Map<String, int> res = {
+      "addStar": 0,
+      "loseStar": 0,
+    };
+    DocumentSnapshot snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('starPoint')
+        .document('star')
+        .get();
+    try {
+      snapshot.data.forEach((key, value) {
+        res[key] = value;
+      });
+      return res;
+    } catch (e) {
+      return {"addStar": 0, "loseStar": 0};
+    }
+  }
+
+  Future<void> updateStarpoint(int addStar, int loseStar) async {
+    Map<String, int> _star = {
+      "addStar": addStar,
+      "loseStar": loseStar,
+    };
 
     await _firestore
         .collection('databases')

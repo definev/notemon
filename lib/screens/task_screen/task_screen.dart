@@ -544,9 +544,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         _timerState != TimerState.DONE
             ? IconButton(
                 icon: Icon(Icons.delete),
-                onPressed: () async {
-                  await _buildDeleteCheckDialog(context);
-                },
+                onPressed: () async => await _buildDeleteCheckDialog(context),
               )
             : IconButton(
                 icon: Icon(Icons.check),
@@ -558,6 +556,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   Navigator.pop(context);
                 },
               ),
+        IconButton(
+          icon: Icon(Icons.edit),
+          onPressed: () {},
+        ),
       ],
     );
   }

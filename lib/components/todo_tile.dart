@@ -59,9 +59,9 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                blurRadius: 10,
+                blurRadius: 3,
                 color: Color(int.parse(colors[widget.todo.color]))
-                    .withOpacity(0.1),
+                    .withOpacity(0.05),
               ),
             ],
           ),
@@ -198,9 +198,9 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                   : null,
               boxShadow: [
                 BoxShadow(
-                  blurRadius: 10,
+                  blurRadius: 3,
                   color: Color(int.parse(colors[widget.todo.color]))
-                      .withOpacity(0.1),
+                      .withOpacity(0.05),
                 ),
               ],
             ),
@@ -250,9 +250,9 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    blurRadius: 10,
+                    blurRadius: 3,
                     color: Color(int.parse(colors[widget.todo.color]))
-                        .withOpacity(0.1),
+                        .withOpacity(0.05),
                   ),
                 ],
               ),

@@ -58,34 +58,46 @@ Future<int> updateHandSide(HandSide handSide) async {
   return prefs.getInt(key);
 }
 
-Future<int> setStar(int star) async {
+/// [Starpoint]
+Future<int> getCurrentStar() async {
   final prefs = await SharedPreferences.getInstance();
-  final key = "my_star_key";
-  prefs.setInt(key, star);
-  return star;
-}
+  final addKey = "my_add_star_key";
+  final loseKey = "my_lose_star_key";
 
-Future<int> currentStar() async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = "my_star_key";
-  if (prefs.getInt(key) == null) prefs.setInt(key, 0);
-  final value = prefs.getInt(key);
+  if (prefs.getInt(addKey) == null) prefs.setInt(addKey, 0);
+  if (prefs.getInt(loseKey) == null) prefs.setInt(loseKey, 0);
+
+  int addStar = prefs.getInt(addKey);
+  int loseStar = prefs.getInt(loseKey);
+  final value = addStar - loseStar;
   return value;
 }
 
-Future<int> getStar(int value) async {
+Future<int> setAddStar(int value) async {
   final prefs = await SharedPreferences.getInstance();
-  final key = "my_star_key";
-  final res = prefs.getInt(key) + value;
-  prefs.setInt(key, res);
+  final key = "my_add_star_key";
+  prefs.setInt(key, value);
   return value;
 }
 
-Future<int> loseStar(int value) async {
+Future<int> getAddStar() async {
   final prefs = await SharedPreferences.getInstance();
-  final key = "my_star_key";
-  final res = prefs.getInt(key) - value;
-  prefs.setInt(key, res);
+  final key = "my_add_star_key";
+  int value = prefs.getInt(key) ?? 0;
+  return value;
+}
+
+Future<int> setLoseStar(int value) async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = "my_lose_star_key";
+  prefs.setInt(key, value);
+  return value;
+}
+
+Future<int> getLoseStar() async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = "my_lose_star_key";
+  int value = prefs.getInt(key) ?? 0;
   return value;
 }
 

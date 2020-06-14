@@ -6,8 +6,8 @@ abstract class StarEvent {}
 class InitStarBloc extends StarEvent {}
 
 class SetStarEvent extends StarEvent {
-  final int point;
-  SetStarEvent({this.point});
+  final Map<String, int> starMap;
+  SetStarEvent({this.starMap});
 }
 
 class AddStarEvent extends StarEvent {

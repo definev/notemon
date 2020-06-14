@@ -24,19 +24,24 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<void> _addEvent(Task task) async {
     await TaskTable.insertTask(task);
-    taskList = await TaskTable.selectAllTask();
+    bool isAdd = !taskList.contains(task);
+    if (isAdd) {
+      taskList.add(task);
+    }
   }
 
   Future<void> _updateEvent(Task task) async {
     await TaskTable.updateTask(task);
-    taskList = await TaskTable.selectAllTask();
+    taskList[taskList.indexWhere((currentTask) => currentTask == task)] = task;
   }
 
   Future<void> _deleteEvent(Task task, bool addDeleteKey) async {
     await TaskTable.deleteTask(task);
-    taskList = await TaskTable.selectAllTask();
+    taskList
+        .removeAt(taskList.indexWhere((currentTask) => currentTask == task));
     if (addDeleteKey) {
       await TaskTable.insertTaskDeleteKey(task.id);
+      print((await TaskTable.selectAllTask()).toString());
       deleteTaskKey = await TaskTable.selectAllDeleteKey();
     }
   }

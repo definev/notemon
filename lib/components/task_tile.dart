@@ -53,14 +53,12 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
         width: kListViewHeight,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          color: Color(
-            int.parse(colors[widget.task.color]),
-          ),
+          color: Color(int.parse(colors[widget.task.color])),
           boxShadow: [
             BoxShadow(
-              blurRadius: 10,
+              blurRadius: 5,
               color:
-                  Color(int.parse(colors[widget.task.color])).withOpacity(0.1),
+                  Color(int.parse(colors[widget.task.color])).withOpacity(0.2),
             ),
           ],
         ),

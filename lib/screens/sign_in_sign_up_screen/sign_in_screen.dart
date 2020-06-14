@@ -38,8 +38,8 @@ class _SignInScreenState extends State<SignInScreen> {
         Provider.of<StarBloc>(context, listen: false),
       );
     });
-
-    Navigator.pushReplacementNamed(context, '/home');
+    Navigator.popUntil(context, (route) => route.isFirst);
+    Navigator.popAndPushNamed(context, '/home');
   }
 
   @override

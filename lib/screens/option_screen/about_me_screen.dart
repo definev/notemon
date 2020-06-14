@@ -163,8 +163,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                           ),
                           GestureDetector(
                             onTap: () async {
-                              const url =
-                                  'https://www.facebook.com/profile.php?id=100013808691060';
+                              const url = 'https://www.facebook.com/definev';
                               if (await canLaunch(url)) {
                                 await launch(url);
                               } else {
@@ -204,8 +203,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                           ),
                           GestureDetector(
                             onTap: () async {
-                              const url =
-                                  'https://github.com/definev';
+                              const url = 'https://github.com/definev';
                               if (await canLaunch(url)) {
                                 await launch(url);
                               } else {
@@ -231,7 +229,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                         child: FadeTransition(
                                           opacity: fadeAnimation,
                                           child: Icon(
-                                            MaterialCommunityIcons.github_circle,
+                                            MaterialCommunityIcons
+                                                .github_circle,
                                             size: 40,
                                             color: Colors.black,
                                           ),

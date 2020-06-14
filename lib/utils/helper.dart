@@ -37,7 +37,7 @@ mixin FilterMixin<T extends StatefulWidget> on State<T> {
     return EdgeInsets.symmetric(horizontal: 10);
   }
 
-  double iconSize() => 15;
+  double iconSize() => 16;
 
-  double fontSize() => 15;
+  double fontSize() => 16;
 }

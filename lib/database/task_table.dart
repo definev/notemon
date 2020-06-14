@@ -149,9 +149,13 @@ class TaskTable {
       String achieve = maps[index]['achieve']
           .substring(1, maps[index]['achieve'].length - 1);
       List<String> achieveList = achieve.split(', ');
+      achieveList.remove("");
+
       List<String> isDoneAchieve = maps[index]['isDoneAchieve']
           .substring(1, maps[index]['isDoneAchieve'].length - 1)
           .split(', ');
+      isDoneAchieve.remove("");
+
       List<bool> isDoneAchieveList = isDoneAchieve
           .map(
             (isDone) => isDone == "false" ? false : true,
