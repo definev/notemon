@@ -32,6 +32,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Animation animation;
   Animation opacityAnimation;
   int indexColor = 0;
+  int _imageSize = 0;
+  int _audioSize = 0;
 
   final TextEditingController _todoEditting = TextEditingController();
   bool isExpandCamera = false;
@@ -63,9 +65,13 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   FirebaseRepository _repository;
 
   Future _openGallery() async {
-    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File imageFile = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
     if (imageFile != null) {
       images.add(base64Encode(imageFile.readAsBytesSync()));
+      _imageSize += imageFile.lengthSync();
       imageFileList.add(imageFile.readAsBytesSync());
     }
   }
@@ -73,9 +79,11 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Future _openCamera() async {
     File imageFile = await ImagePicker.pickImage(
       source: ImageSource.camera,
+      imageQuality: 80,
     );
     if (imageFile != null) {
       images.add(base64Encode(imageFile.readAsBytesSync()));
+      _imageSize += imageFile.lengthSync();
       imageFileList.add(imageFile.readAsBytesSync());
     }
   }
@@ -195,6 +203,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     var result = await _recorder.stop();
     File _audioFile = File(result.path);
     _audioCode = base64Encode(_audioFile.readAsBytesSync());
+    _audioSize = _audioFile.lengthSync();
     initPlayer();
     setState(() {
       _current = result;
@@ -272,7 +281,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     if (isCreate == false) {
       _deleteFile();
     }
-    imageFileList.forEach((imageFile) => print(imageFile));
+    print("IMAGE TOTAL: $_imageSize");
+    print("AUDIO TOTAL: $_audioSize");
   }
 
   Widget _buildTitle(String title) {
@@ -990,8 +1000,6 @@ class _AddTodoScreenState extends State<AddTodoScreen>
               priority: _priority,
             );
             _todoBloc.add(AddTodoEvent(todo: _todo));
-
-            print(_todo.toMap().toString());
 
             if (await checkConnection())
               _repository.updateTodoToFirebase(_todo);

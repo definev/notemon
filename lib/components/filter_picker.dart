@@ -260,7 +260,7 @@ class _FilterPickerState extends State<FilterPicker>
                     fontSize: 25,
                   ),
                 ),
-                (_catagories.contains(true))
+                (_catagories.contains(true) || priority != PriorityState.All)
                     ? InkWell(
                         onTap: () {
                           setState(() {

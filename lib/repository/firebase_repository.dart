@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/models/model.dart';
+import 'package:gottask/repository/firestore_methods.dart';
 import 'package:gottask/repository/repository.dart';
 
 class FirebaseRepository {
   final FirebaseMethods _firebaseMethods = FirebaseMethods();
   final AuthServices _authServices = AuthServices();
+  final FirestoreMethods _firestoreMethods = FirestoreMethods();
   Firestore firestore = Firestore.instance;
   FirebaseUser get user => _firebaseMethods.user;
 
@@ -19,6 +23,12 @@ class FirebaseRepository {
 
   /// [Auth services] methods
   Future<FirebaseUser> googleSignIn() => _authServices.googleSignIn();
+
+  /// [Firestore] methods
+  Future<String> uploadImageFile(
+          FirebaseUser user, File imageFile, Map<String, String> fileInfo) =>
+      _firestoreMethods.uploadImageFile(user, imageFile, fileInfo);
+  // Future<void> uploadAudi
 
   /// [Task] methods
   Future<void> uploadAllTaskToFirebase(List<Task> taskList) =>

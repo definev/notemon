@@ -6,28 +6,40 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 class FirestoreMethods {
-  Future<void> uploadAudioFile(FirebaseUser user, String fileName) async {
+  Future<String> uploadImageFile(
+    FirebaseUser user,
+    File imageFile,
+    Map<String, String> fileInfo,
+  ) async {
+    final StorageReference ref = FirebaseStorage.instance.ref().child(
+        '${user.uid}/todos/images/${fileInfo["name"]}.${fileInfo["format"]}');
+
+    final StorageUploadTask uploadTask = ref.putFile(imageFile);
+
+    try {
+      var dowurl = await (await uploadTask.onComplete).ref.getDownloadURL();
+      return dowurl.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> uploadAudioFile(FirebaseUser user, File audioFile) async {
     final StorageReference ref = FirebaseStorage.instance
         .ref()
-        .child(user.uid)
-        .child('todos')
-        .child('audio')
-        .child(fileName);
-    Directory appDocDirectory;
-    if (Platform.isIOS) {
-      appDocDirectory = await getApplicationDocumentsDirectory();
-    } else {
-      appDocDirectory = await getExternalStorageDirectory();
-    }
+        .child('${user.uid}/')
+        .child('/todos')
+        .child('/audio');
 
-    File file = File(appDocDirectory.path + fileName);
-    final StorageUploadTask uploadTask = ref.putFile(
-      file,
-      StorageMetadata(contentLanguage: 'en'),
-    );
-    uploadTask.onComplete.then((value) {
-      print(value.ref.getDownloadURL());
+    final StorageUploadTask uploadTask = ref.putFile(audioFile);
+
+    dynamic res;
+
+    await uploadTask.onComplete.then((value) {
+      res = value.ref.getDownloadURL();
+      print(res);
     });
+    // return res;
   }
 
   Future<void> downloadAudioFile(
