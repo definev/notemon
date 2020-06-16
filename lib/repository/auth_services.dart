@@ -30,11 +30,44 @@ class AuthServices {
 
   Stream<FirebaseUser> get user => _firebaseAuth.onAuthStateChanged;
 
-  Future<FirebaseUser> anonLogin() async {
-    AuthResult _authResult = await _firebaseAuth.signInAnonymously();
-    FirebaseUser _user = _authResult.user;
-    updateUserData(_user);
-    return _user;
+  // Future<FirebaseUser> anonLogin() async {
+  //   AuthResult _authResult = await _firebaseAuth.signInAnonymously();
+  //   FirebaseUser _user = _authResult.user;
+  //   updateUserData(_user);
+  //   return _user;
+  // }
+
+  Future<FirebaseUser> handleSignInEmail(String email, String password) async {
+    try {
+      AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      final FirebaseUser user = result.user;
+
+      final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+      assert(user.uid == currentUser.uid);
+
+      print('signInEmail succeeded: $user');
+      
+      updateUserData(currentUser);
+
+      return user;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<FirebaseUser> handleSignUpEmail(String email, String password) async {
+    try {
+      AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      final FirebaseUser user = result.user;
+
+      updateUserData(user);
+
+      return user;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<FirebaseUser> googleSignIn() async {

@@ -13,6 +13,7 @@ import 'package:gottask/components/countdown_clock.dart';
 import 'package:gottask/components/parrallel_background.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/screens/task_screen/task_screen_subscreen/edit_task_screen.dart';
 import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:vibration/vibration.dart';
@@ -32,6 +33,8 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> with BlocCreator {
+  Task _currentTask;
+
   List<String> _achievelists;
   Duration _timer;
   int _percent;
@@ -69,7 +72,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   _onBackPress() async {
     //Back and update data
-    List<String> durTimer = widget.task.timer.split(':');
+    List<String> durTimer = _currentTask.timer.split(':');
     List<String> durTimerSecond = durTimer[2].split('.');
     if (_timerState == TimerState.PLAY)
       setState(() {
@@ -85,7 +88,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     Duration _completeTimer = _oldTimer - _timer;
     _taskBloc.add(
       EditTaskEvent(
-        task: widget.task.copyWith(
+        task: _currentTask.copyWith(
           achieve: _achievelists,
           catagories: _catagoryItems,
           completeTimer: _completeTimer.toString(),
@@ -95,7 +98,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       ),
     );
     _repository.updateTaskToFirebase(
-      widget.task.copyWith(
+      _currentTask.copyWith(
         achieve: _achievelists,
         catagories: _catagoryItems,
         completeTimer: _completeTimer.toString(),
@@ -115,49 +118,21 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     return true;
   }
 
-  // IconData _getTimerState() {
-  //   if (_timerState == TimerState.PAUSE)
-  //     return Icons.play_arrow;
-  //   else
-  //     return Icons.pause;
-  // }
-
-  // Widget _widgetInCircle() {
-  //   if (_timerState == TimerState.DONE) {
-  //     return Text(
-  //       'Done!',
-  //       style: TextStyle(
-  //         fontFamily: 'Alata',
-  //         fontSize: 30,
-  //         color: Color(int.parse(colors[widget.task.color])),
-  //       ),
-  //     );
-  //   } else {
-  //     return Icon(
-  //       _getTimerState(),
-  //       color: Color(
-  //         int.parse(
-  //           colors[widget.task.color],
-  //         ),
-  //       ),
-  //       size: 50,
-  //     );
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
-    if (!widget.task.onDoing) {
+    _currentTask = widget.task;
+
+    if (!_currentTask.onDoing) {
       FirebaseAdMob.instance.initialize(appId: appId);
       myInterstitial = _interstitialAds();
 
       achieveFocusNode = FocusNode();
-      _catagoryItems = widget.task.catagories;
+      _catagoryItems = _currentTask.catagories;
 
-      _achievelists = widget.task.achieve;
-      List<String> durTimer = widget.task.timer.split(':');
-      List<String> durCompleteTimer = widget.task.completeTimer.split(':');
+      _achievelists = _currentTask.achieve;
+      List<String> durTimer = _currentTask.timer.split(':');
+      List<String> durCompleteTimer = _currentTask.completeTimer.split(':');
       List<String> durTimerSecond = durTimer[2].split('.');
       List<String> durCompleteTimerSecond = durCompleteTimer[2].split('.');
       _timer = Duration(
@@ -168,10 +143,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       );
       _maxTimer = int.parse(durTimer[0]) * 3600 +
           int.parse(durTimer[1]) * 60 +
-          int.parse(
-            durTimerSecond[0],
-          );
-      _percent = widget.task.percent;
+          int.parse(durTimerSecond[0]);
+      _percent = _currentTask.percent;
       if (_timer == Duration(hours: 0, minutes: 0, seconds: 0)) {
         _timerState = TimerState.DONE;
       }
@@ -204,7 +177,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     );
                     Duration _completeTimer = _oldTimer - _timer;
                     _repository.updateTaskToFirebase(
-                      widget.task.copyWith(
+                      _currentTask.copyWith(
                         onDoing: true,
                         achieve: _achievelists,
                         catagories: _catagoryItems,
@@ -240,7 +213,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     Duration _completeTimer = _oldTimer - _timer;
                     _taskBloc.add(
                       EditTaskEvent(
-                        task: widget.task.copyWith(
+                        task: _currentTask.copyWith(
                           achieve: _achievelists,
                           catagories: _catagoryItems,
                           completeTimer: _completeTimer.toString(),
@@ -250,7 +223,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       ),
                     );
                     _repository.updateTaskToFirebase(
-                      widget.task.copyWith(
+                      _currentTask.copyWith(
                         onDoing: false,
                         achieve: _achievelists,
                         catagories: _catagoryItems,
@@ -278,14 +251,11 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         ),
         onChanged: (duration) {
           _timer = duration;
-          setState(() {
-            _percent++;
-          });
+          setState(() => _percent++);
         },
         onDone: () async {
-          audioPlayer = await audioCache.loop(
-            audioFile['Caught_Pokemon'],
-          );
+          audioPlayer = await audioCache.loop(audioFile['Caught_Pokemon']);
+
           var maxTime = Duration(
             hours: int.parse(durTimer[0]),
             minutes: int.parse(durTimer[1]),
@@ -297,6 +267,15 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           });
           int pointGet = maxTime.inMinutes;
           _starBloc.add(AddStarEvent(point: pointGet));
+          if (await Vibration.hasVibrator()) {
+            while (audioPlayer.state == AudioPlayerState.PLAYING) {
+              print("YO!");
+              Vibration.vibrate(
+                duration: 100,
+                amplitude: 200,
+              );
+            }
+          }
         },
         separator: ':',
         textStyle: TextStyle(
@@ -305,7 +284,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           fontSize: 40,
         ),
       );
-      _isDoneAchieve = widget.task.isDoneAchieve;
+      _isDoneAchieve = _currentTask.isDoneAchieve;
     }
   }
 
@@ -326,7 +305,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       _isInit = true;
     }
 
-    return widget.task.onDoing == false
+    return _currentTask.onDoing == false
         ? _bodyOnDoingFalse(context)
         : _bodyOnDoingTrue();
   }
@@ -334,7 +313,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   Theme _bodyOnDoingFalse(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        accentColor: Color(int.parse(colors[widget.task.color])),
+        accentColor: Color(int.parse(colors[_currentTask.color])),
       ),
       child: Scaffold(
         appBar: _appBar(context),
@@ -434,7 +413,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         children: <Widget>[
           SizedBox(height: 15),
           Text(
-            '${widget.task.taskName}',
+            '${_currentTask.taskName}',
             style: TextStyle(
               fontFamily: 'Alata',
               fontSize: MediaQuery.of(context).size.width / 25,
@@ -453,7 +432,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
               boxShadow: [
                 BoxShadow(
                   blurRadius: 3,
-                  color: Color(int.parse(colors[widget.task.color]))
+                  color: Color(int.parse(colors[_currentTask.color]))
                       .withOpacity(0.1),
                 ),
               ],
@@ -466,16 +445,19 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   ),
                   child: Stack(
                     children: [
-                      Container(
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 200),
                         height: 5,
-                        color: Color(int.parse(colors[widget.task.color]))
+                        color: Color(int.parse(colors[_currentTask.color]))
                             .withOpacity(0.5),
                       ),
                       AnimatedContainer(
                         height: 5,
-                        width: 100,
-                        duration: Duration(seconds: 2),
-                        color: Color(int.parse(colors[widget.task.color])),
+                        width: _percent /
+                            _maxTimer *
+                            (MediaQuery.of(context).size.width - 30),
+                        duration: Duration(milliseconds: 200),
+                        color: Color(int.parse(colors[_currentTask.color])),
                       ),
                     ],
                   ),
@@ -487,11 +469,11 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "“The purpose of our lives is to be happy.”",
+                        "“Facedown your phone to start timing.”",
                         style: kMediumStyle,
                       ),
                       Text(
-                        "— Dalai Lama",
+                        "— Notemon",
                         style: GoogleFonts.getFont(
                           'Dancing Script',
                           fontSize: 20,
@@ -533,7 +515,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         ),
       ),
       centerTitle: true,
-      backgroundColor: Color(int.parse(colors[widget.task.color])),
+      backgroundColor: Color(int.parse(colors[_currentTask.color])),
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
@@ -550,15 +532,24 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 icon: Icon(Icons.check),
                 onPressed: () async {
                   _taskBloc.add(
-                      DeleteTaskEvent(task: widget.task, addDeleteKey: true));
+                      DeleteTaskEvent(task: _currentTask, addDeleteKey: true));
                   if (await checkConnection())
-                    _repository.deleteTaskOnFirebase(widget.task);
+                    _repository.deleteTaskOnFirebase(_currentTask);
                   Navigator.pop(context);
                 },
               ),
         IconButton(
           icon: Icon(Icons.edit),
-          onPressed: () {},
+          onPressed: () async {
+            Task _editTask = await showModalBottomSheet(
+              context: context,
+              builder: (context) => EditTaskScreen(task: _currentTask),
+            );
+
+            _taskBloc.add(EditTaskEvent(task: _editTask));
+
+            setState(() => _currentTask = _editTask);
+          },
         ),
       ],
     );
@@ -589,7 +580,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: Color(int.parse(colors[widget.task.color])),
+                            color: Color(int.parse(colors[_currentTask.color])),
                             width: 1.2,
                           ),
                         ),
@@ -637,7 +628,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       },
                       child: Material(
                         elevation: 1,
-                        color: Color(int.parse(colors[widget.task.color])),
+                        color: Color(int.parse(colors[_currentTask.color])),
                         borderRadius: BorderRadiusDirectional.circular(10),
                         child: Container(
                           height: 50,
@@ -704,7 +695,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Color(int.parse(colors[widget.task.color])),
+                            color: Color(int.parse(colors[_currentTask.color])),
                           ),
                           child: Center(
                             child: Text(
@@ -720,9 +711,9 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       GestureDetector(
                         onTap: () async {
                           _taskBloc.add(DeleteTaskEvent(
-                              task: widget.task, addDeleteKey: true));
+                              task: _currentTask, addDeleteKey: true));
                           if (await checkConnection())
-                            _repository.deleteTaskOnFirebase(widget.task);
+                            _repository.deleteTaskOnFirebase(_currentTask);
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
@@ -731,7 +722,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Color(int.parse(colors[widget.task.color])),
+                            color: Color(int.parse(colors[_currentTask.color])),
                           ),
                           child: Center(
                             child: Text(
@@ -770,10 +761,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 bottomRight: Radius.circular(15),
                 topLeft: Radius.circular(15),
               ),
-              color: Color(int.parse(colors[widget.task.color])),
+              color: Color(int.parse(colors[_currentTask.color])),
               elevation: 3,
               shadowColor:
-                  Color(int.parse(colors[widget.task.color])).withOpacity(0.3),
+                  Color(int.parse(colors[_currentTask.color])).withOpacity(0.3),
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.all(18.0),

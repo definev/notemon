@@ -405,7 +405,8 @@ class _TodoScreenState extends State<TodoScreen>
                 _todoBloc.add(
                     DeleteTodoEvent(todo: _currentTask, addDeleteKey: true));
 
-                _starBloc.add(AddStarEvent(point: 1));
+                if (_currentTask.state == "done")
+                  _starBloc.add(AddStarEvent(point: 1));
                 _repository.deleteTodoOnFirebase(_currentTask);
                 Navigator.pop(context);
               },

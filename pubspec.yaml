@@ -1,7 +1,7 @@
 name: gottask
 description: A new Flutter project.
 
-version: 1.0.0+1
+version: 2.0.0+15
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # gzx_dropdown_menu: ^2.1.0
   provider: ^4.0.3
   percent_indicator: ^2.1.1
   swipedetector: ^1.2.0
@@ -44,7 +43,7 @@ dependencies:
   uuid: ^2.0.4
   loading_animations: ^2.1.0
   google_fonts: any
-  dio: any
+  regexpattern: ^0.2.3
 
 flutter_icons:
   android: true

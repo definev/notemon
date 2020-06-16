@@ -8,6 +8,7 @@ import 'package:gottask/utils/constant.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:regexpattern/regexpattern.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -18,6 +19,14 @@ class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
   FirebaseRepository _repository;
   bool _isLoading = false;
+
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  FocusNode _emailFocusNode = FocusNode();
+  FocusNode _passwordFocusNode = FocusNode();
+
+  final _formKey = GlobalKey<FormState>();
 
   _loginSuccess() async {
     updateLoginState(true);
@@ -126,94 +135,183 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height / 3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(
-                              Icons.mail,
-                              size: 30,
-                              color: TodoColors.lightGreen,
-                            ),
-                            SizedBox(width: 22),
-                            Expanded(
-                              child: TextField(
-                                cursorColor: TodoColors.deepPurple,
-                                style: kMediumStyle,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  labelStyle: kMediumStyle,
-                                  hintText: 'Your email',
-                                  hintStyle: kTinySmallStyle,
+                  Form(
+                    key: _formKey,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height / 3,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.mail,
+                                size: 30,
+                                color: TodoColors.lightGreen,
+                              ),
+                              SizedBox(width: 22),
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _emailController,
+                                  focusNode: _emailFocusNode,
+                                  validator: (value) {
+                                    bool valid = RegexValidation.hasMatch(
+                                        value, RegexPattern.email);
+
+                                    if (!valid) return "Email format wrong.";
+
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (_) =>
+                                      _passwordFocusNode.requestFocus(),
+                                  cursorColor: TodoColors.deepPurple,
+                                  style: kMediumStyle,
+                                  decoration: InputDecoration(
+                                    errorStyle: kTinySmallStyle.copyWith(
+                                      color: Colors.red,
+                                      fontSize: 10,
+                                    ),
+                                    labelText: 'Email',
+                                    labelStyle: kMediumStyle,
+                                    hintText: 'Your email',
+                                    hintStyle: kTinySmallStyle,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(
-                              Icons.lock,
-                              size: 30,
-                              color: TodoColors.lightGreen,
-                            ),
-                            SizedBox(width: 22),
-                            Expanded(
-                              child: TextField(
-                                cursorColor: TodoColors.deepPurple,
-                                style: kMediumStyle,
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: kMediumStyle,
-                                  hintText: 'Your password',
-                                  hintStyle: kTinySmallStyle,
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.lock,
+                                size: 30,
+                                color: TodoColors.lightGreen,
+                              ),
+                              SizedBox(width: 22),
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  focusNode: _passwordFocusNode,
+                                  validator: (value) {
+                                    bool valid = RegexValidation.hasMatch(
+                                        value, RegexPattern.passwordNormal3);
+
+                                    if (!valid)
+                                      return "Password must contain at least one number and one uppercase letter.";
+
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (_) async {
+                                    if (_formKey.currentState.validate()) {
+                                      setState(() => _isLoading = true);
+                                      if (await checkConnection()) {
+                                        FirebaseUser user = await _authServices
+                                            .handleSignInEmail(
+                                          _emailController.text,
+                                          _passwordController.text,
+                                        );
+
+                                        if (user == null) {
+                                          Scaffold.of(context).showSnackBar(
+                                            SnackBar(
+                                              content:
+                                                  Text('Failed to sign in'),
+                                            ),
+                                          );
+                                        } else {
+                                          await _loginSuccess();
+                                        }
+                                      }
+                                      setState(() => _isLoading = false);
+                                    }
+                                  },
+                                  obscureText: true,
+                                  cursorColor: TodoColors.deepPurple,
+                                  style: kMediumStyle,
+                                  decoration: InputDecoration(
+                                    errorStyle: kTinySmallStyle.copyWith(
+                                      color: Colors.red,
+                                      fontSize: 10,
+                                    ),
+                                    labelText: 'Password',
+                                    labelStyle: kMediumStyle,
+                                    hintText: 'Your password',
+                                    hintStyle: kTinySmallStyle,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Column(
                     children: [
-                      SizedBox(
-                        height: 80,
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: SizedBox(
-                                height: 80,
-                                child: CustomPaint(
-                                    painter: ButtonPainter(context)),
+                      GestureDetector(
+                        onTap: () async {
+                          if (_formKey.currentState.validate()) {
+                            setState(() => _isLoading = true);
+                            if (await checkConnection()) {
+                              FirebaseUser user =
+                                  await _authServices.handleSignInEmail(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+
+                              if (user == null) {
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to sign in'),
+                                  ),
+                                );
+                                _emailController.clear();
+                                _passwordController.clear();
+                              } else {
+                                await _loginSuccess();
+                              }
+                            }
+                            setState(() => _isLoading = false);
+                          } else {
+                            _emailController.clear();
+                            _passwordController.clear();
+                          }
+                        },
+                        child: SizedBox(
+                          height: 80,
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: SizedBox(
+                                  height: 80,
+                                  child: CustomPaint(
+                                      painter: ButtonPainter(context)),
+                                ),
                               ),
-                            ),
-                            Center(
-                              child: Container(
-                                height: 80 - 12 * 1.9,
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF485563),
-                                  borderRadius: BorderRadius.horizontal(
-                                    left: Radius.circular(10),
+                              Center(
+                                child: Container(
+                                  height: 80 - 12 * 1.9,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF485563),
+                                    borderRadius: BorderRadius.horizontal(
+                                      left: Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Login',
+                                      style: kMediumStyle.copyWith(
+                                          color: Colors.white),
+                                    ),
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    'Login',
-                                    style: kMediumStyle.copyWith(
-                                        color: Colors.white),
-                                  ),
-                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -243,6 +341,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                         content: Text('Failed to sign in'),
                                       ),
                                     );
+                                    _emailController.clear();
+                                    _passwordController.clear();
                                   } else {
                                     await _loginSuccess();
                                   }
