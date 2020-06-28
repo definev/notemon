@@ -26,10 +26,14 @@ class AllPokemonScreen extends StatefulWidget {
 }
 
 class _AllPokemonScreenState extends State<AllPokemonScreen>
-    with AfterLayoutMixin<AllPokemonScreen>, BlocCreator {
+    with
+        AfterLayoutMixin<AllPokemonScreen>,
+        BlocCreator,
+        SingleTickerProviderStateMixin {
   int _currentPokemon = 0;
   int _currentStarPoint = 0;
   int _amount = 5;
+
   bool _isInit = false;
   bool _isLoaded = false;
   bool _isConnect = false;
@@ -45,313 +49,199 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
 
   int _videoWatched = 0;
 
-  Future _showBuyCheckDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Container(
-            height: 200,
-            width: 400,
-            decoration: BoxDecoration(
-              color: TodoColors.scaffoldWhite,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 20),
-                Text(
-                  'Are you sure?',
-                  style: kBigTitleStyle.copyWith(fontWeight: FontWeight.w200),
+  AnimationController _animationController;
+
+  getCurrentHandside() async => _currentHandside = await currentHandSide();
+
+  adsButton() =>
+      (_isConnect == true && _isLoaded == true) ? _adsContainer() : Container();
+
+  SafeArea _adsContainer() => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: GestureDetector(
+            onTap: () async {
+              await _showAdsWarning();
+            },
+            child: Material(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 5,
+                      color: Colors.orange[50],
+                    ),
+                  ],
                 ),
-                Padding(
+                child: Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 10,
+                    horizontal: 10,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width > 200
-                              ? 130
-                              : 100,
-                          margin: const EdgeInsets.only(
-                            left: 10,
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color:
-                                tagColor[pokedex[_currentPokemon]['type'][0]],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Cancel',
-                              style: kTitleStyle.copyWith(color: Colors.white),
-                            ),
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          color: TodoColors.scaffoldWhite,
+                        ),
+                        child: ShaderMask(
+                          shaderCallback: (rect) {
+                            return LinearGradient(
+                              tileMode: TileMode.repeated,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              stops: [0.1, 0.3, 1],
+                              colors: <Color>[
+                                Colors.white,
+                                tagColor['Flying'],
+                                tagColor['Water'],
+                              ],
+                            ).createShader(rect);
+                          },
+                          blendMode: BlendMode.modulate,
+                          child: Text(
+                            'Ads',
+                            style: kNormalSuperSmallStyle.copyWith(
+                                color: Colors.white),
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () async {
-                          await AudioCache().play(audioFile['Level_Up']);
-                          _starBloc.add(BuyItemEvent(point: 60));
-                          _allPokemonBloc.add(
-                            UpdatePokemonStateEvent(
-                              pokemonState: PokemonState(
-                                name: pokedex[_currentPokemon]['name'],
-                                state: 1,
-                              ),
-                            ),
-                          );
-                          if (await checkConnection()) {
-                            _repository
-                                .updatePokemonStateToFirebase(PokemonState(
-                              name: pokedex[_currentPokemon]['name'],
-                              state: 1,
-                            ));
-                          }
-                          _currentStarPoint -= 60;
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width > 200
-                              ? 130
-                              : 80,
-                          margin: const EdgeInsets.only(
-                            right: 10,
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color:
-                                tagColor[pokedex[_currentPokemon]['type'][0]],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Buy',
-                              style: kTitleStyle.copyWith(color: Colors.white),
-                            ),
-                          ),
+                      Text(
+                        'You can watch ads for support me ^^',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: MediaQuery.of(context).size.width / 38,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  getCurrentHandside() async {
-    _currentHandside = await currentHandSide();
-  }
-
-  adsButton() {
-    return (_isConnect == true && _isLoaded == true)
-        ? _adsContainer()
-        : Container();
-  }
-
-  SafeArea _adsContainer() {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: GestureDetector(
-          onTap: () async {
-            await _showAdsWarning();
-          },
-          child: Material(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 5,
-                    spreadRadius: 0,
-                    color: Colors.orange[50],
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 10,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(3),
-                        color: TodoColors.scaffoldWhite,
-                      ),
-                      child: ShaderMask(
+                      ShaderMask(
                         shaderCallback: (rect) {
                           return LinearGradient(
                             tileMode: TileMode.repeated,
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            stops: [0.1, 0.3, 1],
                             colors: <Color>[
-                              Colors.white,
-                              tagColor['Flying'],
-                              tagColor['Water'],
+                              Colors.yellow,
+                              Colors.deepOrange.shade500,
+                              Colors.yellow,
                             ],
                           ).createShader(rect);
                         },
                         blendMode: BlendMode.modulate,
-                        child: Text(
-                          'Ads',
-                          style: kNormalSuperSmallStyle.copyWith(
-                              color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      'You can watch ads for support me ^^',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: MediaQuery.of(context).size.width / 38,
-                      ),
-                    ),
-                    ShaderMask(
-                      shaderCallback: (rect) {
-                        return LinearGradient(
-                          tileMode: TileMode.repeated,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: <Color>[
-                            Colors.yellow,
-                            Colors.deepOrange.shade500,
-                            Colors.yellow,
-                          ],
-                        ).createShader(rect);
-                      },
-                      blendMode: BlendMode.modulate,
-                      child: Icon(
-                        Icons.play_circle_outline,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  _showAdsWarning() async {
-    showDialog(
-      context: context,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Container(
-            height: 200,
-            width: 400,
-            decoration: BoxDecoration(
-              color: TodoColors.scaffoldWhite,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 20),
-                Text(
-                  'You will get $_amount stars!',
-                  style: kBigTitleStyle.copyWith(fontWeight: FontWeight.w200),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width > 200
-                              ? 130
-                              : 100,
-                          margin: const EdgeInsets.only(
-                            left: 10,
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color:
-                                tagColor[pokedex[_currentPokemon]['type'][0]],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Cancel',
-                              style: kTitleStyle.copyWith(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          try {
-                            final result =
-                                await InternetAddress.lookup('google.com');
-                            if (result.isNotEmpty &&
-                                result[0].rawAddress.isNotEmpty) {
-                              RewardedVideoAd.instance.show();
-                            }
-                          } on SocketException catch (_) {} on PlatformException catch (_) {}
-
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width > 200
-                              ? 130
-                              : 80,
-                          margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color:
-                                tagColor[pokedex[_currentPokemon]['type'][0]],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Watch ads',
-                              style: kTitleStyle.copyWith(color: Colors.white),
-                            ),
-                          ),
+                        child: Icon(
+                          Icons.play_circle_outline,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
+
+  _showAdsWarning() async => showDialog(
+        context: context,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: Container(
+              height: 200,
+              width: 400,
+              decoration: BoxDecoration(
+                color: TodoColors.scaffoldWhite,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 20),
+                  Text(
+                    'You will get $_amount stars!',
+                    style: kBigTitleStyle.copyWith(fontWeight: FontWeight.w200),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width > 200
+                                ? 130
+                                : 100,
+                            margin: const EdgeInsets.only(
+                              left: 10,
+                            ),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color:
+                                  tagColor[pokedex[_currentPokemon]['type'][0]],
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Cancel',
+                                style:
+                                    kTitleStyle.copyWith(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            try {
+                              final result =
+                                  await InternetAddress.lookup('google.com');
+                              if (result.isNotEmpty &&
+                                  result[0].rawAddress.isNotEmpty) {
+                                RewardedVideoAd.instance.show();
+                              }
+                            } on SocketException catch (_) {} on PlatformException catch (_) {}
+
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width > 200
+                                ? 130
+                                : 80,
+                            margin: const EdgeInsets.only(right: 10),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color:
+                                  tagColor[pokedex[_currentPokemon]['type'][0]],
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Watch ads',
+                                style:
+                                    kTitleStyle.copyWith(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 
   checkConnect() async {
     _videoWatched = await getVideoReward();
@@ -412,6 +302,34 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
     super.initState();
     rewardedVideoAdSetup();
     _currentPokemon = widget.currentPokemon;
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1, milliseconds: 400),
+    );
+    _animationController.addListener(() async {
+      if (_animationController.value == 1 &&
+          _animationController.status == AnimationStatus.completed) {
+        await AudioCache().play(audioFile['Level_Up']);
+        _starBloc.add(BuyItemEvent(point: 30));
+        _allPokemonBloc.add(
+          UpdatePokemonStateEvent(
+            pokemonState: PokemonState(
+              name: pokedex[_currentPokemon]['name'],
+              state: 1,
+            ),
+          ),
+        );
+        if (await checkConnection()) {
+          _repository.updatePokemonStateToFirebase(PokemonState(
+            name: pokedex[_currentPokemon]['name'],
+            state: 1,
+          ));
+        }
+        _currentStarPoint -= 30;
+        _animationController.reverse();
+      }
+      setState(() {});
+    });
   }
 
   @override
@@ -426,11 +344,6 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
         }
       },
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -548,7 +461,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                 right: 10,
               ),
               child: SizedBox(
-                height: 56,
+                height: 42,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: snapshot[_currentPokemon].state == 0
@@ -599,59 +512,88 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
   }
 
   Widget _buyButton() => GestureDetector(
-        onTap: () async {
-          if (await getCurrentStar() >= 60) {
-            _showBuyCheckDialog(context);
+        onTapDown: (_) => _animationController.forward(),
+        onTapUp: (_) {
+          if (_animationController.status == AnimationStatus.forward) {
+            _animationController.reverse();
           }
         },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 10,
-                spreadRadius: 0,
-                color: Colors.amber[50],
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(10),
-          width: MediaQuery.of(context).size.width / 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'Unlock',
-                style: kNormalSmallStyle.copyWith(
-                  color: _currentStarPoint >= 60
-                      ? TodoColors.deepPurple
-                      : Colors.grey,
-                  fontWeight: FontWeight.w500,
+        child: Transform(
+          transform: _animationController.status != AnimationStatus.completed
+              ? Matrix4.skewX(-_animationController.value * 0.15)
+              : Matrix4.identity(),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 4,
+                      color: Colors.amber[50],
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(right: 5),
+                width: MediaQuery.of(context).size.width / 2.5,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Hold to unlock',
+                      style: kNormalSmallStyle.copyWith(
+                        color: _currentStarPoint >= 30
+                            ? TodoColors.deepPurple
+                            : Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          '30 ',
+                          style: kNormalSmallStyle.copyWith(
+                            color: _currentStarPoint >= 30
+                                ? TodoColors.deepPurple
+                                : Colors.grey,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Image.asset(
+                          'assets/png/star.png',
+                          height: 12,
+                          color: _currentStarPoint >= 30
+                              ? null
+                              : Colors.black.withOpacity(0.3),
+                          colorBlendMode: _currentStarPoint >= 30
+                              ? null
+                              : BlendMode.modulate,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: [
-                  Text(
-                    '60 ',
-                    style: kNormalSmallStyle.copyWith(
-                      color: _currentStarPoint >= 60
-                          ? TodoColors.deepPurple
-                          : Colors.grey,
-                      fontWeight: FontWeight.w300,
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: _animationController.value *
+                      MediaQuery.of(context).size.width /
+                      2.5,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(5),
+                      topRight: _animationController.value < 0.95
+                          ? Radius.circular(0)
+                          : Radius.circular(5),
                     ),
-                    textAlign: TextAlign.center,
+                    color: TodoColors.deepPurple,
                   ),
-                  Image.asset(
-                    'assets/png/star.png',
-                    height: 12,
-                    color: _currentStarPoint >= 60
-                        ? null
-                        : Colors.black.withOpacity(0.3),
-                    colorBlendMode:
-                        _currentStarPoint >= 60 ? null : BlendMode.modulate,
-                  ),
-                ],
+                  height: 5,
+                ),
               ),
             ],
           ),
@@ -671,12 +613,9 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                 child: ListWheelScrollView(
                   controller: _scrollController,
                   physics: BouncingScrollPhysics(),
-                  offAxisFraction: isLeft ? 4 : -4,
-                  onSelectedItemChanged: (value) {
-                    setState(() {
-                      _currentPokemon = value;
-                    });
-                  },
+                  // offAxisFraction: isLeft ? 4 : -4,
+                  onSelectedItemChanged: (value) =>
+                      setState(() => _currentPokemon = value),
                   children: List.generate(
                     pokedex.length,
                     (index) {

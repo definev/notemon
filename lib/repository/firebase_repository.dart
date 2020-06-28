@@ -24,6 +24,12 @@ class FirebaseRepository {
   /// [Auth services] methods
   Future<FirebaseUser> googleSignIn() => _authServices.googleSignIn();
 
+  /// [Inapp purchase] methods
+  Future<void> setRemoveAdsState(bool state) =>
+      _firebaseMethods.setRemoveAdsState(state);
+
+  Future<bool> getRemoveAdsState() => _firebaseMethods.getRemoveAdsState();
+
   /// [Firestore] methods
   Future<String> uploadImageFile(
           FirebaseUser user, File imageFile, Map<String, String> fileInfo) =>
@@ -79,12 +85,16 @@ class FirebaseRepository {
       _firebaseMethods.uploadAllPokemonStateToFirebase(pokemonStateList);
   Future<void> updatePokemonStateToFirebase(PokemonState pokemonState) =>
       _firebaseMethods.updatePokemonStateToFirebase(pokemonState);
+  Future<List<PokemonState>> getAllPokemonState() =>
+      _firebaseMethods.getAllPokemonState();
 
-  /// [Favourite pokemon] methods
+  /// [FavouritePokemon] methods
   Future<void> getFavouritePokemonStateAndLoadToDb(
           FavouritePokemonBloc favouritePokemonBloc) =>
       _firebaseMethods
           .getFavouritePokemonStateAndLoadToDb(favouritePokemonBloc);
+  Future<FavouritePokemon> getFavouritePokemon() =>
+      _firebaseMethods.getFavouritePokemon();
   Future<void> updateFavouritePokemon(int pokemon) =>
       _firebaseMethods.updateFavouritePokemon(pokemon);
 

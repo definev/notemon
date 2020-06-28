@@ -72,7 +72,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                         height: 5,
                       ),
                       Text(
-                        '''Gottash is my personal project. If you like it, rate it 5 stars ^.^, or if you are not satisfied with this app, please give me a comment. ''',
+                        '''Notemon is my personal project. If you like it, rate it 5 stars ^.^, or if you are not satisfied with this app, please give me a comment. ''',
                         style: TextStyle(
                           fontFamily: 'Source_Sans_Pro',
                           fontSize: 17,
@@ -177,7 +177,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                 duration: Duration(milliseconds: 300),
                                 padding: const EdgeInsets.all(10),
                                 height: 60,
-                                width: animation.value * 170 + 60,
+                                width: 60,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(200),
                                   color: Colors.white,

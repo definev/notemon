@@ -296,6 +296,21 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
   }
 
   @override
+  void dispose() {
+    Navigator.pop(
+        context,
+        widget.task.copyWith(
+          catagories: _catagoryItems,
+          priority: _priority,
+          color: indexColor,
+          taskName: _taskEditting.text == null || _taskEditting.text == ""
+              ? widget.task.taskName
+              : _taskEditting.text,
+        ));
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context)

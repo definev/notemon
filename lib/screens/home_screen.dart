@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen>
     'task': false,
     'pokemonState': false,
     'starPoint': false,
+    'favouritePokemon': false,
   };
 
   ConnectionStatusSingleton connectionStatus;
@@ -63,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen>
     showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
   }
 
-  _updateTodo() async {
+  _updateTodos() async {
     if (_repository.user == null) await _repository.initUser();
     if (_todoBloc.todoList != null) {
       /// [Delete key setup]
@@ -119,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  _updateTask() async {
+  _updateTasks() async {
     if (_repository.user == null) await _repository.initUser();
     if (_taskBloc.taskList != null) {
       /// [Delete key setup]
@@ -190,12 +191,43 @@ class _HomeScreenState extends State<HomeScreen>
         }
       });
 
-      _starBloc.add(
-        SetStarEvent(starMap: _finalStarpoint),
-      );
+      _starBloc.add(SetStarEvent(starMap: _finalStarpoint));
     }
 
     setState(() => _isLoading['starPoint'] = false);
+  }
+
+  _updatePokemonStates() async {
+    try {
+      List<PokemonState> _onlinePokemonStateList =
+          await _repository.getAllPokemonState();
+      for (int i = 0; i < _allPokemonBloc.pokemonStateList.length; i++) {
+        if (_onlinePokemonStateList[i].state !=
+            _allPokemonBloc.pokemonStateList[i].state) {
+          if (_onlinePokemonStateList[i].state == 1) {
+            //Update in local
+            _allPokemonBloc.add(UpdatePokemonStateEvent(
+                pokemonState: _onlinePokemonStateList[i]));
+          } else {
+            //Update in online
+            _repository.updatePokemonStateToFirebase(
+                _allPokemonBloc.pokemonStateList[i]);
+          }
+        }
+      }
+    } catch (e) {}
+
+    setState(() => _isLoading['pokemonState'] = false);
+  }
+
+  _updateFavouritePokemon() async {
+    FavouritePokemon _favPokemon = await _repository.getFavouritePokemon();
+
+    if (_favouritePokemonBloc.favouritePokemon != _favPokemon.pokemon) {
+      _repository
+          .updateFavouritePokemon(_favouritePokemonBloc.favouritePokemon);
+    }
+    setState(() => _isLoading['favouritePokemon'] = false);
   }
 
   _updateDatabase() async {
@@ -204,13 +236,16 @@ class _HomeScreenState extends State<HomeScreen>
       _isLoading['task'] = true;
       _isLoading['pokemonState'] = true;
       _isLoading['starPoint'] = true;
+      _isLoading['favouritePokemon'] = true;
     });
-    await _updateTodo();
-    await _updateTask();
+    await _updateTodos();
+    await _updateTasks();
     await _updateStarpoint();
+    await _updatePokemonStates();
+    await _updateFavouritePokemon();
   }
 
-  _updateTodosWhenbackToOnline(List<Todo> todoList) async {
+  _updateTodosFromOtherDevice(List<Todo> todoList) async {
     List<Todo> _todoListLocal = List<Todo>.from(_todoBloc.todoList);
     List<Todo> _addTodoLocal = [];
     for (Todo todo in todoList) {
@@ -246,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  _updateTasksWhenbackToOnline(List<Task> taskList) async {
+  _updateTasksFromOtherDevice(List<Task> taskList) async {
     List<Task> _taskListLocal = List<Task>.from(_taskBloc.taskList);
     List<Task> _addTaskLocal = [];
     for (Task task in taskList) {
@@ -282,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  _updateStarpointWhenbackToOnline(Map<String, dynamic> _onlineStarpoint) {
+  _updateStarpointFromOtherDevice(Map<String, dynamic> _onlineStarpoint) {
     Map<String, int> _finalStarpoint = {
       "addStar": _starBloc.addStar,
       "loseStar": _starBloc.loseStar,
@@ -297,6 +332,33 @@ class _HomeScreenState extends State<HomeScreen>
       });
 
       _starBloc.add(SetStarEvent(starMap: _finalStarpoint));
+    }
+  }
+
+  _updatePokemonStateFromOtherDevice(
+      List<PokemonState> _onlinePokemonStateList) async {
+    if (_allPokemonBloc.pokemonStateList != null) {
+      for (int i = 0; i < _allPokemonBloc.pokemonStateList.length; i++) {
+        if (_onlinePokemonStateList[i].state !=
+            _allPokemonBloc.pokemonStateList[i].state) {
+          _allPokemonBloc.add(
+            UpdatePokemonStateEvent(pokemonState: _onlinePokemonStateList[i]),
+          );
+        }
+      }
+    } else {
+      _onlinePokemonStateList.forEach((state) {
+        _allPokemonBloc.add(UpdatePokemonStateEvent(pokemonState: state));
+      });
+    }
+  }
+
+  _updateFavouritePokemonFromOtherDevice(
+      FavouritePokemon _onlineFavouritePokemon) async {
+    if (_onlineFavouritePokemon.pokemon !=
+        _favouritePokemonBloc.favouritePokemon) {
+      _favouritePokemonBloc
+          .add(UpdateFavouritePokemonEvent(_onlineFavouritePokemon.pokemon));
     }
   }
 
@@ -411,7 +473,7 @@ class _HomeScreenState extends State<HomeScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       _buildOnlineHeader(snapshot.data),
-                      _buildOnlinePetCollection(),
+                      _buildOnlinePetCollection(snapshot.data),
                       _buildOnlineTaskHeader(),
                       _buildOnlineTask(snapshot.data),
                       _buildOnlineTodoHeader(),
@@ -509,8 +571,11 @@ class _HomeScreenState extends State<HomeScreen>
 
                         FavouritePokemon _favouritePokemon =
                             FavouritePokemon.fromMap(
-                          snapshot.data.documents[0].data,
-                        );
+                                snapshot.data.documents[0].data);
+
+                        if (isOnline)
+                          _updateFavouritePokemonFromOtherDevice(
+                              _favouritePokemon);
 
                         if (_favouritePokemon.pokemon != -1) {
                           return GestureDetector(
@@ -606,7 +671,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   Starpoint _starPoint =
                                       Starpoint.fromMap(snapshot.data.data);
                                   if (isOnline)
-                                    _updateStarpointWhenbackToOnline(
+                                    _updateStarpointFromOtherDevice(
                                         snapshot.data.data);
                                   return Text(
                                     '${_starPoint.star} ',
@@ -651,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildOnlinePetCollection() {
+  Widget _buildOnlinePetCollection(bool isOnline) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 14,
@@ -704,6 +769,9 @@ class _HomeScreenState extends State<HomeScreen>
               List<PokemonState> _pokemonStateList = [];
               snapshot.data.documents.forEach((map) =>
                   _pokemonStateList.add(PokemonState.fromMap(map.data)));
+
+              if (isOnline)
+                _updatePokemonStateFromOtherDevice(_pokemonStateList);
 
               return ListView.builder(
                 physics: const BouncingScrollPhysics(),
@@ -981,7 +1049,7 @@ class _HomeScreenState extends State<HomeScreen>
               _todoList = todoFilterProcess(_todoList);
 
               if (!_isLoading['todo'] && isOnline)
-                _updateTodosWhenbackToOnline(_todoList);
+                _updateTodosFromOtherDevice(_todoList);
               if (_todoList.isEmpty) {
                 return const Center(
                   child: Text(
@@ -1231,7 +1299,7 @@ class _HomeScreenState extends State<HomeScreen>
             _taskList = taskFilterProcess(_taskList);
 
             if (!_isLoading['task'] && isOnline)
-              _updateTasksWhenbackToOnline(_taskList);
+              _updateTasksFromOtherDevice(_taskList);
 
             if (_taskList.isEmpty) {
               return SizedBox(
@@ -1290,6 +1358,7 @@ class _HomeScreenState extends State<HomeScreen>
                       padding: const EdgeInsets.only(left: 10),
                       child: Center(
                         child: TaskTile(
+                          removeAds: false,
                           task: _taskList[index],
                           key: UniqueKey(),
                         ),
@@ -1298,6 +1367,7 @@ class _HomeScreenState extends State<HomeScreen>
                   }
                   return Center(
                     child: TaskTile(
+                      removeAds: false,
                       task: _taskList[index],
                       key: UniqueKey(),
                     ),
@@ -1740,6 +1810,7 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Center(
                           key: UniqueKey(),
                           child: TaskTile(
+                            removeAds: false,
                             task: _taskList[index],
                           ),
                         ),
@@ -1749,6 +1820,7 @@ class _HomeScreenState extends State<HomeScreen>
                     return Center(
                       key: UniqueKey(),
                       child: TaskTile(
+                        removeAds: false,
                         task: _taskList[index],
                       ),
                     );

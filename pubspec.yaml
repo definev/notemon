@@ -1,7 +1,7 @@
 name: gottask
 description: A new Flutter project.
 
-version: 2.0.0+15
+version: 2.0.0+16
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -44,6 +44,7 @@ dependencies:
   loading_animations: ^2.1.0
   google_fonts: any
   regexpattern: ^0.2.3
+  in_app_purchase: ^0.3.4
 
 flutter_icons:
   android: true

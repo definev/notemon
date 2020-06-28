@@ -7,7 +7,6 @@ import 'package:gottask/utils/utils.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:regexpattern/regexpattern.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override

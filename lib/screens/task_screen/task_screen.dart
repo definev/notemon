@@ -27,7 +27,9 @@ class MyBehavior extends ScrollBehavior {
 
 class TaskScreen extends StatefulWidget {
   final Task task;
-  TaskScreen({this.task});
+  final bool removeAds;
+
+  TaskScreen({this.task, @required this.removeAds});
   @override
   _TaskScreenState createState() => _TaskScreenState();
 }
@@ -63,12 +65,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   InterstitialAd myInterstitial;
 
-  InterstitialAd _interstitialAds() {
-    return InterstitialAd(
-      adUnitId: interstitialId,
-      targetingInfo: targetingInfo,
-    );
-  }
+  InterstitialAd _interstitialAds() => InterstitialAd(
+        adUnitId: interstitialId,
+        targetingInfo: targetingInfo,
+      );
 
   _onBackPress() async {
     //Back and update data
@@ -546,9 +546,11 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
               builder: (context) => EditTaskScreen(task: _currentTask),
             );
 
-            _taskBloc.add(EditTaskEvent(task: _editTask));
+            if (_editTask != null) {
+              _taskBloc.add(EditTaskEvent(task: _editTask));
 
-            setState(() => _currentTask = _editTask);
+              setState(() => _currentTask = _editTask);
+            }
           },
         ),
       ],
@@ -660,7 +662,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
             height: 200,
             decoration: BoxDecoration(
               color: TodoColors.scaffoldWhite,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

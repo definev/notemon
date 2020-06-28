@@ -13,15 +13,11 @@ class FavouritePokemonBloc
   @override
   FavouritePokemonState get initialState => FavouritePokemonInitial();
 
-  Future<int> _initFavouritePokemonBloc() async {
-    favouritePokemon = await currentFavouritePokemon();
-    return favouritePokemon;
-  }
+  Future<void> _initFavouritePokemonBloc() async =>
+      favouritePokemon = await currentFavouritePokemon();
 
-  Future<int> _updateEvent(int newPokemon) async {
-    favouritePokemon = await updateFavouritePokemon(newPokemon);
-    return favouritePokemon;
-  }
+  Future<void> _updateEvent(int newPokemon) async =>
+      favouritePokemon = await updateFavouritePokemon(newPokemon);
 
   @override
   Stream<FavouritePokemonState> mapEventToState(

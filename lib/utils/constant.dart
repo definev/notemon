@@ -85,11 +85,14 @@ const String testDevice = "Test-id";
 
 const String appId = "ca-app-pub-8520565961626834~6649996964";
 
-const String interstitialId = "ca-app-pub-8520565961626834/1369750120";
+// const String interstitialId = "ca-app-pub-8520565961626834/1369750120";
+const String interstitialId = "ca-app-pub-3940256099942544/1033173712";
 
-const String bannerId = "ca-app-pub-8520565961626834/2808677078";
+// const String bannerId = "ca-app-pub-8520565961626834/2808677078";
+const String bannerId = "ca-app-pub-3940256099942544/6300978111";
 
-const String rewardId = "ca-app-pub-8520565961626834/9794007386";
+// const String rewardId = "ca-app-pub-8520565961626834/9794007386";
+const String rewardId = "ca-app-pub-3940256099942544/5224354917";
 
 // List<String> icons = [
 //   "Icons.star_border",

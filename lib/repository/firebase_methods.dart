@@ -13,6 +13,35 @@ class FirebaseMethods {
 
   Future<void> initUser() async => user = await _auth.currentUser();
 
+  /// Method of [In-app purchase]
+  Future<void> setRemoveAdsState(bool state) async {
+    await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('inapp')
+        .document('remove_ads')
+        .setData(
+      {"buy": state},
+      merge: true,
+    );
+  }
+
+  Future<bool> getRemoveAdsState() async {
+    DocumentSnapshot document = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('inapp')
+        .document('remove_ads')
+        .get();
+
+    if (document.data == null) {
+      setRemoveAdsState(false);
+      return false;
+    }
+
+    return document.data["buy"];
+  }
+
   /// Method of [Save todo delete key]
   Future<void> addDeleteTodoKey(String id) async {
     await _firestore
@@ -192,7 +221,6 @@ class FirebaseMethods {
   }
 
   Future<void> updateTaskToFirebase(Task task) async {
-    // print(task.toFirebaseMap());
     await _firestore
         .collection('databases')
         .document(user.uid)
@@ -242,6 +270,23 @@ class FirebaseMethods {
     });
   }
 
+  Future<List<PokemonState>> getAllPokemonState() async {
+    QuerySnapshot _pokemonStateSnapshots = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('pokemonStates')
+        .getDocuments();
+
+    List<PokemonState> res = [];
+
+    _pokemonStateSnapshots.documents.forEach((map) {
+      PokemonState pokemonState = PokemonState.fromMap(map.data);
+      res.add(pokemonState);
+    });
+
+    return res;
+  }
+
   Future<void> updatePokemonStateToFirebase(PokemonState pokemonState) async {
     await _firestore
         .collection('databases')
@@ -278,12 +323,27 @@ class FirebaseMethods {
         .collection('favouritePokemon')
         .getDocuments();
     favouritePokemonBloc.add(InitFavouritePokemonEvent());
-    _favouritePokemonSnapshots.documents?.forEach((element) {});
-    _favouritePokemonSnapshots.documents.forEach((map) {
+    _favouritePokemonSnapshots.documents?.forEach((map) {
       FavouritePokemon favouritePokemon = FavouritePokemon.fromMap(map.data);
       favouritePokemonBloc
           .add(UpdateFavouritePokemonEvent(favouritePokemon.pokemon));
     });
+  }
+
+  Future<FavouritePokemon> getFavouritePokemon() async {
+    QuerySnapshot _favouritePokemonSnapshots = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('favouritePokemon')
+        .getDocuments();
+
+    FavouritePokemon res;
+
+    _favouritePokemonSnapshots.documents?.forEach((map) {
+      res = FavouritePokemon.fromMap(map.data);
+    });
+
+    return res;
   }
 
   Future<void> updateFavouritePokemon(int pokemon) async {
@@ -329,6 +389,10 @@ class FirebaseMethods {
         .collection('starPoint')
         .document('star')
         .get();
+
+    if (snapshot.data == null) {
+      updateStarpoint(0, 0);
+    }
     try {
       snapshot.data.forEach((key, value) {
         res[key] = value;

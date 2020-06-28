@@ -169,25 +169,32 @@ class _FilterPickerState extends State<FilterPicker>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: _confirmButton(context),
-      body: SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          color: TodoColors.scaffoldWhite,
-          padding: const EdgeInsets.only(left: 15, right: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _header(context),
-              _buildTitle('Catagory'),
-              _buildCatagoryPicker(context),
-              _buildTitle('Priority'),
-              _buildPriority(),
-            ],
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 380,
+            color: TodoColors.scaffoldWhite,
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _header(context),
+                _buildTitle('Catagory'),
+                _buildCatagoryPicker(context),
+                _buildTitle('Priority'),
+                _buildPriority(),
+              ],
+            ),
           ),
         ),
-      ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: _confirmButton(context),
+        ),
+      ],
     );
   }
 

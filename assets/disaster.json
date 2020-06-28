@@ -1,0 +1,195 @@
+[
+    {
+        "name": {
+            "VN": "Nước biển dâng",
+            "EN": "Sea level rises"
+        },
+        "description": "Mực nước biển dâng do khí hậu trái đất nóng lên cộng với hiện tượng băng tan ở hai cực.",
+        "imageURL": [
+            "https://images.pexels.com/photos/753619/pexels-photo-753619.jpeg"
+        ],
+        "damage": {
+            "affected_people": "480 triệu người",
+            "dangerous_level": 4.5,
+            "affect": [
+                "Nông nghiệp",
+                "Đất đai"
+            ]
+        },
+        "icon": "sea_rises.png"
+    },
+    {
+        "name": {
+            "VN": "Cháy rừng",
+            "EN": "Forest fire"
+        },
+        "description": "Cháy rừng diễn ra do thời tiết nắng nóng, gây hậu quả to lớn về cả về con người và vật chất.",
+        "imageURL": [
+            "https://images.pexels.com/photos/266487/pexels-photo-266487.jpeg"
+        ],
+        "damage": {
+            "affected_people": "10 triệu người/năm",
+            "dangerous_level": 2,
+            "affect": [
+                "Nông nghiệp",
+                "Hệ sinh thái",
+                "Cơ sở vật chất",
+                "Đất lâm nghiệp"
+            ]
+        },
+        "icon": "forest_fire.png"
+    },
+    {
+        "name": {
+            "VN": "Hạn hán",
+            "EN": "Drought"
+        },
+        "description": "Nắng nóng kéo dài và liên tục phá vỡ các kỉ lục đã gây ra hạn hán tại nhiều vùng miền.",
+        "imageURL": [
+            "https://images.pexels.com/photos/2496572/pexels-photo-2496572.jpeg"
+        ],
+        "damage": {
+            "affected_people": "55 triệu người/năm",
+            "dangerous_level": 4,
+            "affect": [
+                "Nông nghiệp"
+            ]
+        },
+        "icon": "drought.png"
+    },
+    {
+        "name": {
+            "VN": "Bão nhiệt đới",
+            "EN": "Hurricane"
+        },
+        "description": "Các cơn bão nhiệt đới diễn ra ở khắp nơi trên thế giới.",
+        "imageURL": [
+            "https://images.pexels.com/photos/71116/hurricane-earth-satellite-tracking-71116.jpeg"
+        ],
+        "damage": {
+            "affected_people": "500 triệu người/năm",
+            "dangerous_level": 5,
+            "affect": [
+                "Kinh tế",
+                "Công nghiệp",
+                "Cơ sở vật chất",
+                "Nông nghiệp"
+            ]
+        },
+        "icon": "hurricane.png"
+    },
+    {
+        "name": {
+            "VN": "Ô nhiễm không khí",
+            "EN": "Air pollution"
+        },
+        "description": "Chất lượng không khí ở mức độc hại cho con người",
+        "imageURL": [
+            "https://images.pexels.com/photos/1697357/pexels-photo-1697357.jpeg"
+        ],
+        "damage": {
+            "affected_people": "4 tỉ người",
+            "dangerous_level": 5,
+            "affect": [
+                "Sức khỏe",
+                "Giao thông"
+            ]
+        },
+        "icon": "air_pollution.png"
+    },
+    {
+        "name": {
+            "VN": "Lốc xoáy",
+            "EN": "Tornado"
+        },
+        "description": "Thường hay xuất hiện ở vùng nhiệt đới trong các cơn dông.",
+        "imageURL": [
+            "https://images.pexels.com/photos/1446076/pexels-photo-1446076.jpeg"
+        ],
+        "damage": {
+            "affected_people": "1 triệu người/năm",
+            "dangerous_level": 2,
+            "affect": [
+                "Nông nghiệp",
+                "Cơ sở vật chất"
+            ]
+        },
+        "icon": "tornado.png"
+    },
+    {
+        "name": {
+            "VN": "Núi lửa",
+            "EN": "Volcano"
+        },
+        "description": "Các hoạt động địa chất dưới lòng đất dẫn tới những vụ phun trào núi lửa.",
+        "imageURL": [
+            "https://images.pexels.com/photos/4220967/pexels-photo-4220967.jpeg"
+        ],
+        "damage": {
+            "affected_people": "500 000 người/năm",
+            "dangerous_level": 1.5,
+            "affect": [
+                "Bầu khí quyển",
+                "Đất đai"
+            ]
+        },
+        "icon": "volcano.png"
+    },
+    {
+        "name": {
+            "VN": "Các cơn dông",
+            "EN": "Storm"
+        },
+        "description": "Xảy ra vào mùa hè do sự chênh lệch nhiệt độ đột ngột",
+        "imageURL": [
+            "https://images.pexels.com/photos/158163/clouds-cloudporn-weather-lookup-158163.jpeg"
+        ],
+        "damage": {
+            "affected_people": "5 triệu người/năm",
+            "dangerous_level": 2,
+            "affect": [
+                "Nông nghiệp"
+            ]
+        },
+        "icon": "storm.png"
+    },
+    {
+        "name": {
+            "VN": "Lũ lụt",
+            "EN": "Flood"
+        },
+        "description": "Lũ lụt gây ra bởi mưa sau các cơn bão.",
+        "imageURL": [
+            "https://images.unsplash.com/photo-1580993777851-40514758f716"
+        ],
+        "damage": {
+            "affected_people": "10 triệu người/năm",
+            "dangerous_level": 3,
+            "affect": [
+                "Nông nghiệp",
+                "Cơ sở vật chất"
+            ]
+        },
+        "icon": "flood.png"
+    },
+    {
+        "name": {
+            "VN": "Mưa Axit",
+            "EN": "Axit rain"
+        },
+        "description": "Khí thải công nghiệp tích tụ trong bầu khí quyển lâu ngày sẽ gây ra hiện tượng mưa Axit",
+        "imageURL": [
+            "https://images.unsplash.com/photo-1428592953211-077101b2021b"
+        ],
+        "damage": {
+            "affected_people": "5 triệu người/năm",
+            "dangerous_level": 3,
+            "affect": [
+                "Nông nghiệp",
+                "Hệ sinh thái",
+                "Sức khỏe"
+            ]
+        },
+        "icon": "axit_rain.png"
+    }
+]

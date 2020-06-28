@@ -7,8 +7,10 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TaskTile extends StatefulWidget {
   final Task task;
+  final bool removeAds;
 
-  const TaskTile({Key key, this.task}) : super(key: key);
+  const TaskTile({Key key, this.task, @required this.removeAds})
+      : super(key: key);
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -37,7 +39,10 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => TaskScreen(task: widget.task),
+            builder: (_) => TaskScreen(
+              task: widget.task,
+              removeAds: widget.removeAds,
+            ),
           ),
         );
       },
