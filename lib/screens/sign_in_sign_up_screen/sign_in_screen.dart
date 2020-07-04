@@ -333,7 +333,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 setState(() => _isLoading = true);
                                 if (await checkConnection()) {
                                   FirebaseUser user =
-                                      await _authServices.googleSignIn();
+                                      await _authServices.googleSignIn(context);
 
                                   if (user == null) {
                                     Scaffold.of(context).showSnackBar(

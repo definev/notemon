@@ -29,7 +29,7 @@ class StarBloc extends Bloc<StarEvent, StarState> {
     await setAddStar(addStar);
     currentStarPoint = addStar - loseStar;
     if (await checkConnection()) {
-      _repository.updateStarpoint(addStar, loseStar);
+      _repository.updateStarpoint({"addStar": addStar, "loseStar": loseStar});
     }
   }
 
@@ -38,7 +38,7 @@ class StarBloc extends Bloc<StarEvent, StarState> {
     await setLoseStar(loseStar);
     currentStarPoint = addStar - loseStar;
     if (await checkConnection()) {
-      _repository.updateStarpoint(addStar, loseStar);
+      _repository.updateStarpoint({"addStar": addStar, "loseStar": loseStar});
     }
   }
 

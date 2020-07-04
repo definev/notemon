@@ -9,7 +9,6 @@ import 'package:gottask/repository/repository.dart';
 
 class FirebaseRepository {
   final FirebaseMethods _firebaseMethods = FirebaseMethods();
-  final AuthServices _authServices = AuthServices();
   final FirestoreMethods _firestoreMethods = FirestoreMethods();
   Firestore firestore = Firestore.instance;
   FirebaseUser get user => _firebaseMethods.user;
@@ -20,9 +19,6 @@ class FirebaseRepository {
 
   /// [init] methods
   Future<void> initUser() => _firebaseMethods.initUser();
-
-  /// [Auth services] methods
-  Future<FirebaseUser> googleSignIn() => _authServices.googleSignIn();
 
   /// [Inapp purchase] methods
   Future<void> setRemoveAdsState(bool state) =>
@@ -103,6 +99,6 @@ class FirebaseRepository {
       _firebaseMethods.getStarpoint(starBloc);
   Future<Map<String, int>> getOnlineStarpoint() =>
       _firebaseMethods.getOnlineStarpoint();
-  Future<void> updateStarpoint(int addStar, int loseStar) =>
-      _firebaseMethods.updateStarpoint(addStar, loseStar);
+  Future<void> updateStarpoint(Map<String, int> starMap) =>
+      _firebaseMethods.updateStarpoint(starMap);
 }

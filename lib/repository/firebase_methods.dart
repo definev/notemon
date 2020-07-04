@@ -391,7 +391,7 @@ class FirebaseMethods {
         .get();
 
     if (snapshot.data == null) {
-      updateStarpoint(0, 0);
+      updateStarpoint({"addStar": 0, "loseStar": 0});
     }
     try {
       snapshot.data.forEach((key, value) {
@@ -403,19 +403,14 @@ class FirebaseMethods {
     }
   }
 
-  Future<void> updateStarpoint(int addStar, int loseStar) async {
-    Map<String, int> _star = {
-      "addStar": addStar,
-      "loseStar": loseStar,
-    };
-
+  Future<void> updateStarpoint(Map<String, int> starMap) async {
     await _firestore
         .collection('databases')
         .document(user.uid)
         .collection('starPoint')
         .document('star')
         .setData(
-          _star,
+          starMap,
           merge: true,
         );
   }

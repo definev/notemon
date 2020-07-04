@@ -88,6 +88,19 @@ class _PokemonInfoState extends State<PokemonInfo> {
     );
   }
 
+  Widget _title(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15),
+      child: Text(
+        text,
+        style: kTitleStyle.copyWith(
+          color: Colors.black,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -179,16 +192,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             ),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 15),
-          child: Text(
-            'Type',
-            style: kTitleStyle.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        _title('Type'),
         Padding(
           padding: const EdgeInsets.only(
             left: 10,
@@ -211,16 +215,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 15),
-          child: Text(
-            'Weaknesses',
-            style: kTitleStyle.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        _title('Weaknesses'),
         Padding(
           padding: const EdgeInsets.only(
             left: 10,
@@ -235,7 +230,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 width: MediaQuery.of(context).size.width * 2 / 3 / 2,
                 style: TextStyle(
                   fontSize: MediaQuery.of(context).size.width / 25,
-                  fontFamily: 'Alata',  
+                  fontFamily: 'Alata',
                   color: Colors.white,
                   decoration: TextDecoration.none,
                 ),
@@ -243,65 +238,48 @@ class _PokemonInfoState extends State<PokemonInfo> {
             ),
           ),
         ),
+        _title('Strength index'),
         Padding(
-          padding: const EdgeInsets.only(left: 15),
-          child: Text(
-            'Strength index',
-            style: kTitleStyle.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        widget.pokemonState.state == 1
-            ? Column(
-                children: <Widget>[
-                  _buildRowStatic(context, 'HP'),
-                  _buildRowStatic(context, 'Attack'),
-                  _buildRowStatic(context, 'Defense'),
-                  _buildRowStatic(context, 'Speed'),
-                  _buildRowStatic(context, 'Sp Atk'),
-                  _buildRowStatic(context, 'Sp Def'),
-                ],
-              )
-            : Container(
-                width: MediaQuery.of(context).size.width * 3 / 4,
-                height: 40.0 * 6,
-                margin: const EdgeInsets.symmetric(
-                  vertical: 5,
-                  horizontal: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: widget.pokemonState.state == 0
-                      ? Colors.white30
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(
-                  child: Icon(
-                    SimpleLineIcons.question,
-                    color: Colors.black38,
-                    size: 40,
+          padding: const EdgeInsets.only(right: 5),
+          child: widget.pokemonState.state == 1
+              ? Column(
+                  children: <Widget>[
+                    _buildRowStatic(context, 'HP'),
+                    _buildRowStatic(context, 'Attack'),
+                    _buildRowStatic(context, 'Defense'),
+                    _buildRowStatic(context, 'Speed'),
+                    _buildRowStatic(context, 'Sp Atk'),
+                    _buildRowStatic(context, 'Sp Def'),
+                  ],
+                )
+              : Container(
+                  width: MediaQuery.of(context).size.width * 3 / 4,
+                  height: 40.0 * 6,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: widget.pokemonState.state == 0
+                        ? Colors.white30
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      SimpleLineIcons.question,
+                      color: Colors.black38,
+                      size: 40,
+                    ),
                   ),
                 ),
-              ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 15,
-          ),
-          child: Text(
-            'Introduction',
-            style: kTitleStyle.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
         ),
+        _title('Introduction'),
         widget.pokemonState.state == 1
             ? Padding(
                 padding: const EdgeInsets.only(
                   left: 10,
-                  right: 10,
+                  right: 15,
                   bottom: 10,
                 ),
                 child: Text(
@@ -318,7 +296,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                   top: 5,
                   bottom: 10,
                   left: 10,
-                  right: 10,
+                  right: 15,
                 ),
                 decoration: BoxDecoration(
                   color: widget.pokemonState.state == 0

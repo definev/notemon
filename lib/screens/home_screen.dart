@@ -29,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, BlocCreator {
   bool _isInit = false;
+  int _updateCounter = 0;
 
   Map<String, dynamic> _todoFilterMap = {
     "priority": PriorityState.All,
@@ -49,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen>
   };
 
   ConnectionStatusSingleton connectionStatus;
-  StreamController<bool> _connectionChangeStream;
   StreamSubscription<bool> _intenetStreamSubscription;
 
   TodoBloc _todoBloc;
@@ -60,9 +60,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   FirebaseRepository _repository;
 
-  void _modalBottomSheetMenu() {
-    showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
-  }
+  _modalBottomSheetMenu() =>
+      showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
 
   _updateTodos() async {
     if (_repository.user == null) await _repository.initUser();
@@ -116,7 +115,6 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       );
-      setState(() => _isLoading['todo'] = false);
     }
   }
 
@@ -172,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       );
-      setState(() => _isLoading['task'] = false);
     }
   }
 
@@ -183,18 +180,17 @@ class _HomeScreenState extends State<HomeScreen>
       "loseStar": _starBloc.loseStar,
     };
 
-    if (_onlineStarpoint["addStar"] != _finalStarpoint["addStar"] &&
+    if (_onlineStarpoint["addStar"] != _finalStarpoint["addStar"] ||
         _onlineStarpoint["loseStar"] != _finalStarpoint["loseStar"]) {
       _onlineStarpoint.forEach((key, value) {
-        if (_finalStarpoint[key] < value) {
-          _finalStarpoint[key] = value;
-        }
+        if (_finalStarpoint[key] < value) _finalStarpoint[key] = value;
       });
 
+      print("DIFF!!!");
+
+      _repository.updateStarpoint(_finalStarpoint);
       _starBloc.add(SetStarEvent(starMap: _finalStarpoint));
     }
-
-    setState(() => _isLoading['starPoint'] = false);
   }
 
   _updatePokemonStates() async {
@@ -216,8 +212,6 @@ class _HomeScreenState extends State<HomeScreen>
         }
       }
     } catch (e) {}
-
-    setState(() => _isLoading['pokemonState'] = false);
   }
 
   _updateFavouritePokemon() async {
@@ -227,10 +221,11 @@ class _HomeScreenState extends State<HomeScreen>
       _repository
           .updateFavouritePokemon(_favouritePokemonBloc.favouritePokemon);
     }
-    setState(() => _isLoading['favouritePokemon'] = false);
   }
 
   _updateDatabase() async {
+    print("_updateCounter!!");
+
     setState(() {
       _isLoading['todo'] = true;
       _isLoading['task'] = true;
@@ -243,6 +238,13 @@ class _HomeScreenState extends State<HomeScreen>
     await _updateStarpoint();
     await _updatePokemonStates();
     await _updateFavouritePokemon();
+    setState(() {
+      _isLoading['todo'] = false;
+      _isLoading['task'] = false;
+      _isLoading['pokemonState'] = false;
+      _isLoading['starPoint'] = false;
+      _isLoading['favouritePokemon'] = false;
+    });
   }
 
   _updateTodosFromOtherDevice(List<Todo> todoList) async {
@@ -291,10 +293,7 @@ class _HomeScreenState extends State<HomeScreen>
         } else {
           int index =
               _taskListLocal.indexWhere((taskLocal) => task == taskLocal);
-          print("TASK ONLINE: ---: ${task.hashCode}");
-          print("TASK OFFLINE: ---: ${_taskListLocal[index].hashCode}");
-          print(task.hashCode != _taskListLocal[index].hashCode);
-          print("");
+
           if (task.hashCode != _taskListLocal[index].hashCode) {
             _taskBloc.add(EditTaskEvent(task: task));
           }
@@ -337,7 +336,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   _updatePokemonStateFromOtherDevice(
       List<PokemonState> _onlinePokemonStateList) async {
-    if (_allPokemonBloc.pokemonStateList != null) {
+    if (_allPokemonBloc.pokemonStateList != null &&
+        _onlinePokemonStateList != null) {
       for (int i = 0; i < _allPokemonBloc.pokemonStateList.length; i++) {
         if (_onlinePokemonStateList[i].state !=
             _allPokemonBloc.pokemonStateList[i].state) {
@@ -369,10 +369,21 @@ class _HomeScreenState extends State<HomeScreen>
     setLoadAdsInfirst(false);
     connectionStatus = ConnectionStatusSingleton.getInstance();
     connectionStatus.initialize();
-    _connectionChangeStream = connectionStatus.connectionChangeController;
-    _intenetStreamSubscription = _connectionChangeStream.stream.listen(
+    _intenetStreamSubscription =
+        connectionStatus.connectionChangeController.stream.listen(
       (hasInternet) async {
-        if (hasInternet) await _updateDatabase();
+        if (hasInternet) {
+          print(_updateCounter);
+
+          if (this._updateCounter == 0) {
+            setState(() => _updateCounter += 1);
+
+            _updateDatabase();
+          }
+        } else {
+          _updateCounter = 0;
+          print("OFF: $_updateCounter");
+        }
       },
     );
   }
@@ -444,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen>
           resizeToAvoidBottomPadding: false,
           backgroundColor: Colors.transparent,
           body: StreamBuilder<bool>(
-            stream: _connectionChangeStream.stream,
+            stream: connectionStatus.connectionChangeController.stream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 connectionStatus.hasConnection = null;
@@ -455,7 +466,6 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 );
               }
-              // print("SNAPSHOT:///${snapshot.data}");
               return IndexedStack(
                 children: [
                   Column(
@@ -573,7 +583,7 @@ class _HomeScreenState extends State<HomeScreen>
                             FavouritePokemon.fromMap(
                                 snapshot.data.documents[0].data);
 
-                        if (isOnline)
+                        if (!_isLoading["favouritePokemon"] && isOnline)
                           _updateFavouritePokemonFromOtherDevice(
                               _favouritePokemon);
 
@@ -662,7 +672,8 @@ class _HomeScreenState extends State<HomeScreen>
                                     );
                                   }
                                   if (snapshot.data.data == null) {
-                                    _repository.updateStarpoint(0, 0);
+                                    _repository.updateStarpoint(
+                                        {"addStar": 0, "loseStar": 0});
                                     return Text(
                                       '0 ',
                                       style: kNormalStyle,
@@ -670,7 +681,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   }
                                   Starpoint _starPoint =
                                       Starpoint.fromMap(snapshot.data.data);
-                                  if (isOnline)
+                                  if (!_isLoading["starPoint"] && isOnline)
                                     _updateStarpointFromOtherDevice(
                                         snapshot.data.data);
                                   return Text(
@@ -770,7 +781,7 @@ class _HomeScreenState extends State<HomeScreen>
               snapshot.data.documents.forEach((map) =>
                   _pokemonStateList.add(PokemonState.fromMap(map.data)));
 
-              if (isOnline)
+              if (!_isLoading["pokemonState"] && isOnline)
                 _updatePokemonStateFromOtherDevice(_pokemonStateList);
 
               return ListView.builder(
@@ -988,7 +999,6 @@ class _HomeScreenState extends State<HomeScreen>
                       priority: _priorityStateClone,
                       initCatagory: _filterCatagoryClone,
                       onCompeleted: (catagories, priority) {
-                        print("HEEYYYEYEEY!");
                         setState(() {
                           _todoFilterMap['todoFilter'] = catagories;
                           _todoFilterMap['priority'] = priority;

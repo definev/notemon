@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gottask/utils/utils.dart';
 
@@ -47,7 +48,7 @@ class AuthServices {
       assert(user.uid == currentUser.uid);
 
       print('signInEmail succeeded: $user');
-      
+
       updateUserData(currentUser);
 
       return user;
@@ -70,7 +71,7 @@ class AuthServices {
     }
   }
 
-  Future<FirebaseUser> googleSignIn() async {
+  Future<FirebaseUser> googleSignIn(BuildContext context) async {
     if (!kIsWeb) {
       bool hasConnect = await checkConnection();
       if (hasConnect) {
@@ -98,7 +99,7 @@ class AuthServices {
           updateUserData(_user);
           return _user;
         } catch (e) {
-          print(e);
+          Scaffold.of(context).showSnackBar(SnackBar(content: Text(e)));
           return null;
         }
       }
