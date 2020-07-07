@@ -11,7 +11,12 @@ class FirebaseMethods {
   Firestore _firestore = Firestore.instance;
   FirebaseUser user;
 
-  Future<void> initUser() async => user = await _auth.currentUser();
+  Future<FirebaseUser> initUser() async {
+    user = await _auth.currentUser();
+    return user;
+  }
+
+  void setUser(FirebaseUser user) => this.user = user;
 
   /// Method of [In-app purchase]
   Future<void> setRemoveAdsState(bool state) async {

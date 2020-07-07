@@ -28,9 +28,9 @@ class _SignInScreenState extends State<SignInScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  _loginSuccess() async {
-    updateLoginState(true);
-    await _repository.initUser().then((_) async {
+  _loginSuccess(BuildContext context, FirebaseUser user) async {
+    if (user != null) {
+      _repository.setUser(user);
       await _repository.getAllTodoAndLoadToDb(
         Provider.of<TodoBloc>(context, listen: false),
       );
@@ -46,9 +46,11 @@ class _SignInScreenState extends State<SignInScreen> {
       await _repository.getStarpoint(
         Provider.of<StarBloc>(context, listen: false),
       );
-    });
-    Navigator.popUntil(context, (route) => route.isFirst);
-    Navigator.popAndPushNamed(context, '/home');
+      updateLoginState(true);
+
+      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.popAndPushNamed(context, '/home');
+    }
   }
 
   @override
@@ -223,7 +225,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                               ),
                                             );
                                           } else {
-                                            await _loginSuccess();
+                                            await _loginSuccess(context, user);
                                           }
                                         }
                                         setState(() => _isLoading = false);
@@ -253,67 +255,69 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   Column(
                     children: [
-                      GestureDetector(
-                        onTap: () async {
-                          if (_formKey.currentState.validate()) {
-                            setState(() => _isLoading = true);
-                            if (await checkConnection()) {
-                              FirebaseUser user =
-                                  await _authServices.handleSignInEmail(
-                                _emailController.text,
-                                _passwordController.text,
-                              );
-
-                              if (user == null) {
-                                Scaffold.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Failed to sign in'),
-                                  ),
+                      Builder(
+                        builder: (context) => GestureDetector(
+                          onTap: () async {
+                            if (_formKey.currentState.validate()) {
+                              setState(() => _isLoading = true);
+                              if (await checkConnection()) {
+                                FirebaseUser user =
+                                    await _authServices.handleSignInEmail(
+                                  _emailController.text,
+                                  _passwordController.text,
                                 );
-                                _emailController.clear();
-                                _passwordController.clear();
-                              } else {
-                                await _loginSuccess();
+
+                                if (user == null) {
+                                  Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to sign in'),
+                                    ),
+                                  );
+                                  _emailController.clear();
+                                  _passwordController.clear();
+                                } else {
+                                  await _loginSuccess(context, user);
+                                }
                               }
+                              setState(() => _isLoading = false);
+                            } else {
+                              _emailController.clear();
+                              _passwordController.clear();
                             }
-                            setState(() => _isLoading = false);
-                          } else {
-                            _emailController.clear();
-                            _passwordController.clear();
-                          }
-                        },
-                        child: SizedBox(
-                          height: 80,
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: SizedBox(
-                                  height: 80,
-                                  child: CustomPaint(
-                                      painter: ButtonPainter(context)),
-                                ),
-                              ),
-                              Center(
-                                child: Container(
-                                  height: 80 - 12 * 1.9,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF485563),
-                                    borderRadius: BorderRadius.horizontal(
-                                      left: Radius.circular(10),
-                                    ),
+                          },
+                          child: SizedBox(
+                            height: 80,
+                            child: Stack(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topCenter,
+                                  child: SizedBox(
+                                    height: 80,
+                                    child: CustomPaint(
+                                        painter: ButtonPainter(context)),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      'Login',
-                                      style: kMediumStyle.copyWith(
-                                          color: Colors.white),
+                                ),
+                                Center(
+                                  child: Container(
+                                    height: 80 - 12 * 1.9,
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF485563),
+                                      borderRadius: BorderRadius.horizontal(
+                                        left: Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Login',
+                                        style: kMediumStyle.copyWith(
+                                            color: Colors.white),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -338,16 +342,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                   FirebaseUser user =
                                       await _authServices.googleSignIn(context);
 
-                                  if (user == null) {
-                                    Scaffold.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Failed to sign in'),
-                                      ),
-                                    );
-                                    _emailController.clear();
-                                    _passwordController.clear();
-                                  } else {
-                                    await _loginSuccess();
+                                  if (user != null) {
+                                    await _loginSuccess(context, user);
                                   }
                                 } else {
                                   Scaffold.of(context).showSnackBar(

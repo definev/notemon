@@ -18,7 +18,9 @@ class FirebaseRepository {
   Firestore get firestoreInstance => Firestore.instance;
 
   /// [init] methods
-  Future<void> initUser() => _firebaseMethods.initUser();
+  Future<FirebaseUser> initUser() => _firebaseMethods.initUser();
+
+  void setUser(FirebaseUser user) => _firebaseMethods.setUser(user);
 
   /// [Inapp purchase] methods
   Future<void> setRemoveAdsState(bool state) =>

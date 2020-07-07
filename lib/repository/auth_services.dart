@@ -102,7 +102,7 @@ class AuthServices {
           print(e);
           Scaffold.of(context).showSnackBar(
             SnackBar(
-              content: Text("Account has register with email."),
+              content: Text(e.toString()),
             ),
           );
           return null;

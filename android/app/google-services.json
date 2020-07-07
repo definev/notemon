@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:409676819250:android:299f39afa4ce276599852b",
+        "mobilesdk_app_id": "1:409676819250:android:dbcc7d6cb68a5a8099852b",
         "android_client_info": {
           "package_name": "com.definev_.gottask"
         }
       },
       "oauth_client": [
         {
-          "client_id": "409676819250-5chm142abpkhuvcob3uh7i2pl5ult68k.apps.googleusercontent.com",
+          "client_id": "409676819250-9rncgv0j37uldratj8dlb7vg72cnvdcc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.definev_.gottask",
-            "certificate_hash": "c0199f302f2eeabb38e61ab9592cc0cb6cc608b4"
+            "certificate_hash": "0cdce242078f9ffb0e4e1f9c08b958c3b8996ebe"
           }
         },
         {
@@ -41,8 +41,7 @@
             }
           ]
         }
-      },
-      "admob_app_id": "ca-app-pub-7224518266029611~6904469212"
+      }
     }
   ],
   "configuration_version": "1"
