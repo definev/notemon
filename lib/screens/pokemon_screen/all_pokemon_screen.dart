@@ -512,7 +512,10 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
   }
 
   Widget _buyButton() => GestureDetector(
-        onTapDown: (_) => _animationController.forward(),
+        onTapDown: (_) {
+          if ((_starBloc.addStar - _starBloc.loseStar) >= 30)
+            _animationController.forward();
+        },
         onTapUp: (_) {
           if (_animationController.status == AnimationStatus.forward) {
             _animationController.reverse();
@@ -542,7 +545,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Hold to unlock',
+                      'Hold to buy',
                       style: kNormalSmallStyle.copyWith(
                         color: _currentStarPoint >= 30
                             ? TodoColors.deepPurple
@@ -613,7 +616,6 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                 child: ListWheelScrollView(
                   controller: _scrollController,
                   physics: BouncingScrollPhysics(),
-                  // offAxisFraction: isLeft ? 4 : -4,
                   onSelectedItemChanged: (value) =>
                       setState(() => _currentPokemon = value),
                   children: List.generate(
@@ -732,7 +734,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         children: <Widget>[
                           Material(
                             child: Text(
-                              '$_currentStarPoint ',
+                              '${_starBloc.addStar - _starBloc.loseStar} ',
                               style: kNormalSmallStyle,
                             ),
                           ),

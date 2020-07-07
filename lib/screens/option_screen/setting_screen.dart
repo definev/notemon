@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
@@ -7,6 +9,7 @@ import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/screens/option_screen/about_me_screen.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -34,6 +37,61 @@ class _SettingScreenState extends State<SettingScreen>
   bool _isInit = false;
 
   List<bool> _leftOrRight;
+
+  // /// Is the API available on the device
+  // bool _available = true;
+
+  // /// The In App Purchase plugin
+  // InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+
+  // /// Products for sale
+  // List<ProductDetails> _products = [];
+
+  // /// Past purchase
+  // List<PurchaseDetails> _purchases = [];
+
+  // /// Initialize data
+  // void _initialize() async {
+  //   _available = await _iap.isAvailable();
+
+  //   if (_available) {
+  //     await _getProducts();
+
+  //     // Verify and deliver a purchase with your own business logic
+  //     _verifyPurchase();
+  //   }
+  // }
+
+  // Future<void> _getProducts() async {
+  //   Set<String> ids = Set.from(['remove_ads']);
+  //   ProductDetailsResponse response = await _iap.queryProductDetails(ids);
+
+  //   setState(() => _products = response.productDetails);
+  // }
+
+  // /// Your own business logic to setup a consumable
+  // void _verifyPurchase() {
+  //   PurchaseDetails purchase = _hasPurchased("remove_ads_id");
+
+  //   // TODO serverside verification & record consumable in the database
+
+  //   if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+  //     print("Has purchase!");
+  //   }
+  // }
+
+  // PurchaseDetails _hasPurchased(String productID) {
+  //   return _purchases.firstWhere((purchase) => purchase.productID == productID,
+  //       orElse: () => null);
+  // }
+
+  // /// Purchase a product
+  // void _buyProduct(ProductDetails prod) {
+  //   final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+  //   _iap.buyNonConsumable(purchaseParam: purchaseParam).then((value) {
+  //     print(value);
+  //   });
+  // }
 
   deleteAll() {
     _allPokemonBloc.pokemonStateList.forEach((state) {
@@ -83,6 +141,7 @@ class _SettingScreenState extends State<SettingScreen>
       reverseDuration: Duration(milliseconds: 300),
     );
     animation = Tween<double>(begin: 0, end: 1).animate(animationController);
+    // _initialize();
   }
 
   @override
@@ -98,6 +157,7 @@ class _SettingScreenState extends State<SettingScreen>
       _taskBloc = findBloc<TaskBloc>();
       _isInit = true;
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -161,6 +221,95 @@ class _SettingScreenState extends State<SettingScreen>
                     ),
                   ],
                 ),
+                SizedBox(height: 40),
+                // if (_products.isNotEmpty)
+                //   InkWell(
+                //     onTap: () {
+                //       _buyProduct(_products[0]);
+                //     },
+                //     borderRadius: BorderRadius.circular(10),
+                //     child: Container(
+                //       height: 100,
+                //       width: MediaQuery.of(context).size.width - 20,
+                //       decoration: BoxDecoration(
+                //         boxShadow: [
+                //           BoxShadow(
+                //             blurRadius: 10,
+                //             color: TodoColors.lightGreen.withOpacity(0.5),
+                //           ),
+                //         ],
+                //         color: Colors.white,
+                //         borderRadius: BorderRadius.circular(10),
+                //         gradient: LinearGradient(
+                //           colors: [
+                //             TodoColors.lightGreen,
+                //             TodoColors.lightOrange,
+                //           ],
+                //           begin: Alignment.topLeft,
+                //           end: Alignment.bottomRight,
+                //         ),
+                //       ),
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         children: [
+                //           Expanded(
+                //             child: Column(
+                //               mainAxisAlignment: MainAxisAlignment.center,
+                //               children: [
+                //                 Text(
+                //                   "Remove ads",
+                //                   style: kMediumStyle.copyWith(
+                //                     color: Colors.white,
+                //                   ),
+                //                 ),
+                //                 Row(
+                //                   mainAxisAlignment: MainAxisAlignment.center,
+                //                   children: [
+                //                     Text(
+                //                       "Buy me a coffee",
+                //                       style: kMediumStyle.copyWith(
+                //                         color: Colors.white,
+                //                       ),
+                //                     ),
+                //                     SizedBox(width: 20),
+                //                     Image.asset(
+                //                       "assets/png/drink.png",
+                //                       height: 50,
+                //                     )
+                //                   ],
+                //                 ),
+                //               ],
+                //             ),
+                //           ),
+                //           ClipPath(
+                //             clipper: PriceTag(),
+                //             child: Container(
+                //               width: 150,
+                //               height: 40,
+                //               decoration: BoxDecoration(
+                //                 color: Colors.white,
+                //                 borderRadius: BorderRadius.circular(5),
+                //               ),
+                //               child: Center(
+                //                 child: Padding(
+                //                   padding: const EdgeInsets.only(right: 30),
+                //                   child: Text(
+                //                     "${_products[0].price}",
+                //                     style: TextStyle(
+                //                       fontFamily: "Source_Sans_Pro",
+                //                       fontSize: 20,
+                //                       fontWeight: FontWeight.bold,
+                //                       color: TodoColors.lightGreen,
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ),
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
             Align(
@@ -188,5 +337,32 @@ class _SettingScreenState extends State<SettingScreen>
         ),
       ),
     );
+  }
+}
+
+class PriceTag extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.addRRect(
+      RRect.fromLTRBAndCorners(
+        0,
+        0,
+        size.width - 30,
+        size.height,
+        bottomLeft: Radius.circular(5),
+        topLeft: Radius.circular(5),
+      ),
+    );
+    path.moveTo(size.width - 30, 0);
+    path.lineTo(size.width, size.height / 2);
+    path.lineTo(size.width - 30, size.height);
+    path.lineTo(size.width - 30, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return true;
   }
 }

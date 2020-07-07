@@ -99,7 +99,12 @@ class AuthServices {
           updateUserData(_user);
           return _user;
         } catch (e) {
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text(e)));
+          print(e);
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Account has register with email."),
+            ),
+          );
           return null;
         }
       }

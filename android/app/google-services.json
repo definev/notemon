@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "409676819250-5rpfo4vcl1cq8j85n5s1vd8804rjoqbq.apps.googleusercontent.com",
+          "client_id": "409676819250-5chm142abpkhuvcob3uh7i2pl5ult68k.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.definev_.gottask",
-            "certificate_hash": "3238d9427fbaad1cc63185bd7d8c39e06c6afa92"
+            "certificate_hash": "c0199f302f2eeabb38e61ab9592cc0cb6cc608b4"
           }
         },
         {
@@ -42,7 +42,7 @@
           ]
         }
       },
-      "admob_app_id": "ca-app-pub-8520565961626834~6649996964"
+      "admob_app_id": "ca-app-pub-7224518266029611~6904469212"
     }
   ],
   "configuration_version": "1"

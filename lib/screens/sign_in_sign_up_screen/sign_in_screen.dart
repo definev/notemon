@@ -190,55 +190,58 @@ class _SignInScreenState extends State<SignInScreen> {
                                 color: TodoColors.lightGreen,
                               ),
                               SizedBox(width: 22),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocusNode,
-                                  validator: (value) {
-                                    bool valid = RegexValidation.hasMatch(
-                                        value, RegexPattern.passwordNormal3);
+                              Builder(
+                                builder: (context) => Expanded(
+                                  child: TextFormField(
+                                    controller: _passwordController,
+                                    focusNode: _passwordFocusNode,
+                                    validator: (value) {
+                                      bool valid = RegexValidation.hasMatch(
+                                          value, RegexPattern.passwordNormal3);
 
-                                    if (!valid)
-                                      return "Password must contain at least one number and one uppercase letter.";
+                                      if (!valid)
+                                        return "Password must contain at least one number and one uppercase letter.";
 
-                                    return null;
-                                  },
-                                  onFieldSubmitted: (_) async {
-                                    if (_formKey.currentState.validate()) {
-                                      setState(() => _isLoading = true);
-                                      if (await checkConnection()) {
-                                        FirebaseUser user = await _authServices
-                                            .handleSignInEmail(
-                                          _emailController.text,
-                                          _passwordController.text,
-                                        );
-
-                                        if (user == null) {
-                                          Scaffold.of(context).showSnackBar(
-                                            SnackBar(
-                                              content:
-                                                  Text('Failed to sign in'),
-                                            ),
+                                      return null;
+                                    },
+                                    onFieldSubmitted: (_) async {
+                                      if (_formKey.currentState.validate()) {
+                                        setState(() => _isLoading = true);
+                                        if (await checkConnection()) {
+                                          FirebaseUser user =
+                                              await _authServices
+                                                  .handleSignInEmail(
+                                            _emailController.text,
+                                            _passwordController.text,
                                           );
-                                        } else {
-                                          await _loginSuccess();
+
+                                          if (user == null) {
+                                            Scaffold.of(context).showSnackBar(
+                                              SnackBar(
+                                                content:
+                                                    Text('Failed to sign in'),
+                                              ),
+                                            );
+                                          } else {
+                                            await _loginSuccess();
+                                          }
                                         }
+                                        setState(() => _isLoading = false);
                                       }
-                                      setState(() => _isLoading = false);
-                                    }
-                                  },
-                                  obscureText: true,
-                                  cursorColor: TodoColors.deepPurple,
-                                  style: kMediumStyle,
-                                  decoration: InputDecoration(
-                                    errorStyle: kTinySmallStyle.copyWith(
-                                      color: Colors.red,
-                                      fontSize: 10,
+                                    },
+                                    obscureText: true,
+                                    cursorColor: TodoColors.deepPurple,
+                                    style: kMediumStyle,
+                                    decoration: InputDecoration(
+                                      errorStyle: kTinySmallStyle.copyWith(
+                                        color: Colors.red,
+                                        fontSize: 10,
+                                      ),
+                                      labelText: 'Password',
+                                      labelStyle: kMediumStyle,
+                                      hintText: 'Your password',
+                                      hintStyle: kTinySmallStyle,
                                     ),
-                                    labelText: 'Password',
-                                    labelStyle: kMediumStyle,
-                                    hintText: 'Your password',
-                                    hintStyle: kTinySmallStyle,
                                   ),
                                 ),
                               ),
