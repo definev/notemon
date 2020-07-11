@@ -90,6 +90,15 @@ class _SignInScreenState extends State<SignInScreen> {
                                   )),
                               padding: const EdgeInsets.only(left: 50),
                               margin: const EdgeInsets.only(left: 10),
+                              // child: Center(
+                              //   child: Text(
+                              //     "Notemon",
+                              //     style: kBigTitleStyle.copyWith(
+                              //       fontFamily: "Tomorrow",
+                              //       color: Colors.white,
+                              //     ),
+                              //   ),
+                              // ),
                               child: Center(
                                 child: TypewriterAnimatedTextKit(
                                   text: [
@@ -120,12 +129,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Stack(
                                   children: [
                                     Image.asset(
-                                      'assets/icon/background.png',
+                                      'assets/icon/background(1).png',
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(11.0),
                                       child: Image.asset(
-                                        'assets/icon/icon.png',
+                                        'assets/icon/icon(1).png',
                                       ),
                                     ),
                                   ],

@@ -67,8 +67,10 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Future _openGallery() async {
     File imageFile = await ImagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 50,
     );
+    print("FILE SIZE BEFORE: " + imageFile.lengthSync().toString());
+
     if (imageFile != null) {
       images.add(base64Encode(imageFile.readAsBytesSync()));
       _imageSize += imageFile.lengthSync();
@@ -79,8 +81,10 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   Future _openCamera() async {
     File imageFile = await ImagePicker.pickImage(
       source: ImageSource.camera,
-      imageQuality: 80,
+      imageQuality: 50,
     );
+    print("FILE SIZE BEFORE: " + imageFile.lengthSync().toString());
+
     if (imageFile != null) {
       images.add(base64Encode(imageFile.readAsBytesSync()));
       _imageSize += imageFile.lengthSync();

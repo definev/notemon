@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
 
   String getRoute() {
     if (_isLogin == false && _isStart == false) {
-      return '/splash';
+      return '/signIn';
     } else if (_isLogin == false) {
       return '/signIn';
     } else if (_isStart == true) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audio_cache.dart';
@@ -65,10 +66,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   InterstitialAd myInterstitial;
 
-  InterstitialAd _interstitialAds() => InterstitialAd(
-        adUnitId: interstitialId,
-        targetingInfo: targetingInfo,
-      );
+  InterstitialAd _interstitialAds() =>
+      InterstitialAd(adUnitId: interstitialId, targetingInfo: targetingInfo);
+
+  StreamSubscription<AudioPlayerState> onStateChanged;
 
   _onBackPress() async {
     //Back and update data
@@ -108,7 +109,10 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     );
     try {
       final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+
+      if (result.isNotEmpty &&
+          result[0].rawAddress.isNotEmpty &&
+          !(await _repository.getRemoveAdsState())) {
         myInterstitial
           ..load()
           ..show();
@@ -149,18 +153,12 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         _timerState = TimerState.DONE;
       }
 
-      if (Platform.isAndroid && _timerState != TimerState.DONE) {
-        _incallManager.enableProximitySensor(true);
-        _incallManager.turnScreenOff();
-        _incallManager.onProximity.stream.listen(
-          (proximity) async {
-            if (_timerState == TimerState.DONE) {
-              _incallManager.turnScreenOn();
-              if (audioPlayer.state == AudioPlayerState.PLAYING &&
-                  proximity == false) {
-                await audioPlayer.stop();
-              }
-            } else {
+      if (_timerState != TimerState.DONE) {
+        if (Platform.isAndroid) {
+          _incallManager.enableProximitySensor(true);
+          _incallManager.turnScreenOff();
+          _incallManager.onProximity.stream.listen(
+            (proximity) async {
               if (proximity == true) {
                 if (isProcess == true) {
                   if (await Vibration.hasVibrator()) {
@@ -187,11 +185,12 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       ),
                     );
                   }
-                  setState(() {
-                    isProcess = false;
-                    _timerState = TimerState.PLAY;
-                    countdownClock.onPause = false;
-                  });
+                  if (mounted)
+                    setState(() {
+                      isProcess = false;
+                      _timerState = TimerState.PLAY;
+                      countdownClock.onPause = false;
+                    });
                 }
               } else {
                 if (isProcess == false) {
@@ -235,12 +234,13 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   });
                   if (audioPlayer.state == AudioPlayerState.PLAYING) {
                     await audioPlayer.stop();
+                    onStateChanged.cancel();
                   }
                 }
               }
-            }
-          },
-        );
+            },
+          );
+        }
       }
 
       countdownClock = SlideCountdownClock(
@@ -256,26 +256,22 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         onDone: () async {
           audioPlayer = await audioCache.loop(audioFile['Caught_Pokemon']);
 
+          onStateChanged = audioPlayer.onPlayerStateChanged.listen((_) async {
+            if (await Vibration.hasVibrator()) {
+              Vibration.vibrate(duration: 100, amplitude: 200);
+            }
+          });
+
           var maxTime = Duration(
             hours: int.parse(durTimer[0]),
             minutes: int.parse(durTimer[1]),
             seconds: int.parse(durTimerSecond[0]),
           );
 
-          setState(() {
-            _timerState = TimerState.DONE;
-          });
+          setState(() => _timerState = TimerState.DONE);
+
           int pointGet = maxTime.inMinutes;
           _starBloc.add(AddStarEvent(point: pointGet));
-          if (await Vibration.hasVibrator()) {
-            while (audioPlayer.state == AudioPlayerState.PLAYING) {
-              print("YO!");
-              Vibration.vibrate(
-                duration: 100,
-                amplitude: 200,
-              );
-            }
-          }
         },
         separator: ':',
         textStyle: TextStyle(
@@ -455,7 +451,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                         height: 5,
                         width: _percent /
                             _maxTimer *
-                            (MediaQuery.of(context).size.width - 30),
+                            (MediaQuery.of(context).size.width - 20),
                         duration: Duration(milliseconds: 200),
                         color: Color(int.parse(colors[_currentTask.color])),
                       ),

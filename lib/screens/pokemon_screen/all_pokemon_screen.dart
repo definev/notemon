@@ -37,6 +37,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
   bool _isInit = false;
   bool _isLoaded = false;
   bool _isConnect = false;
+  bool _isRemoveAds = true;
 
   ScrollController _scrollController = FixedExtentScrollController();
   HandSide _currentHandside;
@@ -54,7 +55,9 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
   getCurrentHandside() async => _currentHandside = await currentHandSide();
 
   adsButton() =>
-      (_isConnect == true && _isLoaded == true) ? _adsContainer() : Container();
+      (_isConnect == true && _isLoaded == true && _isRemoveAds == false)
+          ? _adsContainer()
+          : Container();
 
   SafeArea _adsContainer() => SafeArea(
         child: Padding(
@@ -256,46 +259,50 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
   }
 
   rewardedVideoAdSetup() async {
-    FirebaseAdMob.instance.initialize(appId: appId);
+    if (await _repository.getRemoveAdsState()) {
+      FirebaseAdMob.instance.initialize(appId: appId);
 
-    _isLoaded = await getLoadAdsInfirst();
-    RewardedVideoAd.instance.listener =
-        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
-      // print('Reward video event: $event');
+      _isLoaded = await getLoadAdsInfirst();
+      RewardedVideoAd.instance.listener =
+          (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
+        // print('Reward video event: $event');
 
-      if (event == RewardedVideoAdEvent.rewarded) {
-        _starBloc.add(AddStarEvent(point: _amount));
-        updateVideoReward();
-        setState(() {
-          _currentStarPoint += _amount;
-          _videoWatched++;
-        });
-      }
+        if (event == RewardedVideoAdEvent.rewarded) {
+          _starBloc.add(AddStarEvent(point: _amount));
+          updateVideoReward();
+          setState(() {
+            _currentStarPoint += _amount;
+            _videoWatched++;
+          });
+        }
 
-      if (event == RewardedVideoAdEvent.failedToLoad && mounted) {
-        setLoadAdsInfirst(false);
-      }
+        if (event == RewardedVideoAdEvent.failedToLoad && mounted) {
+          setLoadAdsInfirst(false);
+        }
 
-      if (event == RewardedVideoAdEvent.loaded) {
-        setLoadAdsInfirst(true);
-        if (mounted) setState(() => _isLoaded = true);
-      }
+        if (event == RewardedVideoAdEvent.loaded) {
+          setLoadAdsInfirst(true);
+          if (mounted) setState(() => _isLoaded = true);
+        }
 
-      if (event == RewardedVideoAdEvent.closed && mounted) {
-        setState(() => _isLoaded = false);
+        if (event == RewardedVideoAdEvent.closed && mounted) {
+          setState(() => _isLoaded = false);
+          RewardedVideoAd.instance.load(
+            adUnitId: rewardId,
+            targetingInfo: targetingInfo,
+          );
+        }
+      };
+      if (_isLoaded == false) {
         RewardedVideoAd.instance.load(
           adUnitId: rewardId,
           targetingInfo: targetingInfo,
         );
       }
-    };
-    if (_isLoaded == false) {
-      RewardedVideoAd.instance.load(
-        adUnitId: rewardId,
-        targetingInfo: targetingInfo,
-      );
     }
   }
+
+  _getRemoveAds() async => _isRemoveAds = await _repository.getRemoveAdsState();
 
   @override
   void initState() {
@@ -330,20 +337,16 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
       }
       setState(() {});
     });
+    _getRemoveAds();
   }
 
   @override
   void afterFirstLayout(BuildContext context) {
-    Future.delayed(
-      Duration(milliseconds: 100),
-      () {
-        if (_scrollController.hasClients) {
-          _scrollController.jumpTo(
-            MediaQuery.of(context).size.width / 4 * _currentPokemon,
-          );
-        }
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollController.jumpTo(
+        MediaQuery.of(context).size.width / 4 * _currentPokemon,
+      );
+    });
   }
 
   @override
@@ -615,7 +618,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                 height: MediaQuery.of(context).size.height * 3.1 / 5,
                 child: ListWheelScrollView(
                   controller: _scrollController,
-                  physics: BouncingScrollPhysics(),
+                  physics: FixedExtentScrollPhysics(),
                   onSelectedItemChanged: (value) =>
                       setState(() => _currentPokemon = value),
                   children: List.generate(

@@ -71,7 +71,9 @@ flutter:
   assets:
     - assets/musics/
     - assets/png/
-    - assets/icon/
+    - assets/icon/background(1).png
+    - assets/icon/icon(1).png
+    - assets/icon/google.jpg
     - assets/splash/
 
   fonts:

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "409676819250-dc08skn18mm4huf2b7b61a4epj8lea9q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.definev_.gottask",
+            "certificate_hash": "8a48b31bb9630ecef3b6d54ac9da94db0fde7da5"
+          }
+        },
+        {
           "client_id": "409676819250-9rncgv0j37uldratj8dlb7vg72cnvdcc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
