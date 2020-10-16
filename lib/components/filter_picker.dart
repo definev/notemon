@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/utils/utils.dart';
 
 class FilterPicker extends StatefulWidget {
-  final List<bool> initCatagory;
+  final List<bool> initCategory;
   final PriorityState priority;
   final String nameFilter;
   final Function(List<bool> catagories, PriorityState priority) onCompeleted;
@@ -11,7 +12,7 @@ class FilterPicker extends StatefulWidget {
   const FilterPicker({
     Key key,
     @required this.onCompeleted,
-    @required this.initCatagory,
+    @required this.initCategory,
     @required this.priority,
     @required this.nameFilter,
   }) : super(key: key);
@@ -26,7 +27,7 @@ class _FilterPickerState extends State<FilterPicker>
   PriorityState priority = PriorityState.Low;
   Color currentColor = TodoColors.blueAqua;
 
-  Widget _buildCatagoryPicker(BuildContext context) {
+  Widget _buildCategoryPicker(BuildContext context) {
     return Wrap(
       direction: Axis.horizontal,
       children: List.generate(
@@ -52,7 +53,7 @@ class _FilterPickerState extends State<FilterPicker>
                   : TodoColors.scaffoldWhite,
             ),
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            margin: marginCatagory(index),
+            margin: marginCategory(index),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -162,7 +163,7 @@ class _FilterPickerState extends State<FilterPicker>
   @override
   void initState() {
     super.initState();
-    _catagories = widget.initCatagory;
+    _catagories = widget.initCategory;
     priority = widget.priority;
     currentColor = setPriorityColor(priorityList[priority.index]);
   }
@@ -182,9 +183,9 @@ class _FilterPickerState extends State<FilterPicker>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _header(context),
-                _buildTitle('Catagory'),
-                _buildCatagoryPicker(context),
-                _buildTitle('Priority'),
+                _buildTitle('Category'.tr),
+                _buildCategoryPicker(context),
+                _buildTitle('Priority'.tr),
                 _buildPriority(),
               ],
             ),
@@ -205,14 +206,14 @@ class _FilterPickerState extends State<FilterPicker>
         children: [
           Expanded(
             child: InkWell(
-              onTap: () => Navigator.pop(context),
+              onTap: () => Get.back(),
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 height: 45,
                 color: Colors.grey[300],
                 child: Center(
                   child: Text(
-                    'Cancel',
+                    'Cancel'.tr,
                     style: kNormalStyle.copyWith(
                       color: Colors.black45,
                     ),
@@ -224,7 +225,7 @@ class _FilterPickerState extends State<FilterPicker>
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
 
                 if (widget.onCompeleted != null) {
                   widget.onCompeleted(_catagories, priority);
@@ -236,7 +237,7 @@ class _FilterPickerState extends State<FilterPicker>
                 color: TodoColors.deepPurple,
                 child: Center(
                   child: Text(
-                    'Ok',
+                    'Ok'.tr,
                     style: kNormalStyle.copyWith(
                       color: Colors.white,
                     ),
@@ -261,7 +262,9 @@ class _FilterPickerState extends State<FilterPicker>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${widget.nameFilter} filter',
+                  Get.locale == Locale('en', 'en_US')
+                      ? '${widget.nameFilter.tr} filter'
+                      : 'Bộ lọc ${widget.nameFilter.tr.toLowerCase()}',
                   style: kBigTitleStyle.copyWith(
                     fontFamily: 'Tomorrow',
                     fontSize: 25,
@@ -285,7 +288,7 @@ class _FilterPickerState extends State<FilterPicker>
                           ),
                           child: Center(
                             child: Text(
-                              "Clear",
+                              "Reset".tr,
                               style: kNormalStyle.copyWith(
                                 color: Colors.white,
                               ),

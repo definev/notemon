@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/component.dart';
 import 'package:gottask/models/model.dart';
@@ -547,14 +548,10 @@ class _HomeScreenState extends State<HomeScreen>
                             onTap: () async {
                               await compareTime();
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      BlocProvider<HandSideBloc>.value(
-                                    value: HandSideBloc(),
-                                    child: AllPokemonScreen(currentPokemon: 0),
-                                  ),
+                              Get.to(
+                                BlocProvider<HandSideBloc>.value(
+                                  value: HandSideBloc(),
+                                  child: AllPokemonScreen(currentPokemon: 0),
                                 ),
                               );
                             },
@@ -591,15 +588,11 @@ class _HomeScreenState extends State<HomeScreen>
                           return GestureDetector(
                             onTap: () async {
                               await compareTime();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      BlocProvider<HandSideBloc>.value(
-                                    value: HandSideBloc(),
-                                    child: AllPokemonScreen(
-                                      currentPokemon: _favouritePokemon.pokemon,
-                                    ),
+                              Get.to(
+                                BlocProvider<HandSideBloc>.value(
+                                  value: HandSideBloc(),
+                                  child: AllPokemonScreen(
+                                    currentPokemon: _favouritePokemon.pokemon,
                                   ),
                                 ),
                               );
@@ -611,8 +604,7 @@ class _HomeScreenState extends State<HomeScreen>
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.asset(
-                                  pokedex[_favouritePokemon.pokemon]
-                                      ["imageURL"],
+                                  pokedex[_favouritePokemon.pokemon].imageUrl,
                                   height: 30,
                                 ),
                               ),
@@ -622,15 +614,10 @@ class _HomeScreenState extends State<HomeScreen>
                           return GestureDetector(
                             onTap: () async {
                               await compareTime();
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      BlocProvider<HandSideBloc>.value(
-                                    value: HandSideBloc(),
-                                    child: AllPokemonScreen(currentPokemon: 0),
-                                  ),
+                              Get.to(
+                                BlocProvider<HandSideBloc>.value(
+                                  value: HandSideBloc(),
+                                  child: AllPokemonScreen(currentPokemon: 0),
                                 ),
                               );
                             },
@@ -759,22 +746,22 @@ class _HomeScreenState extends State<HomeScreen>
               if (snapshot.data == null ||
                   snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                  child: Text('Waiting ...'),
+                  child: Text('${"Loading".tr} ...'),
                 );
               }
               if (snapshot.data.documents.isEmpty) {
                 List<PokemonState> _pokemonStates = [];
-                pokedex.forEach((poke) {
+                pokedex.forEach((pokemon) {
                   _pokemonStates.add(
                     PokemonState(
-                      name: poke['name'],
+                      name: pokemon.name,
                       state: 0,
                     ),
                   );
                 });
                 _repository.uploadAllPokemonStateToFirebase(_pokemonStates);
                 return Center(
-                  child: Text('Waiting ...'),
+                  child: Text('${"Loading".tr} ...'),
                 );
               }
               List<PokemonState> _pokemonStateList = [];
@@ -794,14 +781,11 @@ class _HomeScreenState extends State<HomeScreen>
                     onTap: () async {
                       await compareTime();
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BlocProvider<HandSideBloc>.value(
-                            value: HandSideBloc(),
-                            child: AllPokemonScreen(
-                              currentPokemon: index,
-                            ),
+                      Get.to(
+                        BlocProvider<HandSideBloc>.value(
+                          value: HandSideBloc(),
+                          child: AllPokemonScreen(
+                            currentPokemon: index,
                           ),
                         ),
                       );
@@ -839,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen>
                           children: <Widget>[
                             Center(
                               child: Image.asset(
-                                pokedex[index]["imageURL"],
+                                pokedex[index].imageUrl,
                                 height: 60,
                                 width: 60,
                                 color: colorStateOfPokemon(
@@ -880,8 +864,8 @@ class _HomeScreenState extends State<HomeScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Text(
-              'To-do list',
+            Text(
+              'To-do list'.tr,
               style: kTitleStyle,
             ),
             _todoFilter(),
@@ -985,7 +969,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 onTap: () {
-                  List<bool> _filterCatagoryClone = List.generate(
+                  List<bool> _filterCategoryClone = List.generate(
                     _todoFilterMap['todoFilter'].length,
                     (index) => _todoFilterMap['todoFilter'][index],
                   );
@@ -997,7 +981,7 @@ class _HomeScreenState extends State<HomeScreen>
                     builder: (context) => FilterPicker(
                       nameFilter: "Todo",
                       priority: _priorityStateClone,
-                      initCatagory: _filterCatagoryClone,
+                      initCategory: _filterCategoryClone,
                       onCompeleted: (catagories, priority) {
                         setState(() {
                           _todoFilterMap['todoFilter'] = catagories;
@@ -1061,9 +1045,9 @@ class _HomeScreenState extends State<HomeScreen>
               if (!_isLoading['todo'] && isOnline)
                 _updateTodosFromOtherDevice(_todoList);
               if (_todoList.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'Empty to-do',
+                    'Empty to-do'.tr,
                     style: kNormalStyle,
                   ),
                 );
@@ -1080,9 +1064,9 @@ class _HomeScreenState extends State<HomeScreen>
               }
             }
 
-            return const Center(
+            return Center(
               child: Text(
-                'Empty to-do',
+                'Empty to-do'.tr,
                 style: kNormalStyle,
               ),
             );
@@ -1100,8 +1084,8 @@ class _HomeScreenState extends State<HomeScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Task list',
+            Text(
+              'Task list'.tr,
               style: kTitleStyle,
             ),
             _taskFilter(),
@@ -1205,7 +1189,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 onTap: () {
-                  List<bool> _filterCatagoryClone = List.generate(
+                  List<bool> _filterCategoryClone = List.generate(
                     _taskFilterMap['taskFilter'].length,
                     (index) => _taskFilterMap['taskFilter'][index],
                   );
@@ -1218,7 +1202,7 @@ class _HomeScreenState extends State<HomeScreen>
                       key: UniqueKey(),
                       nameFilter: "Task",
                       priority: _priorityStateClone,
-                      initCatagory: _filterCatagoryClone,
+                      initCategory: _filterCategoryClone,
                       onCompeleted: (catagories, priority) => setState(() {
                         _taskFilterMap['taskFilter'] = catagories;
                         _taskFilterMap['priority'] = priority;
@@ -1242,14 +1226,7 @@ class _HomeScreenState extends State<HomeScreen>
               Icons.add,
               color: Colors.white,
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddTaskScreen(),
-                ),
-              );
-            },
+            onPressed: () => Get.to(AddTaskScreen()),
           ),
         ),
       ],
@@ -1283,9 +1260,9 @@ class _HomeScreenState extends State<HomeScreen>
           return SizedBox(
             height: kListViewHeight + 2,
             width: double.infinity,
-            child: const Center(
+            child: Center(
               child: Text(
-                'Empty task',
+                'Empty task'.tr,
                 style: kNormalStyle,
               ),
             ),
@@ -1295,9 +1272,9 @@ class _HomeScreenState extends State<HomeScreen>
             return SizedBox(
               height: kListViewHeight + 2,
               width: double.infinity,
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Empty task',
+                  'Empty task'.tr,
                   style: kNormalStyle,
                 ),
               ),
@@ -1315,9 +1292,9 @@ class _HomeScreenState extends State<HomeScreen>
               return SizedBox(
                 height: kListViewHeight + 2,
                 width: double.infinity,
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'Empty task',
+                    'Empty task'.tr,
                     style: kNormalStyle,
                   ),
                 ),
@@ -1334,14 +1311,7 @@ class _HomeScreenState extends State<HomeScreen>
                   if (index == _taskList.length) {
                     return Center(
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddTaskScreen(),
-                            ),
-                          );
-                        },
+                        onTap: () => Get.to(AddTaskScreen()),
                         child: Container(
                           margin: const EdgeInsets.only(right: 15),
                           height: kListViewHeight,
@@ -1420,15 +1390,11 @@ class _HomeScreenState extends State<HomeScreen>
                               return GestureDetector(
                                 onTap: () async {
                                   await compareTime();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          BlocProvider<HandSideBloc>.value(
-                                        value: HandSideBloc(),
-                                        child: AllPokemonScreen(
-                                          currentPokemon: state.pokemon,
-                                        ),
+                                  Get.to(
+                                    BlocProvider<HandSideBloc>.value(
+                                      value: HandSideBloc(),
+                                      child: AllPokemonScreen(
+                                        currentPokemon: state.pokemon,
                                       ),
                                     ),
                                   );
@@ -1440,7 +1406,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Image.asset(
-                                      pokedex[state.pokemon]["imageURL"],
+                                      pokedex[state.pokemon].imageUrl,
                                       height: 30,
                                     ),
                                   ),
@@ -1451,15 +1417,11 @@ class _HomeScreenState extends State<HomeScreen>
                                 onTap: () async {
                                   await compareTime();
 
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          BlocProvider<HandSideBloc>.value(
-                                        value: HandSideBloc(),
-                                        child:
-                                            AllPokemonScreen(currentPokemon: 0),
-                                      ),
+                                  Get.to(
+                                    BlocProvider<HandSideBloc>.value(
+                                      value: HandSideBloc(),
+                                      child:
+                                          AllPokemonScreen(currentPokemon: 0),
                                     ),
                                   );
                                 },
@@ -1574,14 +1536,11 @@ class _HomeScreenState extends State<HomeScreen>
                         onTap: () async {
                           await compareTime();
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => BlocProvider<HandSideBloc>.value(
-                                value: HandSideBloc(),
-                                child: AllPokemonScreen(
-                                  currentPokemon: index,
-                                ),
+                          Get.to(
+                            BlocProvider<HandSideBloc>.value(
+                              value: HandSideBloc(),
+                              child: AllPokemonScreen(
+                                currentPokemon: index,
                               ),
                             ),
                           );
@@ -1619,7 +1578,7 @@ class _HomeScreenState extends State<HomeScreen>
                               children: <Widget>[
                                 Center(
                                   child: Image.asset(
-                                    pokedex[index]["imageURL"],
+                                    pokedex[index].imageUrl,
                                     height: 60,
                                     width: 60,
                                     color: colorStateOfPokemon(
@@ -1646,7 +1605,7 @@ class _HomeScreenState extends State<HomeScreen>
                   );
                 }
                 return Center(
-                  child: Text('Waiting ...'),
+                  child: Text('${"Loading".tr} ...'),
                 );
               },
             ),
@@ -1663,8 +1622,8 @@ class _HomeScreenState extends State<HomeScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Text(
-              'To-do list',
+            Text(
+              'To-do list'.tr,
               style: kTitleStyle,
             ),
             _todoFilter(),
@@ -1678,9 +1637,9 @@ class _HomeScreenState extends State<HomeScreen>
           builder: (context, state) {
             if (state is TodoLoaded) {
               if (state.todo.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'Empty to-do',
+                    'Empty to-do'.tr,
                     style: kNormalStyle,
                   ),
                 );
@@ -1692,9 +1651,9 @@ class _HomeScreenState extends State<HomeScreen>
                 _todoList = todoFilterProcess(_todoList);
 
                 if (_todoList.length == 0) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'Empty to-do',
+                      'Empty to-do'.tr,
                       style: kNormalStyle,
                     ),
                   );
@@ -1711,9 +1670,9 @@ class _HomeScreenState extends State<HomeScreen>
                 );
               }
             }
-            return const Center(
+            return Center(
               child: Text(
-                'Empty to-do',
+                'Empty to-do'.tr,
                 style: kNormalStyle,
               ),
             );
@@ -1731,8 +1690,8 @@ class _HomeScreenState extends State<HomeScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Task list',
+            Text(
+              'Task list'.tr,
               style: kTitleStyle,
             ),
             _taskFilter(),
@@ -1748,9 +1707,9 @@ class _HomeScreenState extends State<HomeScreen>
               return SizedBox(
                 height: kListViewHeight + 2,
                 width: double.infinity,
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'Empty task',
+                    'Empty task'.tr,
                     style: kNormalStyle,
                   ),
                 ),
@@ -1764,9 +1723,9 @@ class _HomeScreenState extends State<HomeScreen>
                 return SizedBox(
                   height: kListViewHeight + 2,
                   width: double.infinity,
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Empty task',
+                      'Empty task'.tr,
                       style: kNormalStyle,
                     ),
                   ),
@@ -1784,14 +1743,7 @@ class _HomeScreenState extends State<HomeScreen>
                       return Center(
                         key: UniqueKey(),
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddTaskScreen(),
-                              ),
-                            );
-                          },
+                          onTap: () => Get.to(AddTaskScreen()),
                           child: Container(
                             margin: const EdgeInsets.only(right: 15),
                             height: kListViewHeight,
@@ -1842,9 +1794,9 @@ class _HomeScreenState extends State<HomeScreen>
           return SizedBox(
             height: kListViewHeight + 2,
             width: double.infinity,
-            child: const Center(
+            child: Center(
               child: Text(
-                'Empty task',
+                'Empty task'.tr,
                 style: kNormalStyle,
               ),
             ),
@@ -1870,21 +1822,21 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (_taskFilterMap['taskFilter'].contains(true)) {
       /// Save position true value in taskFilterMap
-      List<int> _filterCatagoryPosition = [];
+      List<int> _filterCategoryPosition = [];
       List<Task> _filterTaskList = [];
 
       /// Process
       for (int i = 0; i < _taskFilterMap['taskFilter'].length; i++) {
         if (_taskFilterMap['taskFilter'][i]) {
-          _filterCatagoryPosition.add(i);
+          _filterCategoryPosition.add(i);
         }
       }
 
       _taskList.forEach((task) {
         bool _isAdd = true;
 
-        for (int i = 0; i < _filterCatagoryPosition.length; i++) {
-          if (!task.catagories[_filterCatagoryPosition[i]]) {
+        for (int i = 0; i < _filterCategoryPosition.length; i++) {
+          if (!task.catagories[_filterCategoryPosition[i]]) {
             _isAdd = false;
             break;
           }
@@ -1926,11 +1878,11 @@ class _HomeScreenState extends State<HomeScreen>
     List<Todo> _todoList = todoList;
 
     if (_todoFilterMap['todoFilter'].contains(true)) {
-      List<int> _filterCatagoryPosition = [];
+      List<int> _filterCategoryPosition = [];
 
       for (int i = 0; i < _todoFilterMap['todoFilter'].length; i++) {
         if (_todoFilterMap['todoFilter'][i]) {
-          _filterCatagoryPosition.add(i);
+          _filterCategoryPosition.add(i);
         }
       }
 
@@ -1938,8 +1890,8 @@ class _HomeScreenState extends State<HomeScreen>
       _todoList.forEach((todo) {
         bool _isAdd = true;
 
-        for (int i = 0; i < _filterCatagoryPosition.length; i++) {
-          if (!todo.catagories[_filterCatagoryPosition[i]]) {
+        for (int i = 0; i < _filterCategoryPosition.length; i++) {
+          if (!todo.catagories[_filterCategoryPosition[i]]) {
             _isAdd = false;
             break;
           }

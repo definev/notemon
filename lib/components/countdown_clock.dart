@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import 'package:gottask/components/slide_direction.dart';
 
+// ignore: must_be_immutable
 class SlideCountdownClock extends StatefulWidget {
   final Duration duration;
   final TextStyle textStyle;

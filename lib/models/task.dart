@@ -87,9 +87,9 @@ class Task {
       );
 
   factory Task.fromFirebaseMap(Map<String, dynamic> json) {
-    List<bool> catagory = [];
+    List<bool> category = [];
     json["catagories"].forEach((data) {
-      catagory.add(data);
+      category.add(data);
     });
     List<String> achieve = [];
     json["achieve"]?.forEach((data) {
@@ -112,7 +112,7 @@ class Task {
       priority: PriorityState.values[json["priority"]],
       completeTimer: json["completeTimer"],
       isDoneAchieve: isDoneAchieve,
-      catagories: catagory,
+      catagories: category,
     );
   }
 

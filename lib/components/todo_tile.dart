@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/models/todo.dart';
@@ -68,12 +69,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
           child: InkWell(
             onTap: () {
               if (_isDone != true) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TodoScreen(todo: _currentTodo),
-                  ),
-                );
+                Get.to(TodoScreen(todo: _currentTodo));
               }
             },
             child: Row(
@@ -142,7 +138,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
-                    priorityList[widget.todo.priority.index],
+                    priorityList[widget.todo.priority.index].tr,
                     style: kNormalStyle.copyWith(
                       color: setPriorityColor(
                           priorityList[widget.todo.priority.index]),
@@ -217,7 +213,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                       color: Colors.white,
                     ),
                     Text(
-                      _isChecked == false ? 'Check' : 'Done',
+                      _isChecked == false ? 'Check'.tr : 'Done'.tr,
                       style: kTinySmallStyle.copyWith(
                           color: Colors.white, fontSize: 12),
                     ),
@@ -267,7 +263,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                         color: Colors.white,
                       ),
                       Text(
-                        'Delete',
+                        'Delete'.tr,
                         style: kTinySmallStyle.copyWith(
                             color: Colors.white, fontSize: 12),
                       ),

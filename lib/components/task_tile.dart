@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/models/task.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
@@ -36,13 +37,10 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => TaskScreen(
-              task: widget.task,
-              removeAds: widget.removeAds,
-            ),
+        Get.to(
+          TaskScreen(
+            task: widget.task,
+            removeAds: widget.removeAds,
           ),
         );
       },
@@ -97,7 +95,7 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
                                 priorityList[widget.task.priority.index]),
                           ),
                           Text(
-                            shortPriorityList[widget.task.priority.index],
+                            shortPriorityList[widget.task.priority.index].tr,
                             style: kNormalStyle.copyWith(
                               fontFamily: "Source_Sans_Pro",
                               color: setPriorityColor(

@@ -18,7 +18,7 @@ mixin FilterMixin<T extends StatefulWidget> on State<T> {
       return TodoColors.blueAqua;
   }
 
-  EdgeInsets marginCatagory(int index) {
+  EdgeInsets marginCategory(int index) {
     if (index >= 6) {
       if (index % 3 == 2) {
         return null;
@@ -33,7 +33,7 @@ mixin FilterMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  EdgeInsets paddingCatagory() {
+  EdgeInsets paddingCategory() {
     return EdgeInsets.symmetric(horizontal: 10);
   }
 

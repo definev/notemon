@@ -18,6 +18,7 @@ import 'package:gottask/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:get/get.dart';
 
 class TodoScreen extends StatefulWidget {
   final Todo todo;
@@ -65,7 +66,7 @@ class _TodoScreenState extends State<TodoScreen>
 
   List<Uint8List> imageFileList = [];
   List<String> images = [];
-  List<bool> _catagoryItems = List.generate(9, (index) => false);
+  List<bool> _categoryItems = List.generate(9, (index) => false);
 
   String _content;
   final StreamController<String> _contentStreamController =
@@ -144,7 +145,7 @@ class _TodoScreenState extends State<TodoScreen>
         _isInit = true;
       } else {
         Scaffold.of(context).showSnackBar(
-          const SnackBar(content: Text('You must accept permissions')),
+          SnackBar(content: Text('You must accept permissions'.tr)),
         );
       }
     } catch (e) {
@@ -280,7 +281,7 @@ class _TodoScreenState extends State<TodoScreen>
     }
     _content = widget.todo.content;
     indexColor = widget.todo.color;
-    _catagoryItems = widget.todo.catagories;
+    _categoryItems = widget.todo.catagories;
     _priority = widget.todo.priority;
     _init();
   }
@@ -308,7 +309,7 @@ class _TodoScreenState extends State<TodoScreen>
     return Padding(
       padding: const EdgeInsets.only(left: 3, top: 2, bottom: 5),
       child: Text(
-        title,
+        title.tr,
         style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
@@ -351,7 +352,7 @@ class _TodoScreenState extends State<TodoScreen>
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               if (_isRecording == false) {
-                Navigator.pop(context);
+                Get.back();
               } else {
                 showWarning(context);
               }
@@ -416,7 +417,7 @@ class _TodoScreenState extends State<TodoScreen>
                 if (_currentTask.state == "done")
                   _starBloc.add(AddStarEvent(point: 1));
                 _repository.deleteTodoOnFirebase(_currentTask);
-                Navigator.pop(context);
+                Get.back();
               },
             )
           ],
@@ -435,7 +436,7 @@ class _TodoScreenState extends State<TodoScreen>
                   _buildColorPicker(),
                   _buildTitle('Priority'),
                   _buildPriorityPicker(),
-                  _buildTitle('Catagory'),
+                  _buildTitle('Category'),
                   _buildCatagoriesPicker(context),
                   _buildTitle('File'),
                   _buildFilePicker(context),
@@ -511,7 +512,7 @@ class _TodoScreenState extends State<TodoScreen>
                           opacity: opacityAnimation.value,
                           duration: animationController.duration,
                           child: Text(
-                            'No files',
+                            'No files'.tr,
                             style: kTitleStyle.copyWith(color: Colors.grey),
                           ),
                         ),
@@ -707,7 +708,7 @@ class _TodoScreenState extends State<TodoScreen>
             : Expanded(
                 child: Center(
                   child: Text(
-                    'No files',
+                    'No files'.tr,
                     style: kTitleStyle.copyWith(color: Colors.grey),
                   ),
                 ),
@@ -895,7 +896,7 @@ class _TodoScreenState extends State<TodoScreen>
           },
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
-            labelText: 'Rename to-do',
+            labelText: 'Rename to-do'.tr,
             labelStyle: kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
@@ -923,14 +924,14 @@ class _TodoScreenState extends State<TodoScreen>
               color: indexColor,
               audioPath: _audioPath,
               audioCode: _audioCode,
-              catagories: _catagoryItems,
+              catagories: _categoryItems,
               priority: _priority,
             );
             _todoBloc.add(EditTodoEvent(todo: _currentTask));
             if (await checkConnection())
               _repository.updateTodoToFirebase(_currentTask);
 
-            Navigator.pop(context);
+            Get.back();
           } else {
             showWarning(context);
           }
@@ -948,7 +949,7 @@ class _TodoScreenState extends State<TodoScreen>
                   color: Colors.white,
                 ),
                 Text(
-                  ' Edit to-do',
+                  ' ${"Edit to-do".tr}',
                   style: kNormalStyle.copyWith(color: Colors.white),
                 ),
               ],
@@ -974,7 +975,7 @@ class _TodoScreenState extends State<TodoScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Warning:',
+                    'Warning:'.tr,
                     style: TextStyle(
                       fontFamily: 'Alata',
                       fontSize: 30,
@@ -984,7 +985,7 @@ class _TodoScreenState extends State<TodoScreen>
                     ),
                   ),
                   Text(
-                    'Do not go out if recording not done.',
+                    'Do not go out if recording not done.'.tr,
                     style: kTitleStyle,
                   ),
                   Padding(
@@ -992,7 +993,7 @@ class _TodoScreenState extends State<TodoScreen>
                         horizontal: 40, vertical: 20),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        Get.back();
                       },
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -1002,7 +1003,7 @@ class _TodoScreenState extends State<TodoScreen>
                         ),
                         child: Center(
                           child: Text(
-                            'Cancel',
+                            'Cancel'.tr,
                             style: TextStyle(
                               fontFamily: 'Alata',
                               fontSize: 30,
@@ -1061,7 +1062,7 @@ class _TodoScreenState extends State<TodoScreen>
         ),
         child: Center(
           child: Text(
-            priorityList[value],
+            priorityList[value].tr,
             style: kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
@@ -1089,58 +1090,47 @@ class _TodoScreenState extends State<TodoScreen>
       direction: Axis.horizontal,
       children: List.generate(
         catagories.length,
-        (index) => GestureDetector(
-          onTap: () {
-            setState(() {
-              _catagoryItems[index] = !_catagoryItems[index];
-            });
-          },
-          child: AnimatedContainer(
-            height: 45,
-            width: (MediaQuery.of(context).size.width - 50) / 3,
-            duration: Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: _catagoryItems[index] == false
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : TodoColors.scaffoldWhite,
-                width: 1,
-              ),
-              color: _catagoryItems[index]
-                  ? Color(
-                      int.parse(
-                        colors[indexColor],
-                      ),
-                    )
-                  : TodoColors.scaffoldWhite,
-            ),
-            padding: paddingCatagory(),
-            margin: marginCatagory(index),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Icon(
-                  catagories[index]["iconData"],
-                  size: iconSize(),
-                  color: _catagoryItems[index] == false
+        (index) {
+          String category = catagories[index]["name"];
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _categoryItems[index] = !_categoryItems[index];
+              });
+            },
+            child: AnimatedContainer(
+              height: 45,
+              width: (MediaQuery.of(context).size.width - 50) / 3,
+              duration: Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _categoryItems[index] == false
                       ? Color(
                           int.parse(
                             colors[indexColor],
                           ),
                         )
                       : TodoColors.scaffoldWhite,
+                  width: 1,
                 ),
-                Text(
-                  '${catagories[index]["name"]}',
-                  style: TextStyle(
-                    fontFamily: 'Source_Sans_Pro',
-                    fontSize: fontSize(),
-                    color: _catagoryItems[index] == false
+                color: _categoryItems[index]
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+              ),
+              padding: paddingCategory(),
+              margin: marginCategory(index),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    catagories[index]["iconData"],
+                    size: iconSize(),
+                    color: _categoryItems[index] == false
                         ? Color(
                             int.parse(
                               colors[indexColor],
@@ -1148,11 +1138,25 @@ class _TodoScreenState extends State<TodoScreen>
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                ),
-              ],
+                  Text(
+                    '${category.tr}',
+                    style: TextStyle(
+                      fontFamily: 'Source_Sans_Pro',
+                      fontSize: fontSize(),
+                      color: _categoryItems[index] == false
+                          ? Color(
+                              int.parse(
+                                colors[indexColor],
+                              ),
+                            )
+                          : TodoColors.scaffoldWhite,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

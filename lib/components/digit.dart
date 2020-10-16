@@ -102,10 +102,10 @@ class _DigitState extends State<Digit> with SingleTickerProviderStateMixin {
       decoration: widget.decoration ?? BoxDecoration(),
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, w) {
+        builder: (context, _) {
           return Stack(
             fit: StackFit.passthrough,
-            overflow: Overflow.clip,
+            clipBehavior: Clip.antiAlias,
             children: <Widget>[
               haveData
                   ? FractionalTranslation(

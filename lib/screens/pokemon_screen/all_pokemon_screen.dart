@@ -16,6 +16,7 @@ import 'package:gottask/models/pokemon_state.dart';
 import 'package:gottask/screens/option_screen/setting_screen.dart';
 import 'package:gottask/screens/pokemon_screen/pokemon_info.dart';
 import 'package:swipedetector/swipedetector.dart';
+import 'package:get/get.dart';
 
 class AllPokemonScreen extends StatefulWidget {
   final int currentPokemon;
@@ -115,7 +116,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         ),
                       ),
                       Text(
-                        'You can watch ads for support me ^^',
+                        '${"You can watch ads for support me".tr} ^^'.tr,
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: MediaQuery.of(context).size.width / 38,
@@ -179,7 +180,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
+                            Get.back();
                           },
                           child: Container(
                             width: MediaQuery.of(context).size.width > 200
@@ -192,11 +193,11 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               color:
-                                  tagColor[pokedex[_currentPokemon]['type'][0]],
+                                  tagColor[pokedex[_currentPokemon].type.en[0]],
                             ),
                             child: Center(
                               child: Text(
-                                'Cancel',
+                                'Cancel'.tr,
                                 style:
                                     kTitleStyle.copyWith(color: Colors.white),
                               ),
@@ -214,7 +215,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                               }
                             } on SocketException catch (_) {} on PlatformException catch (_) {}
 
-                            Navigator.pop(context);
+                            Get.back();
                           },
                           child: Container(
                             width: MediaQuery.of(context).size.width > 200
@@ -225,11 +226,11 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               color:
-                                  tagColor[pokedex[_currentPokemon]['type'][0]],
+                                  tagColor[pokedex[_currentPokemon].type.en[0]],
                             ),
                             child: Center(
                               child: Text(
-                                'Watch ads',
+                                'Watch ads'.tr,
                                 style:
                                     kTitleStyle.copyWith(color: Colors.white),
                               ),
@@ -321,14 +322,14 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
         _allPokemonBloc.add(
           UpdatePokemonStateEvent(
             pokemonState: PokemonState(
-              name: pokedex[_currentPokemon]['name'],
+              name: pokedex[_currentPokemon].name,
               state: 1,
             ),
           ),
         );
         if (await checkConnection()) {
           _repository.updatePokemonStateToFirebase(PokemonState(
-            name: pokedex[_currentPokemon]['name'],
+            name: pokedex[_currentPokemon].name,
             state: 1,
           ));
         }
@@ -392,15 +393,15 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
 
   SwipeDetector _handWidget({BuildContext context, bool isLeft}) {
     return SwipeDetector(
-      onSwipeRight: () => Navigator.pop(context),
-      onSwipeLeft: () => Navigator.pop(context),
+      onSwipeRight: () => Get.back(),
+      onSwipeLeft: () => Get.back(),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 600),
         curve: Curves.decelerate,
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: tagColor[pokedex[_currentPokemon]['type'][0]].withOpacity(0.6),
+          color: tagColor[pokedex[_currentPokemon].type.en[0]].withOpacity(0.6),
         ),
         child: BlocBuilder<AllPokemonBloc, AllPokemonState>(
           bloc: _allPokemonBloc,
@@ -408,7 +409,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
             if (state is AllPokemonLoaded) {
               if (state.pokemonStateList.isEmpty)
                 return Center(
-                  child: Text('Waiting ...'),
+                  child: Text('${"Loading".tr} ...'),
                 );
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +427,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
               );
             }
             return Center(
-              child: Text('Waiting ...'),
+              child: Text('${"Loading".tr} ...'),
             );
           },
         ),
@@ -447,7 +448,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
             SizedBox(height: MediaQuery.of(context).size.height / 7 - 20),
             Center(
               child: Image.asset(
-                pokedex[_currentPokemon]["imageURL"],
+                pokedex[_currentPokemon].imageUrl,
                 height: MediaQuery.of(context).size.height / 4,
                 color: snapshot[_currentPokemon].state == 0
                     ? Colors.black45
@@ -471,7 +472,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       ? [hideName(), _buyButton()]
                       : [
                           Text(
-                            pokedex[_currentPokemon]['name'],
+                            pokedex[_currentPokemon].name,
                             style: TextStyle(
                               fontFamily: 'Alata',
                               color: Colors.black,
@@ -548,7 +549,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Hold to buy',
+                      'Hold to buy'.tr,
                       style: kNormalSmallStyle.copyWith(
                         color: _currentStarPoint >= 30
                             ? TodoColors.deepPurple
@@ -641,7 +642,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         child: Stack(
                           children: <Widget>[
                             Image.asset(
-                              pokedex[index]["imageURL"],
+                              pokedex[index].imageUrl,
                               height:
                                   MediaQuery.of(context).size.width / 4 - 10,
                               color: snapshot[index].state == 0

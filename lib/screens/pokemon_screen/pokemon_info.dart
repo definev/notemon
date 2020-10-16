@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:get/get.dart';
 import 'package:gottask/components/pet_tag_custom.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:gottask/models/pokemon_state.dart';
@@ -24,7 +25,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             margin: const EdgeInsets.all(10),
             child: Material(
               child: Text(
-                type,
+                type.tr,
                 style: TextStyle(
                   color: Colors.black54,
                   fontSize: MediaQuery.of(context).size.width / 30,
@@ -55,10 +56,10 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 curve: Curves.decelerate,
                 width:
                     (MediaQuery.of(context).size.width * 3 / 4 * 3 / 4 - 20) *
-                        int.parse(pokedex[widget.currentPokemon][type]) /
+                        pokedex[widget.currentPokemon].getInfoByType(type) /
                         160,
                 height: 30,
-                color: tagColor[pokedex[widget.currentPokemon]['type'][0]],
+                color: tagColor[pokedex[widget.currentPokemon].type.en[0]],
               ),
               AnimatedContainer(
                 margin: const EdgeInsets.symmetric(
@@ -74,7 +75,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                   child: Align(
                     alignment: FractionalOffset.centerRight,
                     child: Text(
-                      ' ${pokedex[widget.currentPokemon][type]}',
+                      ' ${pokedex[widget.currentPokemon].getInfoByType(type)}',
                       style: kNormalSuperSmallStyle.copyWith(
                           color: tagColor['Water']),
                     ),
@@ -92,7 +93,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
     return Padding(
       padding: const EdgeInsets.only(left: 15),
       child: Text(
-        text,
+        text.tr,
         style: kTitleStyle.copyWith(
           color: Colors.black,
           fontWeight: FontWeight.w500,
@@ -115,7 +116,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             Column(
               children: <Widget>[
                 Text(
-                  'Height',
+                  'Height'.tr,
                   style: TextStyle(
                     fontFamily: 'Alata',
                     color: TodoColors.deepPurple,
@@ -127,7 +128,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 Text(
                   widget.pokemonState.state == 0
                       ? '?'
-                      : pokedex[widget.currentPokemon]['height'],
+                      : pokedex[widget.currentPokemon].height,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     color: Colors.black87,
@@ -141,7 +142,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             Column(
               children: <Widget>[
                 Text(
-                  'Weight',
+                  'Weight'.tr,
                   style: TextStyle(
                     fontFamily: 'Alata',
                     color: TodoColors.deepPurple,
@@ -153,7 +154,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 Text(
                   widget.pokemonState.state == 0
                       ? '?'
-                      : pokedex[widget.currentPokemon]['weight'],
+                      : pokedex[widget.currentPokemon].weight,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     color: Colors.black87,
@@ -167,7 +168,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             Column(
               children: <Widget>[
                 Text(
-                  'Category',
+                  'Category'.tr,
                   style: TextStyle(
                     fontFamily: 'Alata',
                     color: TodoColors.deepPurple,
@@ -179,7 +180,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                 Text(
                   widget.pokemonState.state == 0
                       ? '?'
-                      : pokedex[widget.currentPokemon]['category'],
+                      : pokedex[widget.currentPokemon].category,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     color: Colors.black87,
@@ -200,9 +201,11 @@ class _PokemonInfoState extends State<PokemonInfo> {
           child: Wrap(
             direction: Axis.horizontal,
             children: List.generate(
-              pokedex[widget.currentPokemon]['type'].length,
+              pokedex[widget.currentPokemon].type.en.length,
               (index) => PetTagCustom(
-                nameTag: pokedex[widget.currentPokemon]['type'][index],
+                nameTag: Get.locale.languageCode == 'en'
+                    ? pokedex[widget.currentPokemon].type.en[index]
+                    : pokedex[widget.currentPokemon].type.vi[index],
                 height: 35,
                 width: MediaQuery.of(context).size.width * 2 / 3 / 2,
                 style: TextStyle(
@@ -223,9 +226,11 @@ class _PokemonInfoState extends State<PokemonInfo> {
           child: Wrap(
             direction: Axis.horizontal,
             children: List.generate(
-              pokedex[widget.currentPokemon]['weaknesses'].length,
+              pokedex[widget.currentPokemon].weaknesses.en.length,
               (index) => PetTagCustom(
-                nameTag: pokedex[widget.currentPokemon]['weaknesses'][index],
+                nameTag: Get.locale.languageCode == 'en'
+                    ? pokedex[widget.currentPokemon].weaknesses.en[index]
+                    : pokedex[widget.currentPokemon].weaknesses.vi[index],
                 height: 35,
                 width: MediaQuery.of(context).size.width * 2 / 3 / 2,
                 style: TextStyle(
@@ -283,7 +288,9 @@ class _PokemonInfoState extends State<PokemonInfo> {
                   bottom: 10,
                 ),
                 child: Text(
-                  pokedex[widget.currentPokemon]['introduction'],
+                  Get.locale.languageCode == 'en'
+                      ? pokedex[widget.currentPokemon].introduction.en
+                      : pokedex[widget.currentPokemon].introduction.vi,
                   style: kNormalSmallStyle.copyWith(
                     fontFamily: 'Source_Sans_Pro',
                     fontWeight: FontWeight.w400,

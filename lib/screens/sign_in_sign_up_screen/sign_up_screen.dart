@@ -7,6 +7,7 @@ import 'package:gottask/utils/utils.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:regexpattern/regexpattern.dart';
+import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -171,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     labelText: 'Email',
                                     labelStyle: kMediumStyle,
-                                    hintText: 'Your email',
+                                    hintText: 'Your email'.tr,
                                     hintStyle: kTinySmallStyle,
                                   ),
                                 ),
@@ -210,9 +211,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       color: Colors.red,
                                       fontSize: 10,
                                     ),
-                                    labelText: 'Password',
+                                    labelText: 'Password'.tr,
                                     labelStyle: kMediumStyle,
-                                    hintText: 'Your password',
+                                    hintText: 'Your password'.tr,
                                     hintStyle: kTinySmallStyle,
                                   ),
                                 ),
@@ -253,7 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           Scaffold.of(context).showSnackBar(
                                             SnackBar(
                                               content:
-                                                  Text('Failed to sign in'),
+                                                  Text('Failed to sign in'.tr),
                                             ),
                                           );
                                         } else {
@@ -262,8 +263,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       } else {
                                         Scaffold.of(context).showSnackBar(
                                           SnackBar(
-                                            content:
-                                                Text('No internet connection.'),
+                                            content: Text(
+                                                'No internet connection.'.tr),
                                           ),
                                         );
                                       }
@@ -282,9 +283,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       color: Colors.red,
                                       fontSize: 10,
                                     ),
-                                    labelText: 'Rewrite password',
+                                    labelText: 'Rewrite password'.tr,
                                     labelStyle: kMediumStyle,
-                                    hintText: 'Rewrite your password',
+                                    hintText: 'Rewrite your password'.tr,
                                     hintStyle: kTinySmallStyle,
                                   ),
                                 ),
@@ -320,7 +321,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 if (user == null) {
                                   Scaffold.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Failed to sign up and sign in.'),
+                                      content: Text(
+                                          'Failed to sign up and sign in.'),
                                     ),
                                   );
                                 } else {
@@ -329,7 +331,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               } else {
                                 Scaffold.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('No internet connection.'),
+                                    content: Text('No internet connection.'.tr),
                                   ),
                                 );
                               }
@@ -352,7 +354,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  'Sign up and login',
+                                  'Sign up and login'.tr,
                                   style: kMediumStyle.copyWith(
                                       color: Colors.white),
                                 ),

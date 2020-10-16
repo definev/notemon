@@ -74,9 +74,9 @@ class Todo {
   }
 
   factory Todo.fromFirebaseMap(Map<String, dynamic> json) {
-    List<bool> catagory = [];
+    List<bool> category = [];
     json["catagories"].forEach((cata) {
-      catagory.add(cata);
+      category.add(cata);
     });
 
     return Todo(
@@ -88,7 +88,7 @@ class Todo {
       color: json["color"],
       audioPath: json["audioPath"],
       audioCode: json["audioCode"],
-      catagories: catagory,
+      catagories: category,
       priority: PriorityState.values[json["priority"]],
     );
   }

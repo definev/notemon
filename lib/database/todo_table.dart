@@ -128,10 +128,10 @@ class TodoTable {
       where: 'id = ?',
       whereArgs: [index],
     );
-    List<String> _rawCatagoryItems = map[1]['catagories']
+    List<String> _rawCategoryItems = map[1]['catagories']
         .substring(1, map[1]['catagories'].length - 1)
         .split(', ');
-    List<bool> _catagoriesItems = _rawCatagoryItems
+    List<bool> _catagoriesItems = _rawCategoryItems
         .map((isCheck) => isCheck == 'false' ? false : true)
         .toList();
     return Todo(
@@ -153,10 +153,10 @@ class TodoTable {
     final List<Map<String, dynamic>> maps = await db.query(TABLE_NAME);
     if (maps.length == 0) return [];
     return List.generate(maps.length, (index) {
-      List<String> _rawCatagoryItems = maps[index]['catagories']
+      List<String> _rawCategoryItems = maps[index]['catagories']
           .substring(1, maps[index]['catagories'].length - 1)
           .split(', ');
-      List<bool> _catagoriesItems = _rawCatagoryItems
+      List<bool> _catagoriesItems = _rawCategoryItems
           .map((isCheck) => isCheck == 'false' ? false : true)
           .toList();
       return Todo(

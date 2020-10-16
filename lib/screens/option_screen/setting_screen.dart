@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/database.dart';
 import 'package:gottask/models/model.dart';
@@ -159,7 +160,7 @@ class _SettingScreenState extends State<SettingScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Setting',
+          'Setting'.tr,
           style: TextStyle(
             fontFamily: 'Montserrat',
           ),
@@ -167,12 +168,7 @@ class _SettingScreenState extends State<SettingScreen>
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AboutMeScreen(),
-              ),
-            ),
+            onPressed: () => Get.to(AboutMeScreen()),
             icon: Icon(
               Feather.info,
             ),
@@ -193,7 +189,7 @@ class _SettingScreenState extends State<SettingScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Handside control ',
+                      '${"Preferred hand".tr} ',
                       style: kTitleStyle,
                     ),
                     ToggleButtons(
@@ -220,6 +216,30 @@ class _SettingScreenState extends State<SettingScreen>
                   ],
                 ),
                 SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Language".tr,
+                      style: kTitleStyle,
+                    ),
+                    ToggleButtons(
+                      isSelected:
+                          _leftOrRight != null ? _leftOrRight : [false, false],
+                      onPressed: (index) {
+                        if (index == 0) {
+                          Get.updateLocale(Locale('vi', 'VN'));
+                        } else {
+                          Get.updateLocale(Locale('en', 'US'));
+                        }
+                      },
+                      children: <Widget>[
+                        Text('VN'),
+                        Text('EN'),
+                      ],
+                    ),
+                  ],
+                ),
                 if (_products.isNotEmpty)
                   InkWell(
                     onTap: () {
@@ -255,7 +275,7 @@ class _SettingScreenState extends State<SettingScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Remove ads",
+                                  "Remove ads".tr,
                                   style: kMediumStyle.copyWith(
                                     color: Colors.white,
                                   ),
@@ -319,13 +339,12 @@ class _SettingScreenState extends State<SettingScreen>
                   updateLoginState(false);
                   deleteAll();
                   _repository.initUser();
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                  Navigator.popAndPushNamed(context, '/signIn');
+                  Get.offAllNamed('/signIn');
                 },
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: Text(
-                    'Sign out',
+                    'Sign out'.tr,
                     style: kMediumStyle.copyWith(color: Colors.red),
                   ),
                 ),

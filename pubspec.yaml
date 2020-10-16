@@ -4,12 +4,13 @@ description: A new Flutter project.
 version: 2.0.0+17
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.9.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_localizations:
+    sdk: flutter
   provider: ^4.0.3
   percent_indicator: ^2.1.1
   swipedetector: ^1.2.0
@@ -45,6 +46,7 @@ dependencies:
   google_fonts: any
   regexpattern: ^0.2.3
   in_app_purchase: ^0.3.4
+  get:
 
 flutter_icons:
   android: true

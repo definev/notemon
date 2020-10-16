@@ -20,6 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:get/get.dart';
 
 class AddTodoScreen extends StatefulWidget {
   @override
@@ -46,7 +47,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   PlayerState _playerState = PlayerState.READY;
   List<Uint8List> imageFileList = [];
   List<String> images = [];
-  List<bool> _catagoryItems = List.generate(9, (index) => false);
+  List<bool> _categoryItems = List.generate(9, (index) => false);
 
   String _audioPath = '';
   String _audioCode = '';
@@ -128,8 +129,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         _isInit = true;
       } else {
         Scaffold.of(context).showSnackBar(
-          const SnackBar(
-            content: const Text('You must accept permissions'),
+          SnackBar(
+            content: Text('You must accept permissions'.tr),
           ),
         );
       }
@@ -293,7 +294,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
     return Padding(
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
-        title,
+        title.tr,
         style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
@@ -328,7 +329,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   _buildColorPicker(),
                   _buildTitle('Priority'),
                   _buildPriorityPicker(),
-                  _buildTitle('Catagory'),
+                  _buildTitle('Category'),
                   _buildCatagoriesPicker(context),
                   _buildTitle('File'),
                   _buildFilePicker(context),
@@ -486,7 +487,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'No files',
+                      'No files'.tr,
                       style: kTitleStyle.copyWith(color: Colors.grey),
                     ),
                   ],
@@ -545,7 +546,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                         opacity: opacityAnimation.value,
                         duration: animationController.duration,
                         child: Text(
-                          'No files',
+                          'No files'.tr,
                           style: kTitleStyle.copyWith(color: Colors.grey),
                         ),
                       ),
@@ -668,7 +669,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         (index) => GestureDetector(
           onTap: () {
             setState(() {
-              _catagoryItems[index] = !_catagoryItems[index];
+              _categoryItems[index] = !_categoryItems[index];
             });
           },
           child: AnimatedContainer(
@@ -678,7 +679,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: _catagoryItems[index] == false
+                color: _categoryItems[index] == false
                     ? Color(
                         int.parse(
                           colors[indexColor],
@@ -687,7 +688,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                     : TodoColors.scaffoldWhite,
                 width: 1,
               ),
-              color: _catagoryItems[index]
+              color: _categoryItems[index]
                   ? Color(
                       int.parse(
                         colors[indexColor],
@@ -695,15 +696,15 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                     )
                   : TodoColors.scaffoldWhite,
             ),
-            padding: paddingCatagory(),
-            margin: marginCatagory(index),
+            padding: paddingCategory(),
+            margin: marginCategory(index),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Icon(
                   catagories[index]["iconData"],
                   size: iconSize(),
-                  color: _catagoryItems[index] == false
+                  color: _categoryItems[index] == false
                       ? Color(
                           int.parse(
                             colors[indexColor],
@@ -716,7 +717,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   style: TextStyle(
                     fontFamily: 'Source_Sans_Pro',
                     fontSize: fontSize(),
-                    color: _catagoryItems[index] == false
+                    color: _categoryItems[index] == false
                         ? Color(
                             int.parse(
                               colors[indexColor],
@@ -978,7 +979,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
           controller: _todoEditting,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
-            labelText: 'To-do name',
+            labelText: 'To-do name'.tr,
             labelStyle: kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
@@ -1000,7 +1001,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
               color: indexColor,
               audioPath: _haveRecord ? _audioPath : '',
               audioCode: _haveRecord ? _audioCode : '',
-              catagories: _catagoryItems,
+              catagories: _categoryItems,
               priority: _priority,
             );
             _todoBloc.add(AddTodoEvent(todo: _todo));
@@ -1008,7 +1009,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             if (await checkConnection())
               _repository.updateTodoToFirebase(_todo);
 
-            Navigator.pop(context);
+            Get.back();
           } else {
             await showWarning(context);
           }
@@ -1025,7 +1026,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   color: Colors.white,
                 ),
                 Text(
-                  ' Add to-do',
+                  ' ${"Add to-do".tr}',
                   style: kNormalStyle.copyWith(color: Colors.white),
                 ),
               ],
@@ -1051,7 +1052,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
               children: <Widget>[
                 const SizedBox(height: 20),
                 Text(
-                  'Warning:',
+                  'Warning:'.tr,
                   style: TextStyle(
                     fontFamily: 'Alata',
                     fontSize: 30,
@@ -1061,7 +1062,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   ),
                 ),
                 Text(
-                  'Do not go out if recording not done.',
+                  'Do not go out if recording not done.'.tr,
                   style: kTitleStyle,
                 ),
                 Padding(
@@ -1069,7 +1070,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Get.back();
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
@@ -1079,7 +1080,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                       ),
                       child: Center(
                         child: Text(
-                          'Cancel',
+                          'Cancel'.tr,
                           style: TextStyle(
                             fontFamily: 'Alata',
                             fontSize: 30,

@@ -32,7 +32,7 @@ class PokemonStateDatabase {
       for (int i = 0; i < pokedex.length; i++) {
         PokemonStateTable.insertPokemonState(
           PokemonState(
-            name: pokedex[i]['name'],
+            name: pokedex[i].name,
             state: 0,
           ),
         );

@@ -1,10 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/repository/firebase_repository.dart';
 import 'package:gottask/screens/home_screen.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_in_screen.dart';
 import 'package:gottask/screens/splash_screen/splash_screen.dart';
+import 'package:gottask/utils/notemon_dict.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -74,9 +79,20 @@ class _MyAppState extends State<MyApp> {
                     create: (context) => FavouritePokemonBloc(),
                   ),
                 ],
-                child: MaterialApp(
+                child: GetMaterialApp(
                   title: 'Notemon',
                   debugShowCheckedModeBanner: false,
+                  translations: NotemonDict(),
+                  localizationsDelegates: [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  locale: Locale('vi', 'VN'),
+                  supportedLocales: [
+                    Locale('en', 'US'),
+                    Locale('vi', 'VN'),
+                  ],
                   theme: ThemeData(
                     canvasColor: Colors.transparent,
                     scaffoldBackgroundColor: TodoColors.scaffoldWhite,

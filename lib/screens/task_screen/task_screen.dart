@@ -18,6 +18,7 @@ import 'package:gottask/screens/task_screen/task_screen_subscreen/edit_task_scre
 import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:vibration/vibration.dart';
+import 'package:get/get.dart';
 
 class MyBehavior extends ScrollBehavior {
   @override
@@ -46,7 +47,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   bool _isInit = false;
 
   List<bool> _isDoneAchieve = [];
-  List<bool> _catagoryItems =
+  List<bool> _categoryItems =
       List.generate(catagories.length, (index) => false);
 
   SlideCountdownClock countdownClock;
@@ -91,7 +92,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       EditTaskEvent(
         task: _currentTask.copyWith(
           achieve: _achievelists,
-          catagories: _catagoryItems,
+          catagories: _categoryItems,
           completeTimer: _completeTimer.toString(),
           isDoneAchieve: _isDoneAchieve,
           percent: _percent,
@@ -101,7 +102,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     _repository.updateTaskToFirebase(
       _currentTask.copyWith(
         achieve: _achievelists,
-        catagories: _catagoryItems,
+        catagories: _categoryItems,
         completeTimer: _completeTimer.toString(),
         isDoneAchieve: _isDoneAchieve,
         percent: _percent,
@@ -118,7 +119,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
           ..show();
       }
     } on SocketException catch (_) {}
-    Navigator.pop(context);
+    Get.back();
     return true;
   }
 
@@ -132,7 +133,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
       myInterstitial = _interstitialAds();
 
       achieveFocusNode = FocusNode();
-      _catagoryItems = _currentTask.catagories;
+      _categoryItems = _currentTask.catagories;
 
       _achievelists = _currentTask.achieve;
       List<String> durTimer = _currentTask.timer.split(':');
@@ -178,7 +179,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       _currentTask.copyWith(
                         onDoing: true,
                         achieve: _achievelists,
-                        catagories: _catagoryItems,
+                        catagories: _categoryItems,
                         completeTimer: _completeTimer.toString(),
                         isDoneAchieve: _isDoneAchieve,
                         percent: _percent,
@@ -214,7 +215,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       EditTaskEvent(
                         task: _currentTask.copyWith(
                           achieve: _achievelists,
-                          catagories: _catagoryItems,
+                          catagories: _categoryItems,
                           completeTimer: _completeTimer.toString(),
                           isDoneAchieve: _isDoneAchieve,
                           percent: _percent,
@@ -225,7 +226,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       _currentTask.copyWith(
                         onDoing: false,
                         achieve: _achievelists,
-                        catagories: _catagoryItems,
+                        catagories: _categoryItems,
                         completeTimer: _completeTimer.toString(),
                         isDoneAchieve: _isDoneAchieve,
                         percent: _percent,
@@ -357,14 +358,14 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   Column(
                     children: [
                       Text(
-                        "Doing in another device,\n",
+                        "${"Doing in another device".tr},\n",
                         style: kBigTitleStyle.copyWith(
                             fontFamily: 'Source_Sans_Pro',
                             color: Colors.white,
                             fontSize: 35),
                       ),
                       Text(
-                        "Don't distract! 😊",
+                        "${"Don't distract!".tr} 😊",
                         style: kBigTitleStyle.copyWith(
                             fontFamily: 'Source_Sans_Pro',
                             color: Colors.white,
@@ -373,7 +374,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     ],
                   ),
                   InkWell(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 85,
                       width: 85,
@@ -465,7 +466,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "“Facedown your phone to start timing.”",
+                        "“Facedown your phone to start timing.”".tr,
                         style: kMediumStyle,
                       ),
                       Text(
@@ -505,7 +506,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
   AppBar _appBar(BuildContext context) {
     return AppBar(
       title: Text(
-        'Doing task',
+        'Doing task'.tr,
         style: TextStyle(
           fontFamily: 'Montserrat',
         ),
@@ -531,7 +532,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       DeleteTaskEvent(task: _currentTask, addDeleteKey: true));
                   if (await checkConnection())
                     _repository.deleteTaskOnFirebase(_currentTask);
-                  Navigator.pop(context);
+                  Get.back();
                 },
               ),
         IconButton(
@@ -589,7 +590,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                               horizontal: 10,
                               vertical: 5,
                             ),
-                            labelText: 'Achieve goal',
+                            labelText: 'Achieve goal'.tr,
                             labelStyle:
                                 kNormalStyle.copyWith(color: Colors.grey),
                             border: InputBorder.none,
@@ -666,11 +667,11 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
               children: <Widget>[
                 SizedBox(height: 5),
                 Text(
-                  'Warning:',
+                  'Warning:'.tr,
                   style: kTitleStyle.copyWith(color: Colors.yellow[900]),
                 ),
                 Text(
-                  'Are you sure?',
+                  'Are you sure?'.tr,
                   style: TextStyle(
                     fontFamily: 'Alata',
                     fontSize: 30,
@@ -686,7 +687,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Get.back();
                         },
                         child: Container(
                           width: (MediaQuery.of(context).size.width - 80) / 2,
@@ -697,7 +698,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           ),
                           child: Center(
                             child: Text(
-                              'Cancel',
+                              'Cancel'.tr,
                               style: kTitleStyle.copyWith(
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
@@ -712,8 +713,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                               task: _currentTask, addDeleteKey: true));
                           if (await checkConnection())
                             _repository.deleteTaskOnFirebase(_currentTask);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Get.back();
+                          Get.back();
                         },
                         child: Container(
                           width: (MediaQuery.of(context).size.width - 80) / 2,
@@ -724,7 +725,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           ),
                           child: Center(
                             child: Text(
-                              'Give up',
+                              'Give up'.tr,
                               style: kTitleStyle.copyWith(
                                 decorationStyle: TextDecorationStyle.double,
                                 color: Colors.white,

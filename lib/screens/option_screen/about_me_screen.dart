@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:get/get.dart';
 import 'package:gottask/screens/splash_screen/splash_screen.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,23 +37,14 @@ class _AboutMeScreenState extends State<AboutMeScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'About this app',
+          'About this app'.tr,
           style: kTitleStyle.copyWith(
               fontFamily: 'Montserrat', color: Colors.white),
         ),
         actions: <Widget>[
           IconButton(
             icon: Icon(SimpleLineIcons.question),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SplashScreen(
-                    isInit: true,
-                  ),
-                ),
-              );
-            },
+            onPressed: () => Get.to(SplashScreen(isInit: true)),
           ),
         ],
         centerTitle: true,
@@ -72,7 +64,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                         height: 5,
                       ),
                       Text(
-                        '''Notemon is my personal project. If you like it, rate it 5 stars ^.^, or if you are not satisfied with this app, please give me a comment. ''',
+                        'Notemon is my personal project. If you like it, rate it 5 stars ^.^, or if you are not satisfied with this app, please give me a comment.'
+                            .tr,
                         style: TextStyle(
                           fontFamily: 'Source_Sans_Pro',
                           fontSize: 17,
@@ -82,7 +75,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                         height: 20,
                       ),
                       Text(
-                        'Contact me',
+                        'Contact me'.tr,
                         style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
                       ),
                       SizedBox(
@@ -112,7 +105,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                     Scaffold.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Copied!',
+                                          'Copied!'.tr,
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),

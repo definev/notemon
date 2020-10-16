@@ -11,6 +11,7 @@ import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:uuid/uuid.dart';
+import 'package:get/get.dart';
 
 class AddTaskScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen>
     with BlocCreator, FilterMixin {
   int indexColor = 0;
-  List<bool> _catagoryItems =
+  List<bool> _categoryItems =
       List.generate(catagories.length, (index) => false);
   Duration timer = const Duration(hours: 0, minutes: 0);
 
@@ -56,7 +57,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             centerTitle: true,
             backgroundColor: Color(int.parse(colors[indexColor])),
             title: Text(
-              'Add Task',
+              'Add Task'.tr,
               style: const TextStyle(
                 fontFamily: 'Alata',
                 color: Colors.white,
@@ -77,7 +78,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                       color: Colors.white,
                     ),
                     Text(
-                      ' Add task',
+                      ' ${"Add task".tr}',
                       style: kNormalStyle.copyWith(color: Colors.white),
                     ),
                   ],
@@ -100,7 +101,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                   timestamp: Timestamp.now().toDate(),
                   onDoing: false,
                   color: indexColor,
-                  catagories: _catagoryItems,
+                  catagories: _categoryItems,
                   priority: _priority,
                   taskName: _taskNameTextController.text,
                   percent: 0,
@@ -114,7 +115,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                 if (await checkConnection()) {
                   _repository.updateTaskToFirebase(_task);
                 }
-                Navigator.pop(context);
+                Get.back();
               }
             },
           ),
@@ -134,11 +135,11 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                 _buildColorPicker(),
                 _buildTitle('Priority'),
                 _buildPriorityPicker(),
-                _buildTitle('Catagory'),
+                _buildTitle('Category'),
                 _buildCatagoriesPicker(context),
-                _buildTitle('Achievment'),
-                _buildAchievment(context),
-                _buildListAchievment(),
+                _buildTitle('Achievement'),
+                _buildAchievement(context),
+                _buildListAchievement(),
               ],
             ),
           ),
@@ -160,7 +161,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
     );
   }
 
-  Padding _buildListAchievment() {
+  Padding _buildListAchievement() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: StreamBuilder<List<String>>(
@@ -168,17 +169,17 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         stream: _achieveController.stream,
         builder: (context, snapshot) {
           if (snapshot.hasData == false) {
-            return const Center(
+            return Center(
               child: Text(
-                'Empty achieve.',
+                'Empty achieve.'.tr,
                 style: kNormalSmallStyle,
               ),
             );
           }
           if (snapshot.data.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'Empty achieve.',
+                'Empty achieve.'.tr,
                 style: kNormalSmallStyle,
               ),
             );
@@ -194,7 +195,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
     );
   }
 
-  Widget _buildAchievment(BuildContext context) {
+  Widget _buildAchievement(BuildContext context) {
     return SizedBox(
       height: 50,
       child: Row(
@@ -215,7 +216,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     horizontal: 10,
                     vertical: 5,
                   ),
-                  labelText: 'Achieve goal',
+                  labelText: 'Achievement'.tr,
                   labelStyle: kNormalStyle.copyWith(color: Colors.grey),
                   border: InputBorder.none,
                 ),
@@ -261,7 +262,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
     return Padding(
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
-        title,
+        title.tr,
         style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
@@ -280,7 +281,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       child: TextField(
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(10),
-          labelText: 'Task name',
+          labelText: 'Task name'.tr,
           labelStyle: kNormalStyle.copyWith(color: Colors.grey),
           border: InputBorder.none,
         ),
@@ -359,7 +360,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         (index) => GestureDetector(
           onTap: () {
             setState(() {
-              _catagoryItems[index] = !_catagoryItems[index];
+              _categoryItems[index] = !_categoryItems[index];
             });
           },
           child: AnimatedContainer(
@@ -369,7 +370,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: _catagoryItems[index] == false
+                color: _categoryItems[index] == false
                     ? Color(
                         int.parse(
                           colors[indexColor],
@@ -378,7 +379,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     : TodoColors.scaffoldWhite,
                 width: 1,
               ),
-              color: _catagoryItems[index]
+              color: _categoryItems[index]
                   ? Color(
                       int.parse(
                         colors[indexColor],
@@ -386,15 +387,15 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     )
                   : TodoColors.scaffoldWhite,
             ),
-            padding: paddingCatagory(),
-            margin: marginCatagory(index),
+            padding: paddingCategory(),
+            margin: marginCategory(index),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Icon(
                   catagories[index]["iconData"],
                   size: iconSize(),
-                  color: _catagoryItems[index] == false
+                  color: _categoryItems[index] == false
                       ? Color(
                           int.parse(
                             colors[indexColor],
@@ -407,7 +408,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                   style: TextStyle(
                     fontFamily: 'Source_Sans_Pro',
                     fontSize: fontSize(),
-                    color: _catagoryItems[index] == false
+                    color: _categoryItems[index] == false
                         ? Color(
                             int.parse(
                               colors[indexColor],
@@ -442,7 +443,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
               children: <Widget>[
                 const SizedBox(height: 20),
                 Text(
-                  'Warning:',
+                  'Warning:'.tr,
                   style: TextStyle(
                     fontFamily: 'Alata',
                     fontSize: 30,
@@ -452,7 +453,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                   ),
                 ),
                 Text(
-                  'Please fill in the blank.',
+                  'Please fill in the blank.'.tr,
                   style: kTitleStyle,
                 ),
                 Padding(
@@ -462,7 +463,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                   ),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Get.back();
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
@@ -472,7 +473,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                       ),
                       child: Center(
                         child: Text(
-                          'Cancel',
+                          'Cancel'.tr,
                           style: kTitleStyle.copyWith(color: Colors.white),
                         ),
                       ),

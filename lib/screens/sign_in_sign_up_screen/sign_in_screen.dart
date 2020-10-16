@@ -9,6 +9,7 @@ import 'package:gottask/utils/utils.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:regexpattern/regexpattern.dart';
+import 'package:get/get.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -163,30 +164,32 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               SizedBox(width: 22),
                               Expanded(
-                                child: TextFormField(
-                                  controller: _emailController,
-                                  focusNode: _emailFocusNode,
-                                  validator: (value) {
-                                    bool valid = RegexValidation.hasMatch(
-                                        value, RegexPattern.email);
+                                child: Material(
+                                  child: TextFormField(
+                                    controller: _emailController,
+                                    focusNode: _emailFocusNode,
+                                    validator: (value) {
+                                      bool valid = RegexValidation.hasMatch(
+                                          value, RegexPattern.email);
 
-                                    if (!valid) return "Email format wrong.";
+                                      if (!valid) return "Email format wrong.";
 
-                                    return null;
-                                  },
-                                  onFieldSubmitted: (_) =>
-                                      _passwordFocusNode.requestFocus(),
-                                  cursorColor: TodoColors.deepPurple,
-                                  style: kMediumStyle,
-                                  decoration: InputDecoration(
-                                    errorStyle: kTinySmallStyle.copyWith(
-                                      color: Colors.red,
-                                      fontSize: 10,
+                                      return null;
+                                    },
+                                    onFieldSubmitted: (_) =>
+                                        _passwordFocusNode.requestFocus(),
+                                    cursorColor: TodoColors.deepPurple,
+                                    style: kMediumStyle,
+                                    decoration: InputDecoration(
+                                      errorStyle: kTinySmallStyle.copyWith(
+                                        color: Colors.red,
+                                        fontSize: 10,
+                                      ),
+                                      labelText: 'Email',
+                                      labelStyle: kMediumStyle,
+                                      hintText: 'Your email'.tr,
+                                      hintStyle: kTinySmallStyle,
                                     ),
-                                    labelText: 'Email',
-                                    labelStyle: kMediumStyle,
-                                    hintText: 'Your email',
-                                    hintStyle: kTinySmallStyle,
                                   ),
                                 ),
                               ),
@@ -229,8 +232,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                           if (user == null) {
                                             Scaffold.of(context).showSnackBar(
                                               SnackBar(
-                                                content:
-                                                    Text('Failed to sign in'),
+                                                content: Text(
+                                                    'Failed to sign in'.tr),
                                               ),
                                             );
                                           } else {
@@ -248,9 +251,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                         color: Colors.red,
                                         fontSize: 10,
                                       ),
-                                      labelText: 'Password',
+                                      labelText: 'Password'.tr,
                                       labelStyle: kMediumStyle,
-                                      hintText: 'Your password',
+                                      hintText: 'Your password'.tr,
                                       hintStyle: kTinySmallStyle,
                                     ),
                                   ),
@@ -279,7 +282,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 if (user == null) {
                                   Scaffold.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Failed to sign in'),
+                                      content: Text('Failed to sign in'.tr),
                                     ),
                                   );
                                   _emailController.clear();
@@ -318,7 +321,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        'Login',
+                                        'Login'.tr,
                                         style: kMediumStyle.copyWith(
                                             color: Colors.white),
                                       ),
@@ -335,7 +338,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
-                            'Or sign in with',
+                            'Or sign in with'.tr,
                             style: TextStyle(
                               fontFamily: 'Alata',
                               color: Colors.black54,
@@ -357,7 +360,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                 } else {
                                   Scaffold.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('No internet connection.'),
+                                      content:
+                                          Text('No internet connection.'.tr),
                                     ),
                                   );
                                 }
@@ -397,7 +401,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           );
                         },
                         child: Text(
-                          'Sign up new account',
+                          'Sign up'.tr,
                           style: kTitleStyle.copyWith(
                             color: TodoColors.spaceGrey,
                             decoration: TextDecoration.underline,

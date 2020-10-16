@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool isInit;
@@ -104,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 await updateStartState();
                                 Navigator.popAndPushNamed(context, '/signIn');
                               } else {
-                                Navigator.pop(context);
+                                Get.back();
                               }
                             },
                             child: Row(
@@ -112,8 +113,8 @@ class _SplashScreenState extends State<SplashScreen>
                               children: [
                                 Text(
                                   widget.isInit == null
-                                      ? 'Let\'s go!'
-                                      : 'Go back',
+                                      ? 'Let\'s go!'.tr
+                                      : 'Go back'.tr,
                                   style: kNormalStyle.copyWith(
                                       color: Colors.white),
                                 ),

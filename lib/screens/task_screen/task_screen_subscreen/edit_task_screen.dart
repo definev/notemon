@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/utils/utils.dart';
+import 'package:get/get.dart';
 
 class EditTaskScreen extends StatefulWidget {
   final Task task;
@@ -14,14 +15,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
   TextEditingController _taskEditting = TextEditingController();
 
   PriorityState _priority;
-  List<bool> _catagoryItems;
+  List<bool> _categoryItems;
   int indexColor = 0;
 
   Widget _buildTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
-        title,
+        title.tr,
         style: kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
@@ -40,7 +41,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
           controller: _taskEditting,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
-            labelText: 'Task name',
+            labelText: 'Task name'.tr,
             labelStyle: kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
@@ -53,7 +54,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
           Navigator.pop(
               context,
               widget.task.copyWith(
-                catagories: _catagoryItems,
+                catagories: _categoryItems,
                 priority: _priority,
                 color: indexColor,
                 taskName: _taskEditting.text == null || _taskEditting.text == ""
@@ -74,7 +75,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                   size: 16,
                 ),
                 Text(
-                  ' Edit task',
+                  ' ${"Edit task".tr}',
                   style: kNormalStyle.copyWith(color: Colors.white),
                 ),
               ],
@@ -222,7 +223,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
         (index) => GestureDetector(
           onTap: () {
             setState(() {
-              _catagoryItems[index] = !_catagoryItems[index];
+              _categoryItems[index] = !_categoryItems[index];
             });
           },
           child: AnimatedContainer(
@@ -232,7 +233,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: _catagoryItems[index] == false
+                color: _categoryItems[index] == false
                     ? Color(
                         int.parse(
                           colors[indexColor],
@@ -241,7 +242,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                     : TodoColors.scaffoldWhite,
                 width: 1,
               ),
-              color: _catagoryItems[index]
+              color: _categoryItems[index]
                   ? Color(
                       int.parse(
                         colors[indexColor],
@@ -249,15 +250,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                     )
                   : TodoColors.scaffoldWhite,
             ),
-            padding: paddingCatagory(),
-            margin: marginCatagory(index),
+            padding: paddingCategory(),
+            margin: marginCategory(index),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Icon(
                   catagories[index]["iconData"],
                   size: iconSize(),
-                  color: _catagoryItems[index] == false
+                  color: _categoryItems[index] == false
                       ? Color(
                           int.parse(
                             colors[indexColor],
@@ -270,7 +271,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                   style: TextStyle(
                     fontFamily: 'Source_Sans_Pro',
                     fontSize: fontSize(),
-                    color: _catagoryItems[index] == false
+                    color: _categoryItems[index] == false
                         ? Color(
                             int.parse(
                               colors[indexColor],
@@ -291,7 +292,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
   void initState() {
     super.initState();
     _priority = widget.task.priority;
-    _catagoryItems = widget.task.catagories;
+    _categoryItems = widget.task.catagories;
     indexColor = widget.task.color;
   }
 
@@ -300,7 +301,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
     Navigator.pop(
         context,
         widget.task.copyWith(
-          catagories: _catagoryItems,
+          catagories: _categoryItems,
           priority: _priority,
           color: indexColor,
           taskName: _taskEditting.text == null || _taskEditting.text == ""
@@ -332,7 +333,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                   _buildColorPicker(),
                   _buildTitle('Priority'),
                   _buildPriorityPicker(),
-                  _buildTitle('Catagory'),
+                  _buildTitle('Category'),
                   _buildCatagoriesPicker(context),
                 ],
               ),
