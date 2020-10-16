@@ -47,6 +47,7 @@ dependencies:
   regexpattern: ^0.2.3
   in_app_purchase: ^0.3.4
   get:
+  hive:
 
 flutter_icons:
   android: true

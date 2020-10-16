@@ -5,6 +5,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/database.dart';
+import 'package:gottask/database/hive/local_data.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/helper.dart';
@@ -224,8 +225,9 @@ class _SettingScreenState extends State<SettingScreen>
                       style: kTitleStyle,
                     ),
                     ToggleButtons(
-                      isSelected:
-                          _leftOrRight != null ? _leftOrRight : [false, false],
+                      isSelected: LocalData.getLang() == 'vi'
+                          ? [true, false]
+                          : [false, true],
                       onPressed: (index) {
                         if (index == 0) {
                           Get.updateLocale(Locale('vi', 'VN'));

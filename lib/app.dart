@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/database/hive/local_data.dart';
 import 'package:gottask/repository/firebase_repository.dart';
 import 'package:gottask/screens/home_screen.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_in_screen.dart';
@@ -88,7 +89,9 @@ class _MyAppState extends State<MyApp> {
                     GlobalWidgetsLocalizations.delegate,
                     GlobalCupertinoLocalizations.delegate,
                   ],
-                  locale: Locale('vi', 'VN'),
+                  locale: LocalData.getLang() == 'vi'
+                      ? Locale('vi', 'VN')
+                      : Locale('en', 'US'),
                   supportedLocales: [
                     Locale('en', 'US'),
                     Locale('vi', 'VN'),
