@@ -203,6 +203,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             children: List.generate(
               pokedex[widget.currentPokemon].type.en.length,
               (index) => PetTagCustom(
+                colorTag: pokedex[widget.currentPokemon].type.en[index],
                 nameTag: Get.locale.languageCode == 'en'
                     ? pokedex[widget.currentPokemon].type.en[index]
                     : pokedex[widget.currentPokemon].type.vi[index],
@@ -228,6 +229,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
             children: List.generate(
               pokedex[widget.currentPokemon].weaknesses.en.length,
               (index) => PetTagCustom(
+                colorTag: pokedex[widget.currentPokemon].weaknesses.en[index],
                 nameTag: Get.locale.languageCode == 'en'
                     ? pokedex[widget.currentPokemon].weaknesses.en[index]
                     : pokedex[widget.currentPokemon].weaknesses.vi[index],

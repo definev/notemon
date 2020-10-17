@@ -37,6 +37,7 @@ class _SettingScreenState extends State<SettingScreen>
   FavouritePokemonBloc _favouritePokemonBloc;
   StarBloc _starBloc;
   bool _isInit = false;
+  bool _isBuyRemoveAds = true;
 
   List<bool> _leftOrRight;
 
@@ -156,6 +157,11 @@ class _SettingScreenState extends State<SettingScreen>
       _todoBloc = findBloc<TodoBloc>();
       _taskBloc = findBloc<TaskBloc>();
       _isInit = true;
+      _repository.getRemoveAdsState().then((value) {
+        setState(() {
+          _isBuyRemoveAds = value;
+        });
+      });
     }
 
     return Scaffold(
@@ -216,7 +222,7 @@ class _SettingScreenState extends State<SettingScreen>
                     ),
                   ],
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -231,9 +237,12 @@ class _SettingScreenState extends State<SettingScreen>
                       onPressed: (index) {
                         if (index == 0) {
                           Get.updateLocale(Locale('vi', 'VN'));
+                          LocalData.setLang("vi");
                         } else {
                           Get.updateLocale(Locale('en', 'US'));
+                          LocalData.setLang("en");
                         }
+                        setState(() {});
                       },
                       children: <Widget>[
                         Text('VN'),
@@ -242,7 +251,8 @@ class _SettingScreenState extends State<SettingScreen>
                     ),
                   ],
                 ),
-                if (_products.isNotEmpty)
+                SizedBox(height: 10),
+                if (_products.isNotEmpty && _isBuyRemoveAds == false)
                   InkWell(
                     onTap: () {
                       _buyProduct(_products[0]);
@@ -302,25 +312,22 @@ class _SettingScreenState extends State<SettingScreen>
                             ),
                           ),
                           ClipPath(
-                            clipper: PriceTag(),
                             child: Container(
-                              width: 150,
+                              width: 120,
                               height: 40,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(5),
                               ),
+                              margin: const EdgeInsets.only(right: 30),
                               child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 30),
-                                  child: Text(
-                                    "${_products[0].price}",
-                                    style: TextStyle(
-                                      fontFamily: "Source_Sans_Pro",
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: TodoColors.lightGreen,
-                                    ),
+                                child: Text(
+                                  "${_products[0].price}",
+                                  style: TextStyle(
+                                    fontFamily: "Source_Sans_Pro",
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: TodoColors.lightGreen,
                                   ),
                                 ),
                               ),

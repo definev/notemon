@@ -32,53 +32,56 @@ class _FilterPickerState extends State<FilterPicker>
       direction: Axis.horizontal,
       children: List.generate(
         catagories.length,
-        (index) => GestureDetector(
-          onTap: () {
-            setState(() => _catagories[index] = !_catagories[index]);
-          },
-          child: AnimatedContainer(
-            height: 45,
-            width: (MediaQuery.of(context).size.width - 50) / 3,
-            duration: Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: _catagories[index] == false
-                    ? setPriorityColor(priorityList[priority.index])
-                    : TodoColors.scaffoldWhite,
-                width: 1,
-              ),
-              color: _catagories[index]
-                  ? setPriorityColor(priorityList[priority.index])
-                  : TodoColors.scaffoldWhite,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            margin: marginCategory(index),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Icon(
-                  catagories[index]["iconData"],
-                  size: iconSize(),
+        (index) {
+          String name = catagories[index]["name"];
+          return GestureDetector(
+            onTap: () {
+              setState(() => _catagories[index] = !_catagories[index]);
+            },
+            child: AnimatedContainer(
+              height: 45,
+              width: (MediaQuery.of(context).size.width - 50) / 3,
+              duration: Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
                   color: _catagories[index] == false
                       ? setPriorityColor(priorityList[priority.index])
                       : TodoColors.scaffoldWhite,
+                  width: 1,
                 ),
-                Text(
-                  '${catagories[index]["name"]}',
-                  style: TextStyle(
-                    fontFamily: 'Source_Sans_Pro',
-                    fontSize: fontSize(),
-                    fontWeight: FontWeight.w500,
+                color: _catagories[index]
+                    ? setPriorityColor(priorityList[priority.index])
+                    : TodoColors.scaffoldWhite,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              margin: marginCategory(index),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    catagories[index]["iconData"],
+                    size: iconSize(),
                     color: _catagories[index] == false
                         ? setPriorityColor(priorityList[priority.index])
                         : TodoColors.scaffoldWhite,
                   ),
-                ),
-              ],
+                  Text(
+                    '${name.tr}',
+                    style: TextStyle(
+                      fontFamily: 'Alata',
+                      fontSize: fontSize(),
+                      fontWeight: FontWeight.w500,
+                      color: _catagories[index] == false
+                          ? setPriorityColor(priorityList[priority.index])
+                          : TodoColors.scaffoldWhite,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -127,7 +130,7 @@ class _FilterPickerState extends State<FilterPicker>
         ),
         child: Center(
           child: Text(
-            priorityList[value.index],
+            priorityList[value.index].tr,
             style: kNormalStyle.copyWith(
               color: priority == value
                   ? TodoColors.scaffoldWhite
@@ -262,7 +265,7 @@ class _FilterPickerState extends State<FilterPicker>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  Get.locale == Locale('en', 'en_US')
+                  Get.locale == Locale('en', 'US')
                       ? '${widget.nameFilter.tr} filter'
                       : 'Bộ lọc ${widget.nameFilter.tr.toLowerCase()}',
                   style: kBigTitleStyle.copyWith(

@@ -78,7 +78,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                       color: Colors.white,
                     ),
                     Text(
-                      ' ${"Add task".tr}',
+                      ' ${"Add Task".tr.capitalize}',
                       style: kNormalStyle.copyWith(color: Colors.white),
                     ),
                   ],
@@ -163,7 +163,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
 
   Padding _buildListAchievement() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 30),
       child: StreamBuilder<List<String>>(
         initialData: _achieveLists,
         stream: _achieveController.stream,
@@ -216,7 +216,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     horizontal: 10,
                     vertical: 5,
                   ),
-                  labelText: 'Achievement'.tr,
+                  labelText: 'Add achievement'.tr,
                   labelStyle: kNormalStyle.copyWith(color: Colors.grey),
                   border: InputBorder.none,
                 ),
@@ -260,7 +260,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
 
   Widget _buildTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
+      padding: const EdgeInsets.only(left: 3, bottom: 5, top: 10),
       child: Text(
         title.tr,
         style: kNormalStyle.copyWith(color: Colors.grey[600]),
@@ -329,7 +329,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         ),
         child: Center(
           child: Text(
-            priorityList[value],
+            priorityList[value].tr,
             style: kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
@@ -357,44 +357,21 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       direction: Axis.horizontal,
       children: List.generate(
         catagories.length,
-        (index) => GestureDetector(
-          onTap: () {
-            setState(() {
-              _categoryItems[index] = !_categoryItems[index];
-            });
-          },
-          child: AnimatedContainer(
-            height: 45,
-            width: (MediaQuery.of(context).size.width - 50) / 3,
-            duration: Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: _categoryItems[index] == false
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : TodoColors.scaffoldWhite,
-                width: 1,
-              ),
-              color: _categoryItems[index]
-                  ? Color(
-                      int.parse(
-                        colors[indexColor],
-                      ),
-                    )
-                  : TodoColors.scaffoldWhite,
-            ),
-            padding: paddingCategory(),
-            margin: marginCategory(index),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Icon(
-                  catagories[index]["iconData"],
-                  size: iconSize(),
+        (index) {
+          String name = catagories[index]["name"];
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _categoryItems[index] = !_categoryItems[index];
+              });
+            },
+            child: AnimatedContainer(
+              height: 45,
+              width: (MediaQuery.of(context).size.width - 50) / 3,
+              duration: Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
                   color: _categoryItems[index] == false
                       ? Color(
                           int.parse(
@@ -402,12 +379,24 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                           ),
                         )
                       : TodoColors.scaffoldWhite,
+                  width: 1,
                 ),
-                Text(
-                  '${catagories[index]["name"]}',
-                  style: TextStyle(
-                    fontFamily: 'Source_Sans_Pro',
-                    fontSize: fontSize(),
+                color: _categoryItems[index]
+                    ? Color(
+                        int.parse(
+                          colors[indexColor],
+                        ),
+                      )
+                    : TodoColors.scaffoldWhite,
+              ),
+              padding: paddingCategory(),
+              margin: marginCategory(index),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Icon(
+                    catagories[index]["iconData"],
+                    size: iconSize(),
                     color: _categoryItems[index] == false
                         ? Color(
                             int.parse(
@@ -416,11 +405,25 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                           )
                         : TodoColors.scaffoldWhite,
                   ),
-                ),
-              ],
+                  Text(
+                    '${name.tr}',
+                    style: TextStyle(
+                      fontFamily: 'Alata',
+                      fontSize: fontSize(),
+                      color: _categoryItems[index] == false
+                          ? Color(
+                              int.parse(
+                                colors[indexColor],
+                              ),
+                            )
+                          : TodoColors.scaffoldWhite,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

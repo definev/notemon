@@ -52,7 +52,7 @@ String durationFormat(String duration) {
 
   List<String> elements = duration.split(":");
   List<String> seconds = elements[2].split(".");
-  return "${twoDigits(int.parse(elements[0]))}h : ${twoDigits(int.parse(elements[1]))}m : ${twoDigits(int.parse(seconds[0]))}'";
+  return "${twoDigits(int.parse(elements[0]))}h : ${twoDigits(int.parse(elements[1]))}m : ${twoDigits(int.parse(seconds[0]))}s";
 }
 
 String durationFormatByDuration(Duration duration) {
@@ -810,7 +810,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Ice", "Rock"],
-        "vi": ["Đá", "Băng"],
+        "vi": ["Điện", "Đá", "Băng"],
       },
       "introduction": {
         "en":
@@ -984,7 +984,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Grass", "Poison"],
-        "vi": ["Đá", "Cỏ", "Độc"],
+        "vi": ["Điện", "Cỏ", "Độc"],
       },
       "introduction": {
         "en":
@@ -1013,7 +1013,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Rock", "Electric", "Fire", "Flying", "Ice"],
-        "vi": ["Đá", "Lửa", "Bay", "Băng"],
+        "vi": ["Đá", "Điện", "Lửa", "Bay", "Băng"],
       },
       "introduction": {
         "en":
@@ -1129,7 +1129,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Grass", "Electric", "Fighting", "Ground"],
-        "vi": ["Cỏ", "Đá", "Chiến đấu", "Đất"],
+        "vi": ["Cỏ", "Điện", "Chiến đấu", "Đất"],
       },
       "introduction": {
         "en":
@@ -1245,7 +1245,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Grass"],
-        "vi": ["Đá", "Cỏ"],
+        "vi": ["Điện", "Cỏ"],
       },
       "introduction": {
         "en":
@@ -1274,7 +1274,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Grass"],
-        "vi": ["Đá", "Cỏ"],
+        "vi": ["Điện", "Cỏ"],
       },
       "introduction": {
         "en":
@@ -1477,7 +1477,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Fighting", "Grass", "Rock"],
-        "vi": ["Đá", "Chiến đấu", "Cỏ"],
+        "vi": ["Điện", "Chiến đấu", "Cỏ", "Đá"],
       },
       "introduction": {
         "en":
@@ -1506,7 +1506,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Grass"],
-        "vi": ["Đá", "Cỏ"],
+        "vi": ["Điện", "Cỏ"],
       },
       "introduction": {
         "en":
@@ -1593,10 +1593,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Ice", "Rock"],
-        "vi": [
-          "Đá",
-          "Băng",
-        ],
+        "vi": ["Điện", "Băng", "Đá"],
       },
       "introduction": {
         "en":
@@ -1712,7 +1709,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Grass"],
-        "vi": ["Đá", "Cỏ"],
+        "vi": ["Điện", "Cỏ"],
       },
       "introduction": {
         "en":
@@ -1770,7 +1767,7 @@ List<Pokemon> pokedex = [
       },
       "weaknesses": {
         "en": ["Electric", "Rock"],
-        "vi": ["Đá"],
+        "vi": ["Điện", "Đá"],
       },
       "introduction": {
         "en":
@@ -1798,7 +1795,7 @@ List<Pokemon> pokedex = [
     },
     "weaknesses": {
       "en": ["Rock", "Electric", "Fire", "Flying", "Ice"],
-      "vi": ["Đá", "Lửa", "Bay", "Băng"],
+      "vi": ["Đá", "Điện", "Lửa", "Bay", "Băng"],
     },
     "introduction": {
       "en":

@@ -3,6 +3,7 @@ import 'package:gottask/utils/utils.dart';
 
 class PetTagCustom extends StatelessWidget {
   final String nameTag;
+  final String colorTag;
   final double width;
   final double height;
   final TextStyle style;
@@ -11,6 +12,7 @@ class PetTagCustom extends StatelessWidget {
     this.height,
     this.width,
     this.style,
+    @required this.colorTag,
   });
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class PetTagCustom extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width / 3,
         child: Material(
-          color: tagColor[nameTag],
+          color: tagColor[colorTag],
           borderRadius: BorderRadius.circular(5),
           child: Padding(
             padding: const EdgeInsets.all(5.0),

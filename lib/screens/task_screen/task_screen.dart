@@ -461,22 +461,26 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width - 20,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "“Facedown your phone to start timing.”".tr,
-                        style: kMediumStyle,
-                      ),
-                      Text(
-                        "— Notemon",
-                        style: GoogleFonts.getFont(
-                          'Dancing Script',
-                          fontSize: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "“Facedown your phone to start timing.”".tr,
+                          style: kMediumStyle,
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ],
+                        Text(
+                          "— Notemon",
+                          style: GoogleFonts.getFont(
+                            'Dancing Script',
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -590,7 +594,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                               horizontal: 10,
                               vertical: 5,
                             ),
-                            labelText: 'Achieve goal'.tr,
+                            labelText: 'Add achievement'.tr,
                             labelStyle:
                                 kNormalStyle.copyWith(color: Colors.grey),
                             border: InputBorder.none,

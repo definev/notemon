@@ -307,7 +307,7 @@ class _TodoScreenState extends State<TodoScreen>
 
   Widget _buildTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 3, top: 2, bottom: 5),
+      padding: const EdgeInsets.only(left: 3, top: 10, bottom: 5),
       child: Text(
         title.tr,
         style: kNormalStyle.copyWith(color: Colors.grey[600]),

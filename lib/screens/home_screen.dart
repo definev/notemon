@@ -698,7 +698,7 @@ class _HomeScreenState extends State<HomeScreen>
                         kBigTitleStyle.copyWith(color: const Color(0xFF061058)),
                   ),
                   Text(
-                    '${DateFormat.yMMMEd().format(DateTime.now())}',
+                    '${DateFormat.yMMMEd(Get.locale.toString()).format(DateTime.now())}',
                     style: kNormalStyle.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -881,7 +881,7 @@ class _HomeScreenState extends State<HomeScreen>
             Row(
               children: [
                 Text(
-                  priorityList[_todoFilterMap['priority'].index],
+                  shortPriorityList[_todoFilterMap['priority'].index].tr,
                   style: kBigTitleStyle.copyWith(
                     fontFamily: "Source_Sans_Pro",
                     fontSize: 18,
@@ -979,7 +979,7 @@ class _HomeScreenState extends State<HomeScreen>
                   showModalBottomSheet(
                     context: context,
                     builder: (context) => FilterPicker(
-                      nameFilter: "Todo",
+                      nameFilter: "To-do",
                       priority: _priorityStateClone,
                       initCategory: _filterCategoryClone,
                       onCompeleted: (catagories, priority) {
@@ -1101,7 +1101,7 @@ class _HomeScreenState extends State<HomeScreen>
             Row(
               children: [
                 Text(
-                  priorityList[_taskFilterMap['priority'].index],
+                  priorityList[_taskFilterMap['priority'].index].tr,
                   style: kBigTitleStyle.copyWith(
                     fontFamily: "Source_Sans_Pro",
                     fontSize: 18,
@@ -1959,11 +1959,11 @@ class _HomeScreenState extends State<HomeScreen>
     DateTime _now = DateTime.now();
 
     if (_now.hour <= 12) {
-      return 'Good morning,';
+      return 'Good morning,'.tr;
     } else if (_now.hour <= 17) {
-      return 'Good afternoon,';
+      return 'Good afternoon,'.tr;
     } else {
-      return 'Good evening,';
+      return 'Good evening,'.tr;
     }
   }
 

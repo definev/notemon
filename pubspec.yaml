@@ -48,6 +48,7 @@ dependencies:
   in_app_purchase: ^0.3.4
   get:
   hive:
+  hive_flutter:
 
 flutter_icons:
   android: true
