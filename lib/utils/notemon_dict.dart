@@ -95,6 +95,8 @@ class NotemonDict extends Translations {
           'Good morning,': 'Good morning,',
           'Good afternoon,': 'Good afternoon,',
           'Good evening,': 'Good evening,',
+          'Detail note': 'Detail note',
+          'Note': 'Note',
         },
         'vi_VN': {
           'About this app': 'Về ứng dụng này',
@@ -188,6 +190,8 @@ class NotemonDict extends Translations {
           'Good morning,': 'Chào buổi sáng,',
           'Good afternoon,': 'Chào buổi chiều,',
           'Good evening,': 'Chào buổi tối,',
+          'Detail note': 'Ghi chú chi tiết',
+          'Note': 'Ghi chú',
         },
       };
 }

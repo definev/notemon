@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/models/shared.dart';
@@ -15,6 +17,7 @@ class Todo {
     @required this.audioCode,
     @required this.catagories,
     @required this.priority,
+    @required this.note,
   });
 
   String id;
@@ -27,6 +30,7 @@ class Todo {
   String audioCode;
   List<bool> catagories;
   PriorityState priority;
+  String note;
 
   Todo copyWith({
     String id,
@@ -39,6 +43,7 @@ class Todo {
     String audioCode,
     List<bool> catagories,
     PriorityState priority,
+    String note,
   }) =>
       Todo(
         id: id ?? this.id,
@@ -51,6 +56,7 @@ class Todo {
         audioCode: audioCode ?? this.audioCode,
         catagories: catagories ?? this.catagories,
         priority: priority ?? this.priority,
+        note: note ?? this.note,
       );
 
   @override
@@ -65,6 +71,7 @@ class Todo {
         this.audioCode,
         this.catagories.toString(),
         this.priority,
+        this.note,
       );
   bool operator ==(other) {
     if (other is Todo && other.id == this.id) {
@@ -75,9 +82,7 @@ class Todo {
 
   factory Todo.fromFirebaseMap(Map<String, dynamic> json) {
     List<bool> category = [];
-    json["catagories"].forEach((cata) {
-      category.add(cata);
-    });
+    json["catagories"].forEach((cata) => category.add(cata));
 
     return Todo(
       id: json["id"],
@@ -90,6 +95,7 @@ class Todo {
       audioCode: json["audioCode"],
       catagories: category,
       priority: PriorityState.values[json["priority"]],
+      note: json["note"],
     );
   }
 
@@ -104,6 +110,7 @@ class Todo {
         "audioCode": audioCode,
         "catagories": catagories.toString(),
         "priority": priority.index,
+        "note": note,
       };
 
   Map<String, dynamic> toFirebaseMap() => {
@@ -117,5 +124,15 @@ class Todo {
         "audioCode": audioCode,
         "catagories": catagories,
         "priority": priority.index,
+        "note": note,
       };
+}
+
+extension TodoExt on String {
+  List<dynamic> parseNote() {
+    if (this == "[]") return [];
+
+    var data = jsonDecode(this);
+    return data;
+  }
 }

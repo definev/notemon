@@ -1,16 +1,14 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/models/model.dart';
-import 'package:gottask/repository/firestore_methods.dart';
-import 'package:gottask/repository/repository.dart';
+import 'package:gottask/repository/firebase/firebase_methods.dart';
 
 class FirebaseRepository {
   final FirebaseMethods _firebaseMethods = FirebaseMethods();
-  final FirestoreMethods _firestoreMethods = FirestoreMethods();
+
   Firestore firestore = Firestore.instance;
+
   FirebaseUser get user => _firebaseMethods.user;
 
   FirebaseAuth get firebaseAuthInstance => FirebaseAuth.instance;
@@ -27,12 +25,6 @@ class FirebaseRepository {
       _firebaseMethods.setRemoveAdsState(state);
 
   Future<bool> getRemoveAdsState() => _firebaseMethods.getRemoveAdsState();
-
-  /// [Firestore] methods
-  Future<String> uploadImageFile(
-          FirebaseUser user, File imageFile, Map<String, String> fileInfo) =>
-      _firestoreMethods.uploadImageFile(user, imageFile, fileInfo);
-  // Future<void> uploadAudi
 
   /// [Task] methods
   Future<void> uploadAllTaskToFirebase(List<Task> taskList) =>

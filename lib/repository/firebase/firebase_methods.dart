@@ -130,8 +130,11 @@ class FirebaseMethods {
         .collection('todos')
         .getDocuments();
     List<Todo> todoList = [];
-    _snapshot.documents
-        .forEach((map) => todoList.add(Todo.fromFirebaseMap(map.data)));
+    _snapshot.documents.forEach((map) {
+      var data = map.data;
+      if (map.data['note'] == null) data['note'] = "[]";
+      todoList.add(Todo.fromFirebaseMap(data));
+    });
     return todoList;
   }
 
@@ -143,8 +146,11 @@ class FirebaseMethods {
         .getDocuments();
 
     todoBloc.add(InitTodoEvent());
-    _taskSnapshots.documents.forEach((map) =>
-        todoBloc.add(AddTodoEvent(todo: Todo.fromFirebaseMap(map.data))));
+    _taskSnapshots.documents.forEach((map) {
+      var data = map.data;
+      if (map.data['note'] == null) data['note'] = "[]";
+      todoBloc.add(AddTodoEvent(todo: Todo.fromFirebaseMap(data)));
+    });
   }
 
   /// Method of [Save task delete key]

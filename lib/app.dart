@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/hive/local_data.dart';
-import 'package:gottask/repository/firebase_repository.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/home_screen.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_in_screen.dart';
 import 'package:gottask/screens/splash_screen/splash_screen.dart';
@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: _isStart != null
           ? Provider(
-              create: (context) => FirebaseRepository(),
+              create: (context) => FirebaseApi(),
               child: MultiProvider(
                 providers: [
                   BlocProvider<TodoBloc>(

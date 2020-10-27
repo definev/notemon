@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/repository/auth/auth_services.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_up_screen.dart';
 import 'package:gottask/utils/constant.dart';
@@ -18,7 +19,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   bool _isLoading = false;
 
   TextEditingController _emailController = TextEditingController();
@@ -31,20 +32,20 @@ class _SignInScreenState extends State<SignInScreen> {
 
   _loginSuccess(BuildContext context, FirebaseUser user) async {
     if (user != null) {
-      _repository.setUser(user);
-      await _repository.getAllTodoAndLoadToDb(
+      _repository.firebase.setUser(user);
+      await _repository.firebase.getAllTodoAndLoadToDb(
         Provider.of<TodoBloc>(context, listen: false),
       );
-      await _repository.getAllTaskAndLoadToDb(
+      await _repository.firebase.getAllTaskAndLoadToDb(
         Provider.of<TaskBloc>(context, listen: false),
       );
-      await _repository.getAllPokemonStateAndLoadToDb(
+      await _repository.firebase.getAllPokemonStateAndLoadToDb(
         Provider.of<AllPokemonBloc>(context, listen: false),
       );
-      await _repository.getFavouritePokemonStateAndLoadToDb(
+      await _repository.firebase.getFavouritePokemonStateAndLoadToDb(
         Provider.of<FavouritePokemonBloc>(context, listen: false),
       );
-      await _repository.getStarpoint(
+      await _repository.firebase.getStarpoint(
         Provider.of<StarBloc>(context, listen: false),
       );
       updateLoginState(true);
@@ -56,7 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _repository = Provider.of<FirebaseRepository>(context);
+    _repository = Provider.of<FirebaseApi>(context);
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       body: Stack(

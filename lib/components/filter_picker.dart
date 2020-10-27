@@ -27,63 +27,73 @@ class _FilterPickerState extends State<FilterPicker>
   PriorityState priority = PriorityState.Low;
   Color currentColor = TodoColors.blueAqua;
 
-  Widget _buildCategoryPicker(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: List.generate(
-        catagories.length,
+  Widget _buildCatagoriesPicker(BuildContext context) {
+    return Column(children: [
+      ...List.generate(
+        catagories.length ~/ 3,
         (index) {
-          String name = catagories[index]["name"];
-          return GestureDetector(
-            onTap: () {
-              setState(() => _catagories[index] = !_catagories[index]);
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _catagories[index] == false
-                      ? setPriorityColor(priorityList[priority.index])
-                      : TodoColors.scaffoldWhite,
-                  width: 1,
-                ),
-                color: _catagories[index]
-                    ? setPriorityColor(priorityList[priority.index])
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              margin: marginCategory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
-                    color: _catagories[index] == false
-                        ? setPriorityColor(priorityList[priority.index])
-                        : TodoColors.scaffoldWhite,
-                  ),
-                  Text(
-                    '${name.tr}',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: fontSize(),
-                      fontWeight: FontWeight.w500,
-                      color: _catagories[index] == false
-                          ? setPriorityColor(priorityList[priority.index])
-                          : TodoColors.scaffoldWhite,
+          int startIndex = index * 3;
+          return Padding(
+            padding: EdgeInsets.only(bottom: startIndex == 6 ? 0 : 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                3,
+                (index) {
+                  index += startIndex;
+                  String category = catagories[index]["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => _catagories[index] = !_catagories[index]);
+                    },
+                    child: AnimatedContainer(
+                      height: 45,
+                      width: (MediaQuery.of(context).size.width - 50) / 3,
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _catagories[index] == false
+                              ? currentColor
+                              : TodoColors.scaffoldWhite,
+                          width: 1,
+                        ),
+                        color: _catagories[index]
+                            ? currentColor
+                            : TodoColors.scaffoldWhite,
+                      ),
+                      padding: paddingCategory(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Icon(
+                            catagories[index]["iconData"],
+                            size: iconSize(),
+                            color: _catagories[index] == false
+                                ? currentColor
+                                : TodoColors.scaffoldWhite,
+                          ),
+                          Text(
+                            '${category.tr}',
+                            style: TextStyle(
+                              fontFamily: 'Source_Sans_Pro',
+                              fontSize: fontSize(),
+                              color: _catagories[index] == false
+                                  ? currentColor
+                                  : TodoColors.scaffoldWhite,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           );
         },
       ),
-    );
+    ]);
   }
 
   _buildPriority() {
@@ -187,7 +197,7 @@ class _FilterPickerState extends State<FilterPicker>
               children: [
                 _header(context),
                 _buildTitle('Category'.tr),
-                _buildCategoryPicker(context),
+                _buildCatagoriesPicker(context),
                 _buildTitle('Priority'.tr),
                 _buildPriority(),
               ],
@@ -280,6 +290,7 @@ class _FilterPickerState extends State<FilterPicker>
                             _catagories = List.generate(
                                 catagories.length, (index) => false);
                             priority = PriorityState.All;
+                            currentColor = TodoColors.blueAqua;
                           });
                         },
                         child: Container(

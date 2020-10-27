@@ -28,7 +28,7 @@ class _SettingScreenState extends State<SettingScreen>
   AnimationController animationController;
   Animation animation;
 
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   HandSide _handSide;
   HandSideBloc _handsideBloc;
   AllPokemonBloc _allPokemonBloc;
@@ -76,7 +76,7 @@ class _SettingScreenState extends State<SettingScreen>
     PurchaseDetails purchase = _hasPurchased("remove_ads_id");
 
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
-      _repository.setRemoveAdsState(true);
+      _repository.firebase.setRemoveAdsState(true);
       print("Has purchase!");
     }
   }
@@ -149,7 +149,7 @@ class _SettingScreenState extends State<SettingScreen>
   Widget build(BuildContext context) {
     if (_isInit == false) {
       _handsideBloc = Provider.of<HandSideBloc>(widget.ctx);
-      _repository = Provider.of<FirebaseRepository>(context);
+      _repository = Provider.of<FirebaseApi>(context);
       initHandSide();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
@@ -157,7 +157,7 @@ class _SettingScreenState extends State<SettingScreen>
       _todoBloc = findBloc<TodoBloc>();
       _taskBloc = findBloc<TaskBloc>();
       _isInit = true;
-      _repository.getRemoveAdsState().then((value) {
+      _repository.firebase.getRemoveAdsState().then((value) {
         setState(() {
           _isBuyRemoveAds = value;
         });
@@ -343,11 +343,10 @@ class _SettingScreenState extends State<SettingScreen>
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                 onTap: () async {
-                  AuthServices _auth = AuthServices();
-                  await _auth.signOut();
+                  await _repository.authServices.signOut();
                   updateLoginState(false);
                   deleteAll();
-                  _repository.initUser();
+                  _repository.firebase.initUser();
                   Get.offAllNamed('/signIn');
                 },
                 child: Padding(

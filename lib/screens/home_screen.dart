@@ -59,17 +59,19 @@ class _HomeScreenState extends State<HomeScreen>
   StarBloc _starBloc;
   FavouritePokemonBloc _favouritePokemonBloc;
 
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
 
   _modalBottomSheetMenu() =>
       showModalBottomSheet(context: context, builder: (_) => AddTodoScreen());
 
   _updateTodos() async {
-    if (_repository.user == null) await _repository.initUser();
+    if (_repository.firebase.user == null)
+      await _repository.firebase.initUser();
     if (_todoBloc.todoList != null) {
       /// [Delete key setup]
       List<String> _deleteKey = List<String>.from(_todoBloc.deleteTodoKey);
-      List<String> _deleteKeyInServer = await _repository.getDeleteTodoKey();
+      List<String> _deleteKeyInServer =
+          await _repository.firebase.getDeleteTodoKey();
       List<String> _finalDeleteKey = [..._deleteKey, ..._deleteKeyInServer];
       _finalDeleteKey = LinkedHashSet<String>.from(_finalDeleteKey).toList();
       _deleteKey = [];
@@ -79,18 +81,18 @@ class _HomeScreenState extends State<HomeScreen>
         }
       }
 
-      await _repository.setDeleteTodoKey(_deleteKey);
+      await _repository.firebase.setDeleteTodoKey(_deleteKey);
 
       /// [Remove todo if todo.id == deleteKey on server]
       List<Todo> _todoListServer = [];
 
-      _repository.getAllTodo().then(
+      _repository.firebase.getAllTodo().then(
         (todoListServerRaw) async {
           _todoListServer = todoListServerRaw;
           List<Todo>.from(todoListServerRaw).forEach((todo) async {
             if (_deleteKey.contains(todo.id)) {
               _todoListServer.remove(todo);
-              await _repository.deleteTodoOnFirebase(todo);
+              await _repository.firebase.deleteTodoOnFirebase(todo);
             }
           });
           List<Todo> _todoListLocal = _todoBloc.todoList;
@@ -110,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen>
             }
           }
 
-          await _repository.uploadAllTodoToFirebase(_todoListFinal);
+          await _repository.firebase.uploadAllTodoToFirebase(_todoListFinal);
           _todoListAddIn.forEach(
             (todo) => _todoBloc.add(AddTodoEvent(todo: todo)),
           );
@@ -120,11 +122,13 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   _updateTasks() async {
-    if (_repository.user == null) await _repository.initUser();
+    if (_repository.firebase.user == null)
+      await _repository.firebase.initUser();
     if (_taskBloc.taskList != null) {
       /// [Delete key setup]
       List<String> _deleteKey = List<String>.from(_taskBloc.deleteTaskKey);
-      List<String> _deleteKeyInServer = await _repository.getDeleteTaskKey();
+      List<String> _deleteKeyInServer =
+          await _repository.firebase.getDeleteTaskKey();
       List<String> _finalDeleteKey = [..._deleteKey, ..._deleteKeyInServer];
       _finalDeleteKey = LinkedHashSet<String>.from(_finalDeleteKey).toList();
       _deleteKey = [];
@@ -134,18 +138,18 @@ class _HomeScreenState extends State<HomeScreen>
         }
       }
 
-      await _repository.setDeleteTaskKey(_deleteKey);
+      await _repository.firebase.setDeleteTaskKey(_deleteKey);
 
       /// [Remove task if task.id == deleteKey on server]
       List<Task> _taskListServer = [];
 
-      _repository.getAllTask().then(
+      _repository.firebase.getAllTask().then(
         (taskListServerRaw) async {
           _taskListServer = taskListServerRaw;
           List<Task>.from(taskListServerRaw).forEach((task) async {
             if (_deleteKey.contains(task.id)) {
               _taskListServer.remove(task);
-              await _repository.deleteTaskOnFirebase(task);
+              await _repository.firebase.deleteTaskOnFirebase(task);
             }
           });
           List<Task> _taskListLocal = _taskBloc.taskList;
@@ -165,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen>
             }
           }
 
-          await _repository.uploadAllTaskToFirebase(_taskListFinal);
+          await _repository.firebase.uploadAllTaskToFirebase(_taskListFinal);
           _taskListAddIn.forEach(
             (task) => _taskBloc.add(AddTaskEvent(task: task)),
           );
@@ -175,7 +179,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   _updateStarpoint() async {
-    Map<String, int> _onlineStarpoint = await _repository.getOnlineStarpoint();
+    Map<String, int> _onlineStarpoint =
+        await _repository.firebase.getOnlineStarpoint();
     Map<String, int> _finalStarpoint = {
       "addStar": _starBloc.addStar,
       "loseStar": _starBloc.loseStar,
@@ -189,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       print("DIFF!!!");
 
-      _repository.updateStarpoint(_finalStarpoint);
+      _repository.firebase.updateStarpoint(_finalStarpoint);
       _starBloc.add(SetStarEvent(starMap: _finalStarpoint));
     }
   }
@@ -197,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen>
   _updatePokemonStates() async {
     try {
       List<PokemonState> _onlinePokemonStateList =
-          await _repository.getAllPokemonState();
+          await _repository.firebase.getAllPokemonState();
       for (int i = 0; i < _allPokemonBloc.pokemonStateList.length; i++) {
         if (_onlinePokemonStateList[i].state !=
             _allPokemonBloc.pokemonStateList[i].state) {
@@ -207,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen>
                 pokemonState: _onlinePokemonStateList[i]));
           } else {
             //Update in online
-            _repository.updatePokemonStateToFirebase(
+            _repository.firebase.updatePokemonStateToFirebase(
                 _allPokemonBloc.pokemonStateList[i]);
           }
         }
@@ -216,10 +221,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   _updateFavouritePokemon() async {
-    FavouritePokemon _favPokemon = await _repository.getFavouritePokemon();
+    FavouritePokemon _favPokemon =
+        await _repository.firebase.getFavouritePokemon();
 
     if (_favouritePokemonBloc.favouritePokemon != _favPokemon.pokemon) {
-      _repository
+      _repository.firebase
           .updateFavouritePokemon(_favouritePokemonBloc.favouritePokemon);
     }
   }
@@ -270,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen>
       _todoBloc.add(AddTodoEvent(todo: todo));
     }
 
-    List<String> _deleteKey = await _repository.getDeleteTodoKey();
+    List<String> _deleteKey = await _repository.firebase.getDeleteTodoKey();
     _todoListLocal = List<Todo>.from(_todoBloc.todoList);
     for (Todo todo in _todoListLocal) {
       if (_deleteKey.contains(todo.id)) {
@@ -306,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen>
       _taskBloc.add(AddTaskEvent(task: task));
     }
 
-    List<String> _deleteKey = await _repository.getDeleteTaskKey();
+    List<String> _deleteKey = await _repository.firebase.getDeleteTaskKey();
     _taskListLocal = List<Task>.from(_taskBloc.taskList);
     for (Task task in _taskListLocal) {
       if (_deleteKey.contains(task.id)) {
@@ -403,8 +409,8 @@ class _HomeScreenState extends State<HomeScreen>
       _taskBloc = findBloc<TaskBloc>();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _starBloc = findBloc<StarBloc>();
-      _repository = findBloc<FirebaseRepository>();
-      _repository.initUser().then((_) => setState(() {}));
+      _repository = findBloc<FirebaseApi>();
+      _repository.firebase.initUser().then((_) => setState(() {}));
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
 
       /// add initState
@@ -415,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen>
       _favouritePokemonBloc.add(InitFavouritePokemonEvent());
       _isInit = true;
     }
-    if (_repository.user == null) {
+    if (_repository.firebase.user == null) {
       return SafeArea(
         child: Container(
           decoration: BoxDecoration(
@@ -519,9 +525,9 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Row(
                   children: <Widget>[
                     StreamBuilder<QuerySnapshot>(
-                      stream: _repository.firestore
+                      stream: _repository.firebase.firestore
                           .collection('databases')
-                          .document(_repository.user.uid)
+                          .document(_repository.firebase.user.uid)
                           .collection('favouritePokemon')
                           .snapshots(),
                       builder: (context, snapshot) {
@@ -572,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen>
                         }
 
                         if (snapshot.data.documents.isEmpty) {
-                          _repository.updateFavouritePokemon(-1);
+                          _repository.firebase.updateFavouritePokemon(-1);
                           return Container();
                         }
 
@@ -645,9 +651,9 @@ class _HomeScreenState extends State<HomeScreen>
                           Row(
                             children: <Widget>[
                               StreamBuilder<DocumentSnapshot>(
-                                stream: _repository.firestore
+                                stream: _repository.firebase.firestore
                                     .collection('databases')
-                                    .document(_repository.user.uid)
+                                    .document(_repository.firebase.user.uid)
                                     .collection('starPoint')
                                     .document('star')
                                     .snapshots(),
@@ -659,7 +665,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     );
                                   }
                                   if (snapshot.data.data == null) {
-                                    _repository.updateStarpoint(
+                                    _repository.firebase.updateStarpoint(
                                         {"addStar": 0, "loseStar": 0});
                                     return Text(
                                       '0 ',
@@ -737,9 +743,9 @@ class _HomeScreenState extends State<HomeScreen>
           width: MediaQuery.of(context).size.width - 20,
           padding: const EdgeInsets.all(2),
           child: StreamBuilder<QuerySnapshot>(
-            stream: _repository.firestore
+            stream: _repository.firebase.firestore
                 .collection('databases')
-                .document(_repository.user.uid)
+                .document(_repository.firebase.user.uid)
                 .collection('pokemonStates')
                 .snapshots(),
             builder: (context, snapshot) {
@@ -759,7 +765,8 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   );
                 });
-                _repository.uploadAllPokemonStateToFirebase(_pokemonStates);
+                _repository.firebase
+                    .uploadAllPokemonStateToFirebase(_pokemonStates);
                 return Center(
                   child: Text('${"Loading".tr} ...'),
                 );
@@ -1016,9 +1023,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTodo(bool isOnline) => Expanded(
         child: StreamBuilder<QuerySnapshot>(
-          stream: _repository.firestore
+          stream: _repository.firebase.firestore
               .collection('databases')
-              .document(_repository.user.uid)
+              .document(_repository.firebase.user.uid)
               .collection('todos')
               .orderBy('priority')
               .snapshots(),
@@ -1235,9 +1242,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildOnlineTask(bool isOnline) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _repository.firestore
+      stream: _repository.firebase.firestore
           .collection('databases')
-          .document(_repository.user.uid)
+          .document(_repository.firebase.user.uid)
           .collection('tasks')
           .orderBy('priority')
           .snapshots(),
@@ -1256,7 +1263,7 @@ class _HomeScreenState extends State<HomeScreen>
           );
         }
         if (snapshots.data == null) {
-          _repository.uploadAllTaskToFirebase(_taskBloc.taskList);
+          _repository.firebase.uploadAllTaskToFirebase(_taskBloc.taskList);
           return SizedBox(
             height: kListViewHeight + 2,
             width: double.infinity,

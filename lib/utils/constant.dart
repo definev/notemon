@@ -134,6 +134,10 @@ List<String> colors = [
   TodoColors.deepYellow.toString().substring(6, 16),
 ];
 
+extension ParseColor on List<String> {
+  Color parseColor(int indexColor) => Color(int.parse(colors[indexColor]));
+}
+
 List<Map<String, dynamic>> catagories = [
   {
     "name": "Grocery",

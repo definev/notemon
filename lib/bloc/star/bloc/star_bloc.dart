@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:gottask/repository/firebase_repository.dart';
+import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/shared.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:meta/meta.dart';
@@ -13,7 +13,7 @@ class StarBloc extends Bloc<StarEvent, StarState> {
   int addStar = 0;
   int loseStar = 0;
   int currentStarPoint = 0;
-  FirebaseRepository _repository = FirebaseRepository();
+  FirebaseApi _repository = FirebaseApi();
   @override
   StarState get initialState => StarInitial();
 
@@ -21,7 +21,7 @@ class StarBloc extends Bloc<StarEvent, StarState> {
     addStar = await getAddStar();
     loseStar = await getLoseStar();
     currentStarPoint = addStar - loseStar;
-    await _repository.initUser();
+    await _repository.firebase.initUser();
   }
 
   _addEvent(int point) async {
@@ -29,7 +29,8 @@ class StarBloc extends Bloc<StarEvent, StarState> {
     await setAddStar(addStar);
     currentStarPoint = addStar - loseStar;
     if (await checkConnection()) {
-      _repository.updateStarpoint({"addStar": addStar, "loseStar": loseStar});
+      _repository.firebase
+          .updateStarpoint({"addStar": addStar, "loseStar": loseStar});
     }
   }
 
@@ -38,7 +39,8 @@ class StarBloc extends Bloc<StarEvent, StarState> {
     await setLoseStar(loseStar);
     currentStarPoint = addStar - loseStar;
     if (await checkConnection()) {
-      _repository.updateStarpoint({"addStar": addStar, "loseStar": loseStar});
+      _repository.firebase
+          .updateStarpoint({"addStar": addStar, "loseStar": loseStar});
     }
   }
 

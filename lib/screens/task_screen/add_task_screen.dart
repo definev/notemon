@@ -33,14 +33,14 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       StreamController<List<String>>();
 
   TaskBloc _taskBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
 
   final TextEditingController _achieveTextController = TextEditingController();
   final TextEditingController _taskNameTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     _taskBloc = findBloc<TaskBloc>();
-    _repository = findBloc<FirebaseRepository>();
+    _repository = findBloc<FirebaseApi>();
 
     return GestureDetector(
       onTap: () {
@@ -51,11 +51,11 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       },
       child: Theme(
         data: Theme.of(context)
-            .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
+            .copyWith(accentColor: colors.parseColor(indexColor)),
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            backgroundColor: Color(int.parse(colors[indexColor])),
+            backgroundColor: colors.parseColor(indexColor),
             title: Text(
               'Add Task'.tr,
               style: const TextStyle(
@@ -67,7 +67,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
           bottomNavigationBar: GestureDetector(
             child: AnimatedContainer(
               duration: Duration(milliseconds: 200),
-              color: Color(int.parse(colors[indexColor])),
+              color: colors.parseColor(indexColor),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -113,7 +113,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                 );
                 _taskBloc.add(AddTaskEvent(task: _task));
                 if (await checkConnection()) {
-                  _repository.updateTaskToFirebase(_task);
+                  _repository.firebase.updateTaskToFirebase(_task);
                 }
                 Get.back();
               }
@@ -206,7 +206,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Color(int.parse(colors[indexColor])),
+                  color: colors.parseColor(indexColor),
                   width: 1.2,
                 ),
               ),
@@ -241,7 +241,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             },
             child: Material(
               elevation: 1,
-              color: Color(int.parse(colors[indexColor])),
+              color: colors.parseColor(indexColor),
               borderRadius: BorderRadiusDirectional.circular(10),
               child: Container(
                 height: 50,
@@ -274,7 +274,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(int.parse(colors[indexColor])),
+          color: colors.parseColor(indexColor),
           width: 1,
         ),
       ),
@@ -353,79 +353,89 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: List.generate(
-        catagories.length,
+    return Column(children: [
+      ...List.generate(
+        catagories.length ~/ 3,
         (index) {
-          String name = catagories[index]["name"];
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _categoryItems[index] = !_categoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _categoryItems[index] == false
-                      ? Color(
-                          int.parse(
-                            colors[indexColor],
-                          ),
-                        )
-                      : TodoColors.scaffoldWhite,
-                  width: 1,
-                ),
-                color: _categoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
+          int startIndex = index * 3;
+          return Padding(
+            padding: EdgeInsets.only(bottom: startIndex == 6 ? 0 : 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                3,
+                (index) {
+                  index += startIndex;
+                  String category = catagories[index]["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(
+                          () => _categoryItems[index] = !_categoryItems[index]);
+                    },
+                    child: AnimatedContainer(
+                      height: 45,
+                      width: (MediaQuery.of(context).size.width - 50) / 3,
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _categoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[indexColor],
+                                  ),
+                                )
+                              : TodoColors.scaffoldWhite,
+                          width: 1,
                         ),
-                      )
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: paddingCategory(),
-              margin: marginCategory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
-                    color: _categoryItems[index] == false
-                        ? Color(
-                            int.parse(
-                              colors[indexColor],
+                        color: _categoryItems[index]
+                            ? Color(
+                                int.parse(
+                                  colors[indexColor],
+                                ),
+                              )
+                            : TodoColors.scaffoldWhite,
+                      ),
+                      padding: paddingCategory(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Icon(
+                            catagories[index]["iconData"],
+                            size: iconSize(),
+                            color: _categoryItems[index] == false
+                                ? Color(
+                                    int.parse(
+                                      colors[indexColor],
+                                    ),
+                                  )
+                                : TodoColors.scaffoldWhite,
+                          ),
+                          Text(
+                            '${category.tr}',
+                            style: TextStyle(
+                              fontFamily: 'Source_Sans_Pro',
+                              fontSize: fontSize(),
+                              color: _categoryItems[index] == false
+                                  ? Color(
+                                      int.parse(
+                                        colors[indexColor],
+                                      ),
+                                    )
+                                  : TodoColors.scaffoldWhite,
                             ),
-                          )
-                        : TodoColors.scaffoldWhite,
-                  ),
-                  Text(
-                    '${name.tr}',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: fontSize(),
-                      color: _categoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           );
         },
       ),
-    );
+    ]);
   }
 
   Future _buildWarningDialog(BuildContext context) {
@@ -472,7 +482,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Color(int.parse(colors[indexColor])),
+                        color: colors.parseColor(indexColor),
                       ),
                       child: Center(
                         child: Text(
@@ -498,7 +508,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Color(int.parse(colors[indexColor])).withOpacity(0.05),
+              color: colors.parseColor(indexColor).withOpacity(0.05),
               blurRadius: 5,
             ),
           ],

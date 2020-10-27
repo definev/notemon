@@ -55,7 +55,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   TaskBloc _taskBloc;
   StarBloc _starBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   TextEditingController _achieveTextController = TextEditingController();
   PageController _pageController = PageController();
 
@@ -99,7 +99,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         ),
       ),
     );
-    _repository.updateTaskToFirebase(
+    _repository.firebase.updateTaskToFirebase(
       _currentTask.copyWith(
         achieve: _achievelists,
         catagories: _categoryItems,
@@ -113,7 +113,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
       if (result.isNotEmpty &&
           result[0].rawAddress.isNotEmpty &&
-          !(await _repository.getRemoveAdsState())) {
+          !(await _repository.firebase.getRemoveAdsState())) {
         myInterstitial
           ..load()
           ..show();
@@ -175,7 +175,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       seconds: int.parse(durTimerSecond[0]),
                     );
                     Duration _completeTimer = _oldTimer - _timer;
-                    _repository.updateTaskToFirebase(
+                    _repository.firebase.updateTaskToFirebase(
                       _currentTask.copyWith(
                         onDoing: true,
                         achieve: _achievelists,
@@ -222,7 +222,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                         ),
                       ),
                     );
-                    _repository.updateTaskToFirebase(
+                    _repository.firebase.updateTaskToFirebase(
                       _currentTask.copyWith(
                         onDoing: false,
                         achieve: _achievelists,
@@ -298,7 +298,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     if (_isInit == false) {
       _taskBloc = findBloc<TaskBloc>();
       _starBloc = findBloc<StarBloc>();
-      _repository = findBloc<FirebaseRepository>();
+      _repository = findBloc<FirebaseApi>();
       _isInit = true;
     }
 
@@ -535,7 +535,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   _taskBloc.add(
                       DeleteTaskEvent(task: _currentTask, addDeleteKey: true));
                   if (await checkConnection())
-                    _repository.deleteTaskOnFirebase(_currentTask);
+                    _repository.firebase.deleteTaskOnFirebase(_currentTask);
                   Get.back();
                 },
               ),
@@ -716,7 +716,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           _taskBloc.add(DeleteTaskEvent(
                               task: _currentTask, addDeleteKey: true));
                           if (await checkConnection())
-                            _repository.deleteTaskOnFirebase(_currentTask);
+                            _repository.firebase
+                                .deleteTaskOnFirebase(_currentTask);
                           Get.back();
                           Get.back();
                         },

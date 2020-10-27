@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/repository/auth/auth_services.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/constant.dart';
 import 'package:gottask/utils/utils.dart';
@@ -27,24 +28,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _isLoading = false;
 
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
 
   _loginSuccess() async {
     updateLoginState(true);
-    await _repository.initUser().then((_) async {
-      await _repository.getAllTodoAndLoadToDb(
+    await _repository.firebase.initUser().then((_) async {
+      await _repository.firebase.getAllTodoAndLoadToDb(
         Provider.of<TodoBloc>(context, listen: false),
       );
-      await _repository.getAllTaskAndLoadToDb(
+      await _repository.firebase.getAllTaskAndLoadToDb(
         Provider.of<TaskBloc>(context, listen: false),
       );
-      await _repository.getAllPokemonStateAndLoadToDb(
+      await _repository.firebase.getAllPokemonStateAndLoadToDb(
         Provider.of<AllPokemonBloc>(context, listen: false),
       );
-      await _repository.getFavouritePokemonStateAndLoadToDb(
+      await _repository.firebase.getFavouritePokemonStateAndLoadToDb(
         Provider.of<FavouritePokemonBloc>(context, listen: false),
       );
-      await _repository.getStarpoint(
+      await _repository.firebase.getStarpoint(
         Provider.of<StarBloc>(context, listen: false),
       );
     });
@@ -54,7 +55,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _repository = Provider.of<FirebaseRepository>(context);
+    _repository = Provider.of<FirebaseApi>(context);
 
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),

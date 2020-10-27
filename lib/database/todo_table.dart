@@ -17,11 +17,19 @@ class TodoTable {
       audioPath TEXT,
       audioCode TEXT,
       catagories TEXT,
-      priority INTEGER
+      priority INTEGER,
+      note TEXT
     );   
   ''';
   static const CREATE_DELETE_TABLE_QUERY = '''
     CREATE TABLE $DELETE_TABLE_NAME (id TEXT PRIMARY KEY);  
+  ''';
+
+  static const MIGRATE_DATABASE_QUERY = '''
+    ALTER TABLE $TABLE_NAME
+    ADD note TEXT NOT NULL
+    DEFAULT "[]" 
+    WITH VALUES;
   ''';
 
   /// [Todo delete key]
@@ -99,6 +107,7 @@ class TodoTable {
         'color',
         'audioPath',
         'catagories',
+        'note'
       ],
       where: 'id = ?',
       whereArgs: [todo.id],
@@ -124,6 +133,7 @@ class TodoTable {
         'audioPath',
         'audioCode',
         'catagories',
+        'note'
       ],
       where: 'id = ?',
       whereArgs: [index],
@@ -145,6 +155,7 @@ class TodoTable {
       audioCode: map[1]['audioCode'],
       catagories: _catagoriesItems,
       priority: PriorityState.values[map[1]['priority']],
+      note: map[1]['note'] ?? "[]",
     );
   }
 
@@ -170,6 +181,7 @@ class TodoTable {
         audioCode: maps[index]['audioCode'],
         catagories: _catagoriesItems,
         priority: PriorityState.values[maps[index]['priority']],
+        note: maps[index]['note'] ?? "[]",
       );
     });
   }

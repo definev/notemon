@@ -13,6 +13,7 @@ import 'package:gottask/components/image_viewer.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/repository.dart';
+import 'package:gottask/screens/todo_screen/note_screen.dart';
 import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -53,6 +54,7 @@ class _TodoScreenState extends State<TodoScreen>
   String _mainAudioCode;
   String _subAudioPath;
   String _subAudioCode;
+  String _note;
   PriorityState _priority;
 
   Directory appDocDirectory;
@@ -74,7 +76,7 @@ class _TodoScreenState extends State<TodoScreen>
 
   TodoBloc _todoBloc;
   StarBloc _starBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   Todo _currentTask;
 
   Future _openGallery() async {
@@ -175,9 +177,7 @@ class _TodoScreenState extends State<TodoScreen>
 
       const tick = const Duration(milliseconds: 50);
       Timer.periodic(tick, (Timer t) async {
-        if (_currentStatus == RecordingStatus.Stopped) {
-          t.cancel();
-        }
+        if (_currentStatus == RecordingStatus.Stopped) t.cancel();
 
         var current = await _recorder.current(channel: 0);
         try {
@@ -271,6 +271,7 @@ class _TodoScreenState extends State<TodoScreen>
     images.forEach((path) => imageFileList.add(base64Decode(path)));
     _mainAudioPath = widget.todo.audioPath;
     _mainAudioCode = widget.todo.audioCode;
+    _note = widget.todo.note;
     if (_mainAudioPath != '') {
       _haveRecord = true;
       _setMainAudioFile();
@@ -315,25 +316,60 @@ class _TodoScreenState extends State<TodoScreen>
     );
   }
 
+  Widget _buildNote() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 3),
+            child: Text(
+              "Note".tr,
+              style: kNormalStyle.copyWith(color: Colors.grey[600]),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.edit, size: 25),
+            color: colors.parseColor(indexColor),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoteScreen(
+                    noteMode: NoteMode.EDIT,
+                    note: _note.parseNote(),
+                    themeColor: colors.parseColor(indexColor),
+                    onNoteSaved: (String newNote) => _note = newNote,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @deprecated
   @override
   Widget build(BuildContext context) {
     if (_isInitWidget == false) {
       _todoBloc = findBloc<TodoBloc>();
       _starBloc = findBloc<StarBloc>();
-      _repository = findBloc<FirebaseRepository>();
+      _repository = findBloc<FirebaseApi>();
       _isInitWidget = true;
       _currentTask = widget.todo;
       _isChecked = _currentTask.state == "done" ? true : false;
     }
     return Theme(
       data: Theme.of(context)
-          .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
+          .copyWith(accentColor: colors.parseColor(indexColor)),
       child: Scaffold(
         resizeToAvoidBottomPadding: false,
         bottomNavigationBar: _buildEditTodoButton(context),
         appBar: AppBar(
-          backgroundColor: Color(int.parse(colors[indexColor])),
+          backgroundColor: colors.parseColor(indexColor),
           centerTitle: true,
           title: StreamBuilder(
             initialData: _content,
@@ -366,7 +402,7 @@ class _TodoScreenState extends State<TodoScreen>
                     state: _isChecked ? "done" : "notDone");
                 _todoBloc.add(EditTodoEvent(todo: _currentTask));
                 if (await checkConnection())
-                  _repository.updateTodoToFirebase(_currentTask);
+                  _repository.firebase.updateTodoToFirebase(_currentTask);
               },
               child: _isChecked
                   ? FittedBox(
@@ -416,7 +452,7 @@ class _TodoScreenState extends State<TodoScreen>
 
                 if (_currentTask.state == "done")
                   _starBloc.add(AddStarEvent(point: 1));
-                _repository.deleteTodoOnFirebase(_currentTask);
+                _repository.firebase.deleteTodoOnFirebase(_currentTask);
                 Get.back();
               },
             )
@@ -432,6 +468,7 @@ class _TodoScreenState extends State<TodoScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _buildTaskNameTextField(),
+                  _buildNote(),
                   _buildTitle('Color'),
                   _buildColorPicker(),
                   _buildTitle('Priority'),
@@ -551,14 +588,14 @@ class _TodoScreenState extends State<TodoScreen>
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
-              color: Color(int.parse(colors[indexColor])),
+              color: colors.parseColor(indexColor),
               width: 1,
             ),
             borderRadius: BorderRadius.circular(3),
           ),
           child: Icon(
             iconData,
-            color: Color(int.parse(colors[indexColor])),
+            color: colors.parseColor(indexColor),
             size: 50,
           ),
         ),
@@ -586,7 +623,7 @@ class _TodoScreenState extends State<TodoScreen>
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(
-                color: Color(int.parse(colors[indexColor])),
+                color: colors.parseColor(indexColor),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(3),
@@ -596,7 +633,7 @@ class _TodoScreenState extends State<TodoScreen>
               child: Icon(
                 _isRecording == false ? SimpleLineIcons.microphone : Icons.stop,
                 size: 50,
-                color: Color(int.parse(colors[indexColor])),
+                color: colors.parseColor(indexColor),
               ),
             ),
           ),
@@ -613,15 +650,15 @@ class _TodoScreenState extends State<TodoScreen>
                     const SizedBox(height: 10),
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Color(int.parse(colors[indexColor])),
+                        activeTrackColor: colors.parseColor(indexColor),
                         inactiveTrackColor: Colors.grey[350],
                         trackHeight: 3,
-                        thumbColor: Color(int.parse(colors[indexColor])),
+                        thumbColor: colors.parseColor(indexColor),
                         thumbShape: const RoundSliderThumbShape(
                           enabledThumbRadius: 4,
                         ),
-                        overlayColor: Color(int.parse(colors[indexColor]))
-                            .withOpacity(0.3),
+                        overlayColor:
+                            colors.parseColor(indexColor).withOpacity(0.3),
                         overlayShape: const RoundSliderOverlayShape(
                           overlayRadius: 4,
                         ),
@@ -662,7 +699,7 @@ class _TodoScreenState extends State<TodoScreen>
                                 ? Icons.pause
                                 : Icons.play_arrow,
                             size: 30,
-                            color: Color(int.parse(colors[indexColor])),
+                            color: colors.parseColor(indexColor),
                           ),
                         ),
                         InkWell(
@@ -697,7 +734,7 @@ class _TodoScreenState extends State<TodoScreen>
                           child: Icon(
                             Icons.delete_outline,
                             size: 30,
-                            color: Color(int.parse(colors[indexColor])),
+                            color: colors.parseColor(indexColor),
                           ),
                         ),
                       ],
@@ -738,7 +775,7 @@ class _TodoScreenState extends State<TodoScreen>
                           context,
                           MaterialPageRoute(
                             builder: (context) => ImageViewer(
-                              color: Color(int.parse(colors[indexColor])),
+                              color: colors.parseColor(indexColor),
                               imageLinkList: snapshot.data,
                               imageLinkIndex: index,
                             ),
@@ -793,7 +830,7 @@ class _TodoScreenState extends State<TodoScreen>
                           context,
                           MaterialPageRoute(
                             builder: (context) => ImageViewer(
-                              color: Color(int.parse(colors[indexColor])),
+                              color: colors.parseColor(indexColor),
                               imageLinkList: snapshot.data,
                               imageLinkIndex: index,
                             ),
@@ -841,7 +878,7 @@ class _TodoScreenState extends State<TodoScreen>
         height: 100,
         decoration: BoxDecoration(
           border: Border.all(
-            color: Color(int.parse(colors[indexColor])),
+            color: colors.parseColor(indexColor),
             width: 1,
           ),
           color: Colors.white,
@@ -856,7 +893,7 @@ class _TodoScreenState extends State<TodoScreen>
                 opacity: animation.value,
                 child: Icon(
                   Ionicons.ios_arrow_back,
-                  color: Color(int.parse(colors[indexColor])),
+                  color: colors.parseColor(indexColor),
                   size: 50,
                 ),
               ),
@@ -870,7 +907,7 @@ class _TodoScreenState extends State<TodoScreen>
                   duration: Duration(milliseconds: 200),
                   child: Icon(
                     SimpleLineIcons.camera,
-                    color: Color(int.parse(colors[indexColor])),
+                    color: colors.parseColor(indexColor),
                     size: 50,
                   ),
                 ),
@@ -884,7 +921,7 @@ class _TodoScreenState extends State<TodoScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: Color(int.parse(colors[indexColor])),
+            color: colors.parseColor(indexColor),
             width: 1,
           ),
         ),
@@ -926,10 +963,11 @@ class _TodoScreenState extends State<TodoScreen>
               audioCode: _audioCode,
               catagories: _categoryItems,
               priority: _priority,
+              note: _note,
             );
             _todoBloc.add(EditTodoEvent(todo: _currentTask));
             if (await checkConnection())
-              _repository.updateTodoToFirebase(_currentTask);
+              _repository.firebase.updateTodoToFirebase(_currentTask);
 
             Get.back();
           } else {
@@ -937,7 +975,7 @@ class _TodoScreenState extends State<TodoScreen>
           }
         },
         child: AnimatedContainer(
-          color: Color(int.parse(colors[indexColor])),
+          color: colors.parseColor(indexColor),
           duration: Duration(milliseconds: 200),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -999,7 +1037,7 @@ class _TodoScreenState extends State<TodoScreen>
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Color(int.parse(colors[indexColor])),
+                          color: colors.parseColor(indexColor),
                         ),
                         child: Center(
                           child: Text(
@@ -1086,79 +1124,89 @@ class _TodoScreenState extends State<TodoScreen>
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: List.generate(
-        catagories.length,
+    return Column(children: [
+      ...List.generate(
+        catagories.length ~/ 3,
         (index) {
-          String category = catagories[index]["name"];
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _categoryItems[index] = !_categoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _categoryItems[index] == false
-                      ? Color(
-                          int.parse(
-                            colors[indexColor],
-                          ),
-                        )
-                      : TodoColors.scaffoldWhite,
-                  width: 1,
-                ),
-                color: _categoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
+          int startIndex = index * 3;
+          return Padding(
+            padding: EdgeInsets.only(bottom: startIndex == 6 ? 0 : 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                3,
+                (index) {
+                  index += startIndex;
+                  String category = catagories[index]["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(
+                          () => _categoryItems[index] = !_categoryItems[index]);
+                    },
+                    child: AnimatedContainer(
+                      height: 45,
+                      width: (MediaQuery.of(context).size.width - 50) / 3,
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _categoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[indexColor],
+                                  ),
+                                )
+                              : TodoColors.scaffoldWhite,
+                          width: 1,
                         ),
-                      )
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: paddingCategory(),
-              margin: marginCategory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
-                    color: _categoryItems[index] == false
-                        ? Color(
-                            int.parse(
-                              colors[indexColor],
+                        color: _categoryItems[index]
+                            ? Color(
+                                int.parse(
+                                  colors[indexColor],
+                                ),
+                              )
+                            : TodoColors.scaffoldWhite,
+                      ),
+                      padding: paddingCategory(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Icon(
+                            catagories[index]["iconData"],
+                            size: iconSize(),
+                            color: _categoryItems[index] == false
+                                ? Color(
+                                    int.parse(
+                                      colors[indexColor],
+                                    ),
+                                  )
+                                : TodoColors.scaffoldWhite,
+                          ),
+                          Text(
+                            '${category.tr}',
+                            style: TextStyle(
+                              fontFamily: 'Source_Sans_Pro',
+                              fontSize: fontSize(),
+                              color: _categoryItems[index] == false
+                                  ? Color(
+                                      int.parse(
+                                        colors[indexColor],
+                                      ),
+                                    )
+                                  : TodoColors.scaffoldWhite,
                             ),
-                          )
-                        : TodoColors.scaffoldWhite,
-                  ),
-                  Text(
-                    '${category.tr}',
-                    style: TextStyle(
-                      fontFamily: 'Source_Sans_Pro',
-                      fontSize: fontSize(),
-                      color: _categoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           );
         },
       ),
-    );
+    ]);
   }
 
   Widget _buildColorPicker() {
