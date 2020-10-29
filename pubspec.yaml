@@ -80,8 +80,6 @@ flutter:
     - assets/icon/icon(1).png
     - assets/icon/google.jpg
     - assets/splash/
-    - assets/tessdata/
-    - assets/tessdata_config.json
   fonts:
     - family: Alata
       fonts:
