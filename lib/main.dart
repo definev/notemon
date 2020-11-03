@@ -12,8 +12,10 @@ void main() async {
   await Hive.initFlutter();
   await LocalData.init();
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
     runApp(MyApp());
   });
 }

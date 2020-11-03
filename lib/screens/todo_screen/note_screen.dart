@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:gottask/utils/text_editor_utils.dart';
@@ -6,7 +7,7 @@ import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
 import 'package:get/get.dart';
 
-enum NoteMode { ADD, EDIT }
+enum NoteMode { add, edit }
 
 class NoteScreen extends StatefulWidget {
   final List<dynamic> note;
@@ -24,9 +25,7 @@ class NoteScreen extends StatefulWidget {
 class _NoteScreenState extends State<NoteScreen> {
   FocusNode _textEditorNode = FocusNode();
   ZefyrController _textEditorController;
-  ZefyrMode zefyrMode = ZefyrMode.select;
-
-  bool isEdit = false;
+  ZefyrMode zefyrMode;
 
   ZefyrController _setTextEditorController() {
     if (widget.note.length != 0) {
@@ -47,6 +46,7 @@ class _NoteScreenState extends State<NoteScreen> {
   void initState() {
     super.initState();
     _textEditorController = _setTextEditorController();
+    zefyrMode = ZefyrMode.select;
   }
 
   @override
@@ -56,23 +56,31 @@ class _NoteScreenState extends State<NoteScreen> {
         title: Text("Detail note".tr),
         backgroundColor: widget.themeColor,
         actions: [
-          if (widget.noteMode == NoteMode.EDIT)
+          IconButton(
+              icon: Icon(
+                zefyrMode == ZefyrMode.select ? Icons.edit : Icons.lock_rounded,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (zefyrMode == ZefyrMode.select) {
+                    zefyrMode = ZefyrMode.edit;
+                  } else {
+                    zefyrMode = ZefyrMode.select;
+                  }
+                  log(jsonEncode(_textEditorController.document
+                      .toDelta()
+                      .toJson()
+                      .map((e) => e.toJson())
+                      .toList()));
+                });
+              }),
+          if (zefyrMode == ZefyrMode.edit)
             IconButton(
-                icon: Icon(isEdit == false ? Icons.edit : Icons.cancel),
-                onPressed: () {
-                  setState(() {
-                    if (zefyrMode == ZefyrMode.select) {
-                      isEdit = true;
-                      zefyrMode = ZefyrMode.edit;
-                    } else {
-                      isEdit = false;
-                      zefyrMode = ZefyrMode.select;
-                    }
-                  });
-                }),
-          if (isEdit == true)
-            IconButton(
-              icon: Icon(Icons.save_sharp),
+              icon: Icon(
+                widget.noteMode == NoteMode.edit
+                    ? Icons.check
+                    : Icons.save_sharp,
+              ),
               onPressed: () {
                 var data = jsonEncode(_textEditorController.document
                     .toDelta()

@@ -30,3 +30,12 @@ mixin FilterMixin<T extends StatefulWidget> on State<T> {
 
   double fontSize() => 16;
 }
+
+class WidgetInfomation {
+  static Offset position(GlobalKey key) {
+    final RenderBox renderBoxRed = key.currentContext.findRenderObject();
+    final position = renderBoxRed.localToGlobal(Offset.zero);
+    print("POSITION: $position");
+    return position;
+  }
+}

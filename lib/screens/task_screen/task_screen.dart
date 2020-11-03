@@ -108,18 +108,17 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         percent: _percent,
       ),
     );
-    try {
-      final result = await InternetAddress.lookup('google.com');
-
-      if (result.isNotEmpty &&
-          result[0].rawAddress.isNotEmpty &&
-          !(await _repository.firebase.getRemoveAdsState())) {
-        myInterstitial
-          ..load()
-          ..show();
-      }
-    } on SocketException catch (_) {}
     Get.back();
+    final result = await InternetAddress.lookup('google.com')
+        .timeout(Duration(seconds: 10));
+
+    if (result.isNotEmpty &&
+        result[0].rawAddress.isNotEmpty &&
+        !(await _repository.firebase.getRemoveAdsState())) {
+      myInterstitial
+        ..load()
+        ..show();
+    }
     return true;
   }
 

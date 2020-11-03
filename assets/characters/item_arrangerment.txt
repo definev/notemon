@@ -1,0 +1,13 @@
+Shadow,
+Body,
+Skin,
+Hair,
+Hair_Tail,
+Eye,
+Beard,
+Ear,
+Hat,
+Glasses,
+Cloak,
+Tail,
+Item

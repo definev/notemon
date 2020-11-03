@@ -28,7 +28,7 @@ class TodoTable {
   static const MIGRATE_DATABASE_QUERY = '''
     ALTER TABLE $TABLE_NAME
     ADD note TEXT NOT NULL
-    DEFAULT "[]" 
+    DEFAULT '[]'
     WITH VALUES;
   ''';
 

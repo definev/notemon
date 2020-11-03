@@ -1632,7 +1632,7 @@ List<Pokemon> pokedex = [
         "en":
             "Swinub roots for food by rubbing its snout against the ground. Its favorite food is a mushroom that grows under the cover of dead grass. This Pokémon occasionally roots out hot springs.",
         "vi":
-            "Swinub bén rễ tìm thức ăn bằng cách cọ sát mõm của nó vào mặt đất. Thức ăn ưa thích của nó là nấm mọc dưới lớp cỏ chết. Pokémon này thỉnh thoảng bén rễ ra suối nước nóng."
+            "Swinub bén rễ tìm thức ăn bằng cách cọ sát mõm của nó vào mặt đất. Thức ăn ưa thích của nó là nấm mọc dưới lớp cỏ. Pokémon này thỉnh thoảng bén rễ ra suối nước nóng."
       }
     },
   ),

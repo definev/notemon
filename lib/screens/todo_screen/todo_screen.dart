@@ -68,7 +68,8 @@ class _TodoScreenState extends State<TodoScreen>
 
   List<Uint8List> imageFileList = [];
   List<String> images = [];
-  List<bool> _categoryItems = List.generate(9, (index) => false);
+  List<bool> _categoryItems =
+      List.generate(catagories.length, (index) => false);
 
   String _content;
   final StreamController<String> _contentStreamController =
@@ -337,7 +338,7 @@ class _TodoScreenState extends State<TodoScreen>
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteScreen(
-                    noteMode: NoteMode.EDIT,
+                    noteMode: NoteMode.edit,
                     note: _note.parseNote(),
                     themeColor: colors.parseColor(indexColor),
                     onNoteSaved: (String newNote) => _note = newNote,

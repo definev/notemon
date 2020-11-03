@@ -1,7 +1,7 @@
 name: gottask
 description: A new Flutter project.
 
-version: 2.1.0+1
+version: 2.1.0+101
 
 environment:
   sdk: ">=2.9.0 <3.0.0"
@@ -50,6 +50,7 @@ dependencies:
   hive:
   hive_flutter:
   zefyr: ^0.12.0
+  image: ^2.1.18
 
 flutter_icons:
   android: true
@@ -80,6 +81,42 @@ flutter:
     - assets/icon/icon(1).png
     - assets/icon/google.jpg
     - assets/splash/
+    - assets/characters/Beard/rare/
+    - assets/characters/Beard/superrare/
+    - assets/characters/Beard/trivial/
+    - assets/characters/Body/rare/
+    - assets/characters/Body/superrare/
+    - assets/characters/Body/trivial/
+    - assets/characters/Cloak/rare/
+    - assets/characters/Cloak/superrare/
+    - assets/characters/Cloak/trivial/
+    - assets/characters/Ear/rare/
+    - assets/characters/Ear/superrare/
+    - assets/characters/Ear/trivial/
+    - assets/characters/Eye/rare/
+    - assets/characters/Eye/superrare/
+    - assets/characters/Eye/trivial/
+    - assets/characters/Glasses/rare/
+    - assets/characters/Glasses/superrare/
+    - assets/characters/Glasses/trivial/
+    - assets/characters/Hat/rare/
+    - assets/characters/Hat/superrare/
+    - assets/characters/Hat/trivial/
+    - assets/characters/Item/rare/
+    - assets/characters/Item/superrare/
+    - assets/characters/Item/trivial/
+    - assets/characters/Tail/rare/
+    - assets/characters/Tail/superrare/
+    - assets/characters/Tail/trivial/
+    - assets/characters/Skin/rare/
+    - assets/characters/Skin/superrare/
+    - assets/characters/Skin/trivial/
+    - assets/characters/Skin/rare/
+    - assets/characters/Shadow/
+    - assets/characters/Hair_Men/
+    - assets/characters/Hair_Men_Tail/
+    - assets/characters/Hair_Women/
+    - assets/characters/Hair_Women_Tail/
   fonts:
     - family: Alata
       fonts:

@@ -131,8 +131,8 @@ class Todo {
 extension TodoExt on String {
   List<dynamic> parseNote() {
     if (this == "[]") return [];
-
     var data = jsonDecode(this);
+
     return data;
   }
 }

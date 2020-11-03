@@ -14,9 +14,11 @@ import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/component.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
-import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
+import 'package:gottask/screens/character_screen/character_screen.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
 import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
+import 'package:gottask/screens/todo_screen/template_todo_screen.dart';
+import 'package:gottask/screens/todo_screen/widgets/add_dialog.dart';
 import 'package:gottask/utils/helper.dart';
 import 'package:gottask/utils/utils.dart';
 import 'package:intl/intl.dart';
@@ -554,12 +556,14 @@ class _HomeScreenState extends State<HomeScreen>
                             onTap: () async {
                               await compareTime();
 
-                              Get.to(
-                                BlocProvider<HandSideBloc>.value(
-                                  value: HandSideBloc(),
-                                  child: AllPokemonScreen(currentPokemon: 0),
-                                ),
-                              );
+                              Get.to(CharacterScreen());
+
+                              // Get.to(
+                              //   BlocProvider<HandSideBloc>.value(
+                              //     value: HandSideBloc(),
+                              //     child: AllPokemonScreen(currentPokemon: 0),
+                              //   ),
+                              // );
                             },
                             child: Material(
                               borderRadius: BorderRadius.circular(30),
@@ -594,14 +598,16 @@ class _HomeScreenState extends State<HomeScreen>
                           return GestureDetector(
                             onTap: () async {
                               await compareTime();
-                              Get.to(
-                                BlocProvider<HandSideBloc>.value(
-                                  value: HandSideBloc(),
-                                  child: AllPokemonScreen(
-                                    currentPokemon: _favouritePokemon.pokemon,
-                                  ),
-                                ),
-                              );
+                              Get.to(CharacterScreen());
+
+                              // Get.to(
+                              //   BlocProvider<HandSideBloc>.value(
+                              //     value: HandSideBloc(),
+                              //     child: AllPokemonScreen(
+                              //       currentPokemon: _favouritePokemon.pokemon,
+                              //     ),
+                              //   ),
+                              // );
                             },
                             child: Material(
                               borderRadius: BorderRadius.circular(30),
@@ -620,12 +626,14 @@ class _HomeScreenState extends State<HomeScreen>
                           return GestureDetector(
                             onTap: () async {
                               await compareTime();
-                              Get.to(
-                                BlocProvider<HandSideBloc>.value(
-                                  value: HandSideBloc(),
-                                  child: AllPokemonScreen(currentPokemon: 0),
-                                ),
-                              );
+                              Get.to(CharacterScreen());
+
+                              // Get.to(
+                              //   BlocProvider<HandSideBloc>.value(
+                              //     value: HandSideBloc(),
+                              //     child: AllPokemonScreen(currentPokemon: 0),
+                              //   ),
+                              // );
                             },
                             child: Material(
                               borderRadius: BorderRadius.circular(30),
@@ -787,15 +795,16 @@ class _HomeScreenState extends State<HomeScreen>
                   return GestureDetector(
                     onTap: () async {
                       await compareTime();
+                      Get.to(CharacterScreen());
 
-                      Get.to(
-                        BlocProvider<HandSideBloc>.value(
-                          value: HandSideBloc(),
-                          child: AllPokemonScreen(
-                            currentPokemon: index,
-                          ),
-                        ),
-                      );
+                      // Get.to(
+                      //   BlocProvider<HandSideBloc>.value(
+                      //     value: HandSideBloc(),
+                      //     child: AllPokemonScreen(
+                      //       currentPokemon: index,
+                      //     ),
+                      //   ),
+                      // );
                     },
                     child: Container(
                       width: 56.2,
@@ -1002,20 +1011,11 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
-        Container(
-          width: 25,
-          height: 25,
-          margin: const EdgeInsets.only(right: 15),
-          child: RawMaterialButton(
-            fillColor: TodoColors.deepPurple,
-            shape: const CircleBorder(),
-            elevation: 0.5,
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: _modalBottomSheetMenu,
-          ),
+        AddButton(
+          onCustomAdd: _modalBottomSheetMenu,
+          onTemplateAdd: () {
+            Get.to(TemplateTodoScreen());
+          },
         ),
       ],
     );
@@ -1221,20 +1221,13 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
-        Container(
-          width: 25,
-          height: 25,
-          margin: const EdgeInsets.only(right: 15),
-          child: RawMaterialButton(
-            fillColor: TodoColors.deepPurple,
-            shape: const CircleBorder(),
-            elevation: 0.5,
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: () => Get.to(AddTaskScreen()),
-          ),
+        AddButton(
+          onCustomAdd: () {
+            Get.to(AddTaskScreen());
+          },
+          onTemplateAdd: () {
+            Get.to(TemplateTodoScreen());
+          },
         ),
       ],
     );
@@ -1397,14 +1390,15 @@ class _HomeScreenState extends State<HomeScreen>
                               return GestureDetector(
                                 onTap: () async {
                                   await compareTime();
-                                  Get.to(
-                                    BlocProvider<HandSideBloc>.value(
-                                      value: HandSideBloc(),
-                                      child: AllPokemonScreen(
-                                        currentPokemon: state.pokemon,
-                                      ),
-                                    ),
-                                  );
+                                  Get.to(CharacterScreen());
+                                  // Get.to(
+                                  //   BlocProvider<HandSideBloc>.value(
+                                  //     value: HandSideBloc(),
+                                  //     child: AllPokemonScreen(
+                                  //       currentPokemon: state.pokemon,
+                                  //     ),
+                                  //   ),
+                                  // );
                                 },
                                 child: Material(
                                   borderRadius: BorderRadius.circular(30),
@@ -1424,13 +1418,14 @@ class _HomeScreenState extends State<HomeScreen>
                                 onTap: () async {
                                   await compareTime();
 
-                                  Get.to(
-                                    BlocProvider<HandSideBloc>.value(
-                                      value: HandSideBloc(),
-                                      child:
-                                          AllPokemonScreen(currentPokemon: 0),
-                                    ),
-                                  );
+                                  Get.to(CharacterScreen());
+                                  // Get.to(
+                                  //   BlocProvider<HandSideBloc>.value(
+                                  //     value: HandSideBloc(),
+                                  //     child:
+                                  //         AllPokemonScreen(currentPokemon: 0),
+                                  //   ),
+                                  // );
                                 },
                                 child: Material(
                                   borderRadius: BorderRadius.circular(30),
@@ -1543,14 +1538,15 @@ class _HomeScreenState extends State<HomeScreen>
                         onTap: () async {
                           await compareTime();
 
-                          Get.to(
-                            BlocProvider<HandSideBloc>.value(
-                              value: HandSideBloc(),
-                              child: AllPokemonScreen(
-                                currentPokemon: index,
-                              ),
-                            ),
-                          );
+                          Get.to(CharacterScreen());
+                          // Get.to(
+                          //   BlocProvider<HandSideBloc>.value(
+                          //     value: HandSideBloc(),
+                          //     child: AllPokemonScreen(
+                          //       currentPokemon: index,
+                          //     ),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           width: 56.2,
@@ -1983,5 +1979,47 @@ class _HomeScreenState extends State<HomeScreen>
       return TodoColors.massiveRed;
     } else
       return TodoColors.blueAqua;
+  }
+}
+
+class AddButton extends StatelessWidget {
+  final Function() onTemplateAdd;
+  final Function() onCustomAdd;
+  final GlobalKey<State<StatefulWidget>> _addKey =
+      GlobalKey<State<StatefulWidget>>();
+
+  AddButton({Key key, @required this.onTemplateAdd, @required this.onCustomAdd})
+      : super(key: key);
+
+  void _addFunc() {
+    Get.dialog(
+      AddDialog(
+        offset: WidgetInfomation.position(_addKey),
+        onCustomAdd: onCustomAdd,
+        onTemplateAdd: onTemplateAdd,
+      ),
+      barrierColor: Colors.black12,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: _addKey,
+      width: 25,
+      height: 25,
+      margin: const EdgeInsets.only(right: 15),
+      child: RawMaterialButton(
+        fillColor: TodoColors.deepPurple,
+        shape: const CircleBorder(),
+        elevation: 0.5,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        onLongPress: _addFunc,
+        onPressed: _addFunc,
+      ),
+    );
   }
 }

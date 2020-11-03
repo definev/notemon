@@ -11,6 +11,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/components/image_viewer.dart';
 import 'package:gottask/models/model.dart';
+import 'package:gottask/models/template_todo.dart';
 import 'package:gottask/models/todo.dart';
 import 'package:gottask/repository/firestore/firestore_methods.dart';
 import 'package:gottask/repository/repository.dart';
@@ -25,6 +26,9 @@ import 'package:uuid/uuid.dart';
 import 'package:get/get.dart';
 
 class AddTodoScreen extends StatefulWidget {
+  final TemplateTodo templateTodo;
+
+  const AddTodoScreen({Key key, this.templateTodo}) : super(key: key);
   @override
   _AddTodoScreenState createState() => _AddTodoScreenState();
 }
@@ -49,7 +53,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
   PlayerState _playerState = PlayerState.READY;
   List<Uint8List> imageFileList = [];
   List<String> images = [];
-  List<bool> _categoryItems = List.generate(9, (index) => false);
+  List<bool> _categoryItems =
+      List.generate(catagories.length, (index) => false);
 
   String _audioPath = '';
   String _audioCode = '';
@@ -271,6 +276,14 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             setState(() {});
           });
 
+    if (widget.templateTodo != null) {
+      _categoryItems = widget.templateTodo.categoryItems ??
+          List.generate(catagories.length, (index) => false);
+      indexColor = widget.templateTodo.color ?? 0;
+      _note = widget.templateTodo.note.vi ?? "[]";
+      _priority = widget.templateTodo.priorityState ?? PriorityState.Low;
+    }
+
     _init();
   }
 
@@ -330,7 +343,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteScreen(
-                    noteMode: NoteMode.ADD,
+                    noteMode: NoteMode.add,
                     note: _note.parseNote(),
                     themeColor: colors.parseColor(indexColor),
                     onNoteSaved: (String newNote) => _note = newNote,
