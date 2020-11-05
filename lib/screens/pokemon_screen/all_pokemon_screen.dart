@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:after_layout/after_layout.dart';
 import 'package:audioplayers/audio_cache.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:gottask/bloc/bloc.dart';
@@ -33,282 +29,25 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
         SingleTickerProviderStateMixin {
   int _currentPokemon = 0;
   int _currentStarPoint = 0;
-  int _amount = 5;
 
   bool _isInit = false;
-  bool _isLoaded = false;
-  bool _isConnect = false;
-  bool _isRemoveAds = true;
 
   ScrollController _scrollController = FixedExtentScrollController();
   HandSide _currentHandside;
 
   AllPokemonBloc _allPokemonBloc;
   StarBloc _starBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   FavouritePokemonBloc _favouritePokemonBloc;
   HandSideBloc _handsideBloc;
-
-  int _videoWatched = 0;
 
   AnimationController _animationController;
 
   getCurrentHandside() async => _currentHandside = await currentHandSide();
 
-  adsButton() =>
-      (_isConnect == true && _isLoaded == true && _isRemoveAds == false)
-          ? _adsContainer()
-          : Container();
-
-  SafeArea _adsContainer() => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: GestureDetector(
-            onTap: () async {
-              await _showAdsWarning();
-            },
-            child: Material(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 5,
-                      color: Colors.orange[50],
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 10,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                          color: TodoColors.scaffoldWhite,
-                        ),
-                        child: ShaderMask(
-                          shaderCallback: (rect) {
-                            return LinearGradient(
-                              tileMode: TileMode.repeated,
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              stops: [0.1, 0.3, 1],
-                              colors: <Color>[
-                                Colors.white,
-                                tagColor['Flying'],
-                                tagColor['Water'],
-                              ],
-                            ).createShader(rect);
-                          },
-                          blendMode: BlendMode.modulate,
-                          child: Text(
-                            'Ads',
-                            style: kNormalSuperSmallStyle.copyWith(
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        '${"You can watch ads for support me".tr} ^^'.tr,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: MediaQuery.of(context).size.width / 38,
-                        ),
-                      ),
-                      ShaderMask(
-                        shaderCallback: (rect) {
-                          return LinearGradient(
-                            tileMode: TileMode.repeated,
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: <Color>[
-                              Colors.yellow,
-                              Colors.deepOrange.shade500,
-                              Colors.yellow,
-                            ],
-                          ).createShader(rect);
-                        },
-                        blendMode: BlendMode.modulate,
-                        child: Icon(
-                          Icons.play_circle_outline,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-  _showAdsWarning() async => showDialog(
-        context: context,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Center(
-            child: Container(
-              height: 200,
-              width: 400,
-              decoration: BoxDecoration(
-                color: TodoColors.scaffoldWhite,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  const SizedBox(height: 20),
-                  Text(
-                    'You will get $_amount stars!',
-                    style: kBigTitleStyle.copyWith(fontWeight: FontWeight.w200),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width > 200
-                                ? 130
-                                : 100,
-                            margin: const EdgeInsets.only(
-                              left: 10,
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color:
-                                  tagColor[pokedex[_currentPokemon].type.en[0]],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Cancel'.tr,
-                                style:
-                                    kTitleStyle.copyWith(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            try {
-                              final result =
-                                  await InternetAddress.lookup('google.com');
-                              if (result.isNotEmpty &&
-                                  result[0].rawAddress.isNotEmpty) {
-                                RewardedVideoAd.instance.show();
-                              }
-                            } on SocketException catch (_) {} on PlatformException catch (_) {}
-
-                            Get.back();
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width > 200
-                                ? 130
-                                : 80,
-                            margin: const EdgeInsets.only(right: 10),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color:
-                                  tagColor[pokedex[_currentPokemon].type.en[0]],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Watch ads'.tr,
-                                style:
-                                    kTitleStyle.copyWith(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-  checkConnect() async {
-    _videoWatched = await getVideoReward();
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        if (mounted) setState(() => _isConnect = true);
-      }
-    } on SocketException catch (_) {
-      if (mounted) setState(() => _isConnect = false);
-    }
-  }
-
-  rewardedVideoAdSetup() async {
-    if (await _repository.getRemoveAdsState()) {
-      FirebaseAdMob.instance.initialize(appId: appId);
-
-      _isLoaded = await getLoadAdsInfirst();
-      RewardedVideoAd.instance.listener =
-          (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
-        // print('Reward video event: $event');
-
-        if (event == RewardedVideoAdEvent.rewarded) {
-          _starBloc.add(AddStarEvent(point: _amount));
-          updateVideoReward();
-          setState(() {
-            _currentStarPoint += _amount;
-            _videoWatched++;
-          });
-        }
-
-        if (event == RewardedVideoAdEvent.failedToLoad && mounted) {
-          setLoadAdsInfirst(false);
-        }
-
-        if (event == RewardedVideoAdEvent.loaded) {
-          setLoadAdsInfirst(true);
-          if (mounted) setState(() => _isLoaded = true);
-        }
-
-        if (event == RewardedVideoAdEvent.closed && mounted) {
-          setState(() => _isLoaded = false);
-          RewardedVideoAd.instance.load(
-            adUnitId: rewardId,
-            targetingInfo: targetingInfo,
-          );
-        }
-      };
-      if (_isLoaded == false) {
-        RewardedVideoAd.instance.load(
-          adUnitId: rewardId,
-          targetingInfo: targetingInfo,
-        );
-      }
-    }
-  }
-
-  _getRemoveAds() async => _isRemoveAds = await _repository.getRemoveAdsState();
-
   @override
   void initState() {
     super.initState();
-    rewardedVideoAdSetup();
     _currentPokemon = widget.currentPokemon;
     _animationController = AnimationController(
       vsync: this,
@@ -328,7 +67,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
           ),
         );
         if (await checkConnection()) {
-          _repository.updatePokemonStateToFirebase(PokemonState(
+          _repository.firebase.updatePokemonStateToFirebase(PokemonState(
             name: pokedex[_currentPokemon].name,
             state: 1,
           ));
@@ -338,7 +77,6 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
       }
       setState(() {});
     });
-    _getRemoveAds();
   }
 
   @override
@@ -357,11 +95,11 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
       _starBloc = findBloc<StarBloc>();
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
       _handsideBloc = findBloc<HandSideBloc>();
-      _repository = findBloc<FirebaseRepository>();
+      _repository = findBloc<FirebaseApi>();
       _allPokemonBloc.add(InitAllPokemonEvent());
       _handsideBloc.add(InitHandSide());
       getCurrentHandside();
-      checkConnect();
+
       _currentStarPoint = _starBloc.currentStarPoint;
       _isInit = true;
     }
@@ -444,7 +182,6 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            if (_isConnect == true && _videoWatched < 4) adsButton(),
             SizedBox(height: MediaQuery.of(context).size.height / 7 - 20),
             Center(
               child: Image.asset(
@@ -550,7 +287,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                   children: <Widget>[
                     Text(
                       'Hold to buy'.tr,
-                      style: kNormalSmallStyle.copyWith(
+                      style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                         color: _currentStarPoint >= 30
                             ? TodoColors.deepPurple
                             : Colors.grey,
@@ -561,7 +298,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       children: [
                         Text(
                           '30 ',
-                          style: kNormalSmallStyle.copyWith(
+                          style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                             color: _currentStarPoint >= 30
                                 ? TodoColors.deepPurple
                                 : Colors.grey,
@@ -688,8 +425,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         Material(
                           child: Text(
                             _allPokemonBloc.pokemonStateList.collectedPokemon(),
-                            style: kNormalSuperSmallStyle.copyWith(
-                                color: TodoColors.deepPurple),
+                            style: NotemonTextStyle.kNormalSuperSmallStyle
+                                .copyWith(color: TodoColors.deepPurple),
                           ),
                         ),
                       GestureDetector(
@@ -711,8 +448,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         Material(
                           child: Text(
                             _allPokemonBloc.pokemonStateList.collectedPokemon(),
-                            style: kNormalSuperSmallStyle.copyWith(
-                                color: TodoColors.deepPurple),
+                            style: NotemonTextStyle.kNormalSuperSmallStyle
+                                .copyWith(color: TodoColors.deepPurple),
                           ),
                         ),
                     ],
@@ -739,7 +476,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           Material(
                             child: Text(
                               '${_starBloc.addStar - _starBloc.loseStar} ',
-                              style: kNormalSmallStyle,
+                              style: NotemonTextStyle.kNormalSmallStyle,
                             ),
                           ),
                           Image.asset(
@@ -789,7 +526,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
               onTap: () {
                 _favouritePokemonBloc
                     .add(UpdateFavouritePokemonEvent(_currentPokemon));
-                _repository.updateFavouritePokemon(_currentPokemon);
+                _repository.firebase.updateFavouritePokemon(_currentPokemon);
                 setState(() {
                   _favouritePokemonBloc.favouritePokemon = _currentPokemon;
                 });
@@ -803,7 +540,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
           : GestureDetector(
               onTap: () {
                 _favouritePokemonBloc.add(UpdateFavouritePokemonEvent(-1));
-                _repository.updateFavouritePokemon(-1);
+                _repository.firebase.updateFavouritePokemon(-1);
                 setState(() {
                   _favouritePokemonBloc.favouritePokemon = -1;
                 });

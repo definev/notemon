@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gottask/bloc/bloc.dart';
+import 'package:gottask/repository/auth/auth_services.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/sign_in_sign_up_screen/sign_up_screen.dart';
 import 'package:gottask/utils/constant.dart';
@@ -18,7 +19,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   AuthServices _authServices = AuthServices();
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   bool _isLoading = false;
 
   TextEditingController _emailController = TextEditingController();
@@ -31,20 +32,20 @@ class _SignInScreenState extends State<SignInScreen> {
 
   _loginSuccess(BuildContext context, FirebaseUser user) async {
     if (user != null) {
-      _repository.setUser(user);
-      await _repository.getAllTodoAndLoadToDb(
+      _repository.firebase.setUser(user);
+      await _repository.firebase.getAllTodoAndLoadToDb(
         Provider.of<TodoBloc>(context, listen: false),
       );
-      await _repository.getAllTaskAndLoadToDb(
+      await _repository.firebase.getAllTaskAndLoadToDb(
         Provider.of<TaskBloc>(context, listen: false),
       );
-      await _repository.getAllPokemonStateAndLoadToDb(
+      await _repository.firebase.getAllPokemonStateAndLoadToDb(
         Provider.of<AllPokemonBloc>(context, listen: false),
       );
-      await _repository.getFavouritePokemonStateAndLoadToDb(
+      await _repository.firebase.getFavouritePokemonStateAndLoadToDb(
         Provider.of<FavouritePokemonBloc>(context, listen: false),
       );
-      await _repository.getStarpoint(
+      await _repository.firebase.getStarpoint(
         Provider.of<StarBloc>(context, listen: false),
       );
       updateLoginState(true);
@@ -56,7 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _repository = Provider.of<FirebaseRepository>(context);
+    _repository = Provider.of<FirebaseApi>(context);
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       body: Stack(
@@ -91,6 +92,18 @@ class _SignInScreenState extends State<SignInScreen> {
                                   )),
                               padding: const EdgeInsets.only(left: 50),
                               margin: const EdgeInsets.only(left: 10),
+<<<<<<< HEAD
+=======
+                              // child: Center(
+                              //   child: Text(
+                              //     "Notemon",
+                              //     style: NotemonTextStyle.kBigTitleStyle.copyWith(
+                              //       fontFamily: "Tomorrow",
+                              //       color: Colors.white,
+                              //     ),
+                              //   ),
+                              // ),
+>>>>>>> aaa7cce12e505771694cdb5ee22cfedbc72817a8
                               child: Center(
                                 child: TypewriterAnimatedTextKit(
                                   text: [
@@ -99,7 +112,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                     "Help you focus.".tr,
                                     "Notemon",
                                   ],
-                                  textStyle: kBigTitleStyle.copyWith(
+                                  textStyle:
+                                      NotemonTextStyle.kBigTitleStyle.copyWith(
                                     fontFamily: "Tomorrow",
                                     color: Colors.white,
                                   ),
@@ -170,16 +184,19 @@ class _SignInScreenState extends State<SignInScreen> {
                                     onFieldSubmitted: (_) =>
                                         _passwordFocusNode.requestFocus(),
                                     cursorColor: TodoColors.deepPurple,
-                                    style: kMediumStyle,
+                                    style: NotemonTextStyle.kMediumStyle,
                                     decoration: InputDecoration(
-                                      errorStyle: kTinySmallStyle.copyWith(
+                                      errorStyle: NotemonTextStyle
+                                          .kTinySmallStyle
+                                          .copyWith(
                                         color: Colors.red,
                                         fontSize: 10,
                                       ),
                                       labelText: 'Email',
-                                      labelStyle: kMediumStyle,
+                                      labelStyle: NotemonTextStyle.kMediumStyle,
                                       hintText: 'Your email'.tr,
-                                      hintStyle: kTinySmallStyle,
+                                      hintStyle:
+                                          NotemonTextStyle.kTinySmallStyle,
                                     ),
                                   ),
                                 ),
@@ -236,16 +253,19 @@ class _SignInScreenState extends State<SignInScreen> {
                                     },
                                     obscureText: true,
                                     cursorColor: TodoColors.deepPurple,
-                                    style: kMediumStyle,
+                                    style: NotemonTextStyle.kMediumStyle,
                                     decoration: InputDecoration(
-                                      errorStyle: kTinySmallStyle.copyWith(
+                                      errorStyle: NotemonTextStyle
+                                          .kTinySmallStyle
+                                          .copyWith(
                                         color: Colors.red,
                                         fontSize: 10,
                                       ),
                                       labelText: 'Password'.tr,
-                                      labelStyle: kMediumStyle,
+                                      labelStyle: NotemonTextStyle.kMediumStyle,
                                       hintText: 'Your password'.tr,
-                                      hintStyle: kTinySmallStyle,
+                                      hintStyle:
+                                          NotemonTextStyle.kTinySmallStyle,
                                     ),
                                   ),
                                 ),
@@ -313,8 +333,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                     child: Center(
                                       child: Text(
                                         'Login'.tr,
-                                        style: kMediumStyle.copyWith(
-                                            color: Colors.white),
+                                        style: NotemonTextStyle.kMediumStyle
+                                            .copyWith(color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -393,7 +413,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                         child: Text(
                           'Sign up'.tr,
-                          style: kTitleStyle.copyWith(
+                          style: NotemonTextStyle.kTitleStyle.copyWith(
                             color: TodoColors.spaceGrey,
                             decoration: TextDecoration.underline,
                           ),

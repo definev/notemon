@@ -76,8 +76,8 @@ class _PokemonInfoState extends State<PokemonInfo> {
                     alignment: FractionalOffset.centerRight,
                     child: Text(
                       ' ${pokedex[widget.currentPokemon].getInfoByType(type)}',
-                      style: kNormalSuperSmallStyle.copyWith(
-                          color: tagColor['Water']),
+                      style: NotemonTextStyle.kNormalSuperSmallStyle
+                          .copyWith(color: tagColor['Water']),
                     ),
                   ),
                 ),
@@ -94,7 +94,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
       padding: const EdgeInsets.only(left: 15),
       child: Text(
         text.tr,
-        style: kTitleStyle.copyWith(
+        style: NotemonTextStyle.kTitleStyle.copyWith(
           color: Colors.black,
           fontWeight: FontWeight.w500,
         ),
@@ -293,7 +293,7 @@ class _PokemonInfoState extends State<PokemonInfo> {
                   Get.locale.languageCode == 'en'
                       ? pokedex[widget.currentPokemon].introduction.en
                       : pokedex[widget.currentPokemon].introduction.vi,
-                  style: kNormalSmallStyle.copyWith(
+                  style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                     fontFamily: 'Source_Sans_Pro',
                     fontWeight: FontWeight.w400,
                   ),

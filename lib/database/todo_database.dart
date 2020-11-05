@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 
 class TodoDatabase {
   static const DB_NAME = 'tododb.db';
-  static const DB_VERSION = 1;
+  static const DB_VERSION = 2;
   static Database _database;
 
   TodoDatabase._internal();
@@ -16,7 +16,9 @@ class TodoDatabase {
     TodoTable.CREATE_TABLE_QUERY,
     TodoTable.CREATE_DELETE_TABLE_QUERY
   ];
-  static const migrationScripts = [];
+  static const migrationScripts = [
+    TodoTable.MIGRATE_DATABASE_QUERY,
+  ];
 
   init() async {
     _database = await openDatabase(

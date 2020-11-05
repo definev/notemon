@@ -19,18 +19,7 @@ mixin FilterMixin<T extends StatefulWidget> on State<T> {
   }
 
   EdgeInsets marginCategory(int index) {
-    if (index >= 6) {
-      if (index % 3 == 2) {
-        return null;
-      } else {
-        return EdgeInsets.only(right: 10);
-      }
-    }
-    if (index % 3 == 2) {
-      return EdgeInsets.only(bottom: 10);
-    } else {
-      return EdgeInsets.only(right: 10, bottom: 10);
-    }
+    return EdgeInsets.only(bottom: 10);
   }
 
   EdgeInsets paddingCategory() {
@@ -40,4 +29,13 @@ mixin FilterMixin<T extends StatefulWidget> on State<T> {
   double iconSize() => 16;
 
   double fontSize() => 16;
+}
+
+class WidgetInfomation {
+  static Offset position(GlobalKey key) {
+    final RenderBox renderBoxRed = key.currentContext.findRenderObject();
+    final position = renderBoxRed.localToGlobal(Offset.zero);
+    print("POSITION: $position");
+    return position;
+  }
 }

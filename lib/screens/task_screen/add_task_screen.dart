@@ -33,14 +33,14 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       StreamController<List<String>>();
 
   TaskBloc _taskBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
 
   final TextEditingController _achieveTextController = TextEditingController();
   final TextEditingController _taskNameTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     _taskBloc = findBloc<TaskBloc>();
-    _repository = findBloc<FirebaseRepository>();
+    _repository = findBloc<FirebaseApi>();
 
     return GestureDetector(
       onTap: () {
@@ -51,11 +51,11 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       },
       child: Theme(
         data: Theme.of(context)
-            .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
+            .copyWith(accentColor: colors.parseColor(indexColor)),
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            backgroundColor: Color(int.parse(colors[indexColor])),
+            backgroundColor: colors.parseColor(indexColor),
             title: Text(
               'Add Task'.tr,
               style: const TextStyle(
@@ -67,7 +67,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
           bottomNavigationBar: GestureDetector(
             child: AnimatedContainer(
               duration: Duration(milliseconds: 200),
-              color: Color(int.parse(colors[indexColor])),
+              color: colors.parseColor(indexColor),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -79,7 +79,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     ),
                     Text(
                       ' ${"Add Task".tr.capitalize}',
-                      style: kNormalStyle.copyWith(color: Colors.white),
+                      style: NotemonTextStyle.kNormalStyle
+                          .copyWith(color: Colors.white),
                     ),
                   ],
                 ),
@@ -113,7 +114,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                 );
                 _taskBloc.add(AddTaskEvent(task: _task));
                 if (await checkConnection()) {
-                  _repository.updateTaskToFirebase(_task);
+                  _repository.firebase.updateTaskToFirebase(_task);
                 }
                 Get.back();
               }
@@ -172,7 +173,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             return Center(
               child: Text(
                 'Empty achieve.'.tr,
-                style: kNormalSmallStyle,
+                style: NotemonTextStyle.kNormalSmallStyle,
               ),
             );
           }
@@ -180,7 +181,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             return Center(
               child: Text(
                 'Empty achieve.'.tr,
-                style: kNormalSmallStyle,
+                style: NotemonTextStyle.kNormalSmallStyle,
               ),
             );
           }
@@ -206,7 +207,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Color(int.parse(colors[indexColor])),
+                  color: colors.parseColor(indexColor),
                   width: 1.2,
                 ),
               ),
@@ -217,11 +218,12 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     vertical: 5,
                   ),
                   labelText: 'Add achievement'.tr,
-                  labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+                  labelStyle: NotemonTextStyle.kNormalStyle
+                      .copyWith(color: Colors.grey),
                   border: InputBorder.none,
                 ),
                 controller: _achieveTextController,
-                style: kNormalStyle.copyWith(
+                style: NotemonTextStyle.kNormalStyle.copyWith(
                   fontFamily: "Source_Sans_Pro",
                 ),
               ),
@@ -241,7 +243,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             },
             child: Material(
               elevation: 1,
-              color: Color(int.parse(colors[indexColor])),
+              color: colors.parseColor(indexColor),
               borderRadius: BorderRadiusDirectional.circular(10),
               child: Container(
                 height: 50,
@@ -263,7 +265,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 10),
       child: Text(
         title.tr,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -274,7 +276,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(int.parse(colors[indexColor])),
+          color: colors.parseColor(indexColor),
           width: 1,
         ),
       ),
@@ -282,7 +284,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(10),
           labelText: 'Task name'.tr,
-          labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+          labelStyle:
+              NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey),
           border: InputBorder.none,
         ),
         controller: _taskNameTextController,
@@ -330,7 +333,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         child: Center(
           child: Text(
             priorityList[value].tr,
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value]),
@@ -353,79 +356,89 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: List.generate(
-        catagories.length,
+    return Column(children: [
+      ...List.generate(
+        catagories.length ~/ 3,
         (index) {
-          String name = catagories[index]["name"];
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _categoryItems[index] = !_categoryItems[index];
-              });
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _categoryItems[index] == false
-                      ? Color(
-                          int.parse(
-                            colors[indexColor],
-                          ),
-                        )
-                      : TodoColors.scaffoldWhite,
-                  width: 1,
-                ),
-                color: _categoryItems[index]
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
+          int startIndex = index * 3;
+          return Padding(
+            padding: EdgeInsets.only(bottom: startIndex == 6 ? 0 : 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                3,
+                (index) {
+                  index += startIndex;
+                  String category = catagories[index]["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(
+                          () => _categoryItems[index] = !_categoryItems[index]);
+                    },
+                    child: AnimatedContainer(
+                      height: 45,
+                      width: (MediaQuery.of(context).size.width - 50) / 3,
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _categoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[indexColor],
+                                  ),
+                                )
+                              : TodoColors.scaffoldWhite,
+                          width: 1,
                         ),
-                      )
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: paddingCategory(),
-              margin: marginCategory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
-                    color: _categoryItems[index] == false
-                        ? Color(
-                            int.parse(
-                              colors[indexColor],
+                        color: _categoryItems[index]
+                            ? Color(
+                                int.parse(
+                                  colors[indexColor],
+                                ),
+                              )
+                            : TodoColors.scaffoldWhite,
+                      ),
+                      padding: paddingCategory(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Icon(
+                            catagories[index]["iconData"],
+                            size: iconSize(),
+                            color: _categoryItems[index] == false
+                                ? Color(
+                                    int.parse(
+                                      colors[indexColor],
+                                    ),
+                                  )
+                                : TodoColors.scaffoldWhite,
+                          ),
+                          Text(
+                            '${category.tr}',
+                            style: TextStyle(
+                              fontFamily: 'Source_Sans_Pro',
+                              fontSize: fontSize(),
+                              color: _categoryItems[index] == false
+                                  ? Color(
+                                      int.parse(
+                                        colors[indexColor],
+                                      ),
+                                    )
+                                  : TodoColors.scaffoldWhite,
                             ),
-                          )
-                        : TodoColors.scaffoldWhite,
-                  ),
-                  Text(
-                    '${name.tr}',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: fontSize(),
-                      color: _categoryItems[index] == false
-                          ? Color(
-                              int.parse(
-                                colors[indexColor],
-                              ),
-                            )
-                          : TodoColors.scaffoldWhite,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           );
         },
       ),
-    );
+    ]);
   }
 
   Future _buildWarningDialog(BuildContext context) {
@@ -457,7 +470,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                 ),
                 Text(
                   'Please fill in the blank.'.tr,
-                  style: kTitleStyle,
+                  style: NotemonTextStyle.kTitleStyle,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -472,12 +485,13 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Color(int.parse(colors[indexColor])),
+                        color: colors.parseColor(indexColor),
                       ),
                       child: Center(
                         child: Text(
                           'Cancel'.tr,
-                          style: kTitleStyle.copyWith(color: Colors.white),
+                          style: NotemonTextStyle.kTitleStyle
+                              .copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -498,7 +512,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Color(int.parse(colors[indexColor])).withOpacity(0.05),
+              color: colors.parseColor(indexColor).withOpacity(0.05),
               blurRadius: 5,
             ),
           ],
@@ -512,7 +526,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             children: <Widget>[
               Text(
                 StringFormatter.format(snapshot.data[index]),
-                style: kNormalSuperSmallStyle,
+                style: NotemonTextStyle.kNormalSuperSmallStyle,
               ),
               GestureDetector(
                 child: Icon(

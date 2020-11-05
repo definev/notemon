@@ -27,103 +27,55 @@ class _FilterPickerState extends State<FilterPicker>
   PriorityState priority = PriorityState.Low;
   Color currentColor = TodoColors.blueAqua;
 
-  Widget _buildCategoryPicker(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: List.generate(
-        catagories.length,
+  Widget _buildCatagoriesPicker(BuildContext context) {
+    return Column(children: [
+      ...List.generate(
+        catagories.length ~/ 3,
         (index) {
-          String name = catagories[index]["name"];
-          return GestureDetector(
-            onTap: () {
-              setState(() => _catagories[index] = !_catagories[index]);
-            },
-            child: AnimatedContainer(
-              height: 45,
-              width: (MediaQuery.of(context).size.width - 50) / 3,
-              duration: Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _catagories[index] == false
-                      ? setPriorityColor(priorityList[priority.index])
-                      : TodoColors.scaffoldWhite,
-                  width: 1,
-                ),
-                color: _catagories[index]
-                    ? setPriorityColor(priorityList[priority.index])
-                    : TodoColors.scaffoldWhite,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              margin: marginCategory(index),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Icon(
-                    catagories[index]["iconData"],
-                    size: iconSize(),
-                    color: _catagories[index] == false
-                        ? setPriorityColor(priorityList[priority.index])
-                        : TodoColors.scaffoldWhite,
-                  ),
-                  SizedBox(
-                    child: Text(
-                      '${name.tr}',
-                      style: TextStyle(
-                        fontFamily: 'Alata',
-                        fontSize: fontSize(),
-                        fontWeight: FontWeight.w500,
-                        color: _catagories[index] == false
-                            ? setPriorityColor(priorityList[priority.index])
+          return Padding(
+            padding: EdgeInsets.only(bottom: startIndex == 6 ? 0 : 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                3,
+                (index) {
+                  index += startIndex;
+                  String category = catagories[index]["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() => _catagories[index] = !_catagories[index]);
+                    },
+                    child: AnimatedContainer(
+                      height: 45,
+                      width: (MediaQuery.of(context).size.width - 50) / 3,
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _catagories[index] == false
+                              ? currentColor
+                              : TodoColors.scaffoldWhite,
+                          width: 1,
+                        ),
+                        color: _catagories[index]
+                            ? currentColor
                             : TodoColors.scaffoldWhite,
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  _buildPriority() {
-    return Row(
-      children: [
-        _priorityTile(PriorityState.High),
-        SizedBox(width: 10),
-        _priorityTile(PriorityState.Medium),
-        SizedBox(width: 10),
-        _priorityTile(PriorityState.Low),
-        SizedBox(width: 10),
-        _priorityTile(PriorityState.All),
-      ],
-    );
-  }
-
-  Widget _priorityTile(PriorityState value) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          if (priority != value) {
-            priority = value;
-          } else {
-            priority = PriorityState.All;
-          }
-          currentColor = setPriorityColor(priorityList[priority.index]);
-        });
-      },
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        height: 45,
-        width: (MediaQuery.of(context).size.width - 60) / 4,
-        decoration: BoxDecoration(
-          color: priority != value
-              ? TodoColors.scaffoldWhite
-              : setPriorityColor(priorityList[value.index]),
-          border: Border.all(
-            color: priority == value
+                      padding: paddingCategory(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Icon(
+                            catagories[index]["iconData"],
+                            size: iconSize(),
+                            color: _catagories[index] == false
+                                ? currentColor
+                                : TodoColors.scaffoldWhite,
+                          ),
+                          Text(
+                            '${category.tr}',
+                            style: TextStyle(
+                              fontFamily: 'Source_Sans_Pro',
                 ? TodoColors.scaffoldWhite
                 : setPriorityColor(priorityList[value.index]),
             width: 1,
@@ -132,8 +84,13 @@ class _FilterPickerState extends State<FilterPicker>
         ),
         child: Center(
           child: Text(
+<<<<<<< HEAD
             shortPriorityList[value.index].tr,
             style: kNormalStyle.copyWith(
+=======
+            priorityList[value.index].tr,
+            style: NotemonTextStyle.kNormalStyle.copyWith(
+>>>>>>> aaa7cce12e505771694cdb5ee22cfedbc72817a8
               color: priority == value
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value.index]),
@@ -160,7 +117,7 @@ class _FilterPickerState extends State<FilterPicker>
       padding: const EdgeInsets.only(bottom: 5, left: 3, top: 2),
       child: Text(
         text,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -189,7 +146,7 @@ class _FilterPickerState extends State<FilterPicker>
               children: [
                 _header(context),
                 _buildTitle('Category'.tr),
-                _buildCategoryPicker(context),
+                _buildCatagoriesPicker(context),
                 _buildTitle('Priority'.tr),
                 _buildPriority(),
               ],
@@ -219,7 +176,7 @@ class _FilterPickerState extends State<FilterPicker>
                 child: Center(
                   child: Text(
                     'Cancel'.tr,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       color: Colors.black45,
                     ),
                   ),
@@ -243,7 +200,7 @@ class _FilterPickerState extends State<FilterPicker>
                 child: Center(
                   child: Text(
                     'Ok'.tr,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       color: Colors.white,
                     ),
                   ),
@@ -270,7 +227,7 @@ class _FilterPickerState extends State<FilterPicker>
                   Get.locale == Locale('en', 'US')
                       ? '${widget.nameFilter.tr} filter'
                       : 'Bộ lọc ${widget.nameFilter.tr.toLowerCase()}',
-                  style: kBigTitleStyle.copyWith(
+                  style: NotemonTextStyle.kBigTitleStyle.copyWith(
                     fontFamily: 'Tomorrow',
                     fontSize: 25,
                   ),
@@ -282,6 +239,7 @@ class _FilterPickerState extends State<FilterPicker>
                             _catagories = List.generate(
                                 catagories.length, (index) => false);
                             priority = PriorityState.All;
+                            currentColor = TodoColors.blueAqua;
                           });
                         },
                         child: Container(
@@ -294,7 +252,7 @@ class _FilterPickerState extends State<FilterPicker>
                           child: Center(
                             child: Text(
                               "Reset".tr,
-                              style: kNormalStyle.copyWith(
+                              style: NotemonTextStyle.kNormalStyle.copyWith(
                                 color: Colors.white,
                               ),
                             ),

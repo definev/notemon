@@ -23,7 +23,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
         title.tr,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -33,7 +33,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: Color(int.parse(colors[indexColor])),
+            color: colors.parseColor(indexColor),
             width: 1,
           ),
         ),
@@ -42,7 +42,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'Task name'.tr,
-            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+            labelStyle:
+                NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
           ),
@@ -76,12 +77,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                 ),
                 Text(
                   ' ${"Edit task".tr}',
-                  style: kNormalStyle.copyWith(color: Colors.white),
+                  style: NotemonTextStyle.kNormalStyle
+                      .copyWith(color: Colors.white),
                 ),
               ],
             ),
           ),
-          color: Color(int.parse(colors[indexColor])),
+          color: colors.parseColor(indexColor),
         ),
       );
 
@@ -193,7 +195,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
         child: Center(
           child: Text(
             priorityList[value],
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value]),
@@ -216,76 +218,89 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
   }
 
   Widget _buildCatagoriesPicker(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: List.generate(
-        catagories.length,
-        (index) => GestureDetector(
-          onTap: () {
-            setState(() {
-              _categoryItems[index] = !_categoryItems[index];
-            });
-          },
-          child: AnimatedContainer(
-            height: 45,
-            width: (MediaQuery.of(context).size.width - 50) / 3,
-            duration: Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: _categoryItems[index] == false
-                    ? Color(
-                        int.parse(
-                          colors[indexColor],
-                        ),
-                      )
-                    : TodoColors.scaffoldWhite,
-                width: 1,
-              ),
-              color: _categoryItems[index]
-                  ? Color(
-                      int.parse(
-                        colors[indexColor],
-                      ),
-                    )
-                  : TodoColors.scaffoldWhite,
-            ),
-            padding: paddingCategory(),
-            margin: marginCategory(index),
+    return Column(children: [
+      ...List.generate(
+        catagories.length ~/ 3,
+        (index) {
+          int startIndex = index * 3;
+          return Padding(
+            padding: EdgeInsets.only(bottom: startIndex == 6 ? 0 : 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Icon(
-                  catagories[index]["iconData"],
-                  size: iconSize(),
-                  color: _categoryItems[index] == false
-                      ? Color(
-                          int.parse(
-                            colors[indexColor],
+              children: List.generate(
+                3,
+                (index) {
+                  index += startIndex;
+                  String category = catagories[index]["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(
+                          () => _categoryItems[index] = !_categoryItems[index]);
+                    },
+                    child: AnimatedContainer(
+                      height: 45,
+                      width: (MediaQuery.of(context).size.width - 50) / 3,
+                      duration: Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _categoryItems[index] == false
+                              ? Color(
+                                  int.parse(
+                                    colors[indexColor],
+                                  ),
+                                )
+                              : TodoColors.scaffoldWhite,
+                          width: 1,
+                        ),
+                        color: _categoryItems[index]
+                            ? Color(
+                                int.parse(
+                                  colors[indexColor],
+                                ),
+                              )
+                            : TodoColors.scaffoldWhite,
+                      ),
+                      padding: paddingCategory(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Icon(
+                            catagories[index]["iconData"],
+                            size: iconSize(),
+                            color: _categoryItems[index] == false
+                                ? Color(
+                                    int.parse(
+                                      colors[indexColor],
+                                    ),
+                                  )
+                                : TodoColors.scaffoldWhite,
                           ),
-                        )
-                      : TodoColors.scaffoldWhite,
-                ),
-                Text(
-                  '${catagories[index]["name"]}',
-                  style: TextStyle(
-                    fontFamily: 'Source_Sans_Pro',
-                    fontSize: fontSize(),
-                    color: _categoryItems[index] == false
-                        ? Color(
-                            int.parse(
-                              colors[indexColor],
+                          Text(
+                            '${category.tr}',
+                            style: TextStyle(
+                              fontFamily: 'Source_Sans_Pro',
+                              fontSize: fontSize(),
+                              color: _categoryItems[index] == false
+                                  ? Color(
+                                      int.parse(
+                                        colors[indexColor],
+                                      ),
+                                    )
+                                  : TodoColors.scaffoldWhite,
                             ),
-                          )
-                        : TodoColors.scaffoldWhite,
-                  ),
-                ),
-              ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
-    );
+    ]);
   }
 
   @override
@@ -315,7 +330,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context)
-          .copyWith(accentColor: Color(int.parse(colors[indexColor]))),
+          .copyWith(accentColor: colors.parseColor(indexColor)),
       child: Scaffold(
         resizeToAvoidBottomPadding: false,
         bottomNavigationBar: _buildEditTaskButton(context),

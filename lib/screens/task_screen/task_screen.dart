@@ -55,7 +55,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
 
   TaskBloc _taskBloc;
   StarBloc _starBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   TextEditingController _achieveTextController = TextEditingController();
   PageController _pageController = PageController();
 
@@ -99,7 +99,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         ),
       ),
     );
-    _repository.updateTaskToFirebase(
+    _repository.firebase.updateTaskToFirebase(
       _currentTask.copyWith(
         achieve: _achievelists,
         catagories: _categoryItems,
@@ -108,18 +108,17 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
         percent: _percent,
       ),
     );
-    try {
-      final result = await InternetAddress.lookup('google.com');
-
-      if (result.isNotEmpty &&
-          result[0].rawAddress.isNotEmpty &&
-          !(await _repository.getRemoveAdsState())) {
-        myInterstitial
-          ..load()
-          ..show();
-      }
-    } on SocketException catch (_) {}
     Get.back();
+    final result = await InternetAddress.lookup('google.com')
+        .timeout(Duration(seconds: 10));
+
+    if (result.isNotEmpty &&
+        result[0].rawAddress.isNotEmpty &&
+        !(await _repository.firebase.getRemoveAdsState())) {
+      myInterstitial
+        ..load()
+        ..show();
+    }
     return true;
   }
 
@@ -175,7 +174,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       seconds: int.parse(durTimerSecond[0]),
                     );
                     Duration _completeTimer = _oldTimer - _timer;
-                    _repository.updateTaskToFirebase(
+                    _repository.firebase.updateTaskToFirebase(
                       _currentTask.copyWith(
                         onDoing: true,
                         achieve: _achievelists,
@@ -222,7 +221,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                         ),
                       ),
                     );
-                    _repository.updateTaskToFirebase(
+                    _repository.firebase.updateTaskToFirebase(
                       _currentTask.copyWith(
                         onDoing: false,
                         achieve: _achievelists,
@@ -298,7 +297,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
     if (_isInit == false) {
       _taskBloc = findBloc<TaskBloc>();
       _starBloc = findBloc<StarBloc>();
-      _repository = findBloc<FirebaseRepository>();
+      _repository = findBloc<FirebaseApi>();
       _isInit = true;
     }
 
@@ -359,14 +358,14 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     children: [
                       Text(
                         "${"Doing in another device".tr},\n",
-                        style: kBigTitleStyle.copyWith(
+                        style: NotemonTextStyle.kBigTitleStyle.copyWith(
                             fontFamily: 'Source_Sans_Pro',
                             color: Colors.white,
                             fontSize: 35),
                       ),
                       Text(
                         "${"Don't distract!".tr} 😊",
-                        style: kBigTitleStyle.copyWith(
+                        style: NotemonTextStyle.kBigTitleStyle.copyWith(
                             fontFamily: 'Source_Sans_Pro',
                             color: Colors.white,
                             fontSize: 35),
@@ -469,7 +468,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       children: [
                         Text(
                           "“Facedown your phone to start timing.”".tr,
-                          style: kMediumStyle,
+                          style: NotemonTextStyle.kMediumStyle,
                           textAlign: TextAlign.center,
                         ),
                         Text(
@@ -535,7 +534,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                   _taskBloc.add(
                       DeleteTaskEvent(task: _currentTask, addDeleteKey: true));
                   if (await checkConnection())
-                    _repository.deleteTaskOnFirebase(_currentTask);
+                    _repository.firebase.deleteTaskOnFirebase(_currentTask);
                   Get.back();
                 },
               ),
@@ -595,12 +594,12 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                               vertical: 5,
                             ),
                             labelText: 'Add achievement'.tr,
-                            labelStyle:
-                                kNormalStyle.copyWith(color: Colors.grey),
+                            labelStyle: NotemonTextStyle.kNormalStyle
+                                .copyWith(color: Colors.grey),
                             border: InputBorder.none,
                           ),
                           controller: _achieveTextController,
-                          style: kNormalStyle.copyWith(
+                          style: NotemonTextStyle.kNormalStyle.copyWith(
                             fontFamily: "Source_Sans_Pro",
                           ),
                         ),
@@ -672,7 +671,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 SizedBox(height: 5),
                 Text(
                   'Warning:'.tr,
-                  style: kTitleStyle.copyWith(color: Colors.yellow[900]),
+                  style: NotemonTextStyle.kTitleStyle
+                      .copyWith(color: Colors.yellow[900]),
                 ),
                 Text(
                   'Are you sure?'.tr,
@@ -703,7 +703,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           child: Center(
                             child: Text(
                               'Cancel'.tr,
-                              style: kTitleStyle.copyWith(
+                              style: NotemonTextStyle.kTitleStyle.copyWith(
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
                               ),
@@ -716,7 +716,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           _taskBloc.add(DeleteTaskEvent(
                               task: _currentTask, addDeleteKey: true));
                           if (await checkConnection())
-                            _repository.deleteTaskOnFirebase(_currentTask);
+                            _repository.firebase
+                                .deleteTaskOnFirebase(_currentTask);
                           Get.back();
                           Get.back();
                         },
@@ -730,7 +731,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           child: Center(
                             child: Text(
                               'Give up'.tr,
-                              style: kTitleStyle.copyWith(
+                              style: NotemonTextStyle.kTitleStyle.copyWith(
                                 decorationStyle: TextDecorationStyle.double,
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
@@ -775,7 +776,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     StringFormatter.format(
                         _achievelists[_achievelists.length - index - 1]),
                     overflow: TextOverflow.clip,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       decoration:
                           _isDoneAchieve[_achievelists.length - index - 1] ==
                                   false

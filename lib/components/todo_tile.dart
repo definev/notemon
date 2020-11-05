@@ -25,7 +25,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
   bool _isDone = false;
   TodoBloc _todoBloc;
   StarBloc _starBloc;
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   Todo _currentTodo;
 
   @override
@@ -41,7 +41,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
   Widget build(BuildContext context) {
     _todoBloc = findBloc<TodoBloc>();
     _starBloc = findBloc<StarBloc>();
-    _repository = findBloc<FirebaseRepository>();
+    _repository = findBloc<FirebaseApi>();
     _currentTodo = widget.todo;
 
     return Padding(
@@ -83,7 +83,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                           state: _isChecked ? "done" : "notDone");
                       _todoBloc.add(EditTodoEvent(todo: _currentTodo));
                       if (await checkConnection()) {
-                        await _repository.updateTodoToFirebase(_currentTodo);
+                        await _repository.firebase
+                            .updateTodoToFirebase(_currentTodo);
                       }
                     }
                   },
@@ -125,7 +126,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                   child: Text(
                     widget.todo.content,
                     overflow: TextOverflow.ellipsis,
-                    style: kNormalSmallStyle.copyWith(
+                    style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                       decoration: _isChecked
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
@@ -139,7 +140,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     priorityList[widget.todo.priority.index].tr,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       color: setPriorityColor(
                           priorityList[widget.todo.priority.index]),
                     ),
@@ -164,7 +165,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                       state: _isChecked ? "done" : "notDone");
                   _todoBloc.add(EditTodoEvent(todo: _currentTodo));
                   if (await checkConnection()) {
-                    await _repository.updateTodoToFirebase(_currentTodo);
+                    await _repository.firebase
+                        .updateTodoToFirebase(_currentTodo);
                   }
                 });
               } else if (_isChecked == true) {
@@ -175,7 +177,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                     addDeleteKey: true,
                   ));
                   if (await checkConnection()) {
-                    await _repository.deleteTodoOnFirebase(_currentTodo);
+                    await _repository.firebase
+                        .deleteTodoOnFirebase(_currentTodo);
                   }
                   _starBloc.add(AddStarEvent(point: 1));
                 });
@@ -214,8 +217,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                     ),
                     Text(
                       _isChecked == false ? 'Check'.tr : 'Done'.tr,
-                      style: kTinySmallStyle.copyWith(
-                          color: Colors.white, fontSize: 12),
+                      style: NotemonTextStyle.kTinySmallStyle
+                          .copyWith(color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),
@@ -233,7 +236,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                     addDeleteKey: true,
                   ));
                   if (connection) {
-                    _repository.deleteTodoOnFirebase(widget.todo);
+                    _repository.firebase.deleteTodoOnFirebase(widget.todo);
                   }
                 });
               },
@@ -264,8 +267,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                       ),
                       Text(
                         'Delete'.tr,
-                        style: kTinySmallStyle.copyWith(
-                            color: Colors.white, fontSize: 12),
+                        style: NotemonTextStyle.kTinySmallStyle
+                            .copyWith(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),

@@ -5,7 +5,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/database.dart';
-import 'package:gottask/database/hive/local_data.dart';
+import 'package:gottask/database/hive/notemon_hive.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/utils/helper.dart';
@@ -28,7 +28,7 @@ class _SettingScreenState extends State<SettingScreen>
   AnimationController animationController;
   Animation animation;
 
-  FirebaseRepository _repository;
+  FirebaseApi _repository;
   HandSide _handSide;
   HandSideBloc _handsideBloc;
   AllPokemonBloc _allPokemonBloc;
@@ -76,7 +76,7 @@ class _SettingScreenState extends State<SettingScreen>
     PurchaseDetails purchase = _hasPurchased("remove_ads_id");
 
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
-      _repository.setRemoveAdsState(true);
+      _repository.firebase.setRemoveAdsState(true);
       print("Has purchase!");
     }
   }
@@ -149,7 +149,7 @@ class _SettingScreenState extends State<SettingScreen>
   Widget build(BuildContext context) {
     if (_isInit == false) {
       _handsideBloc = Provider.of<HandSideBloc>(widget.ctx);
-      _repository = Provider.of<FirebaseRepository>(context);
+      _repository = Provider.of<FirebaseApi>(context);
       initHandSide();
       _allPokemonBloc = findBloc<AllPokemonBloc>();
       _favouritePokemonBloc = findBloc<FavouritePokemonBloc>();
@@ -157,7 +157,7 @@ class _SettingScreenState extends State<SettingScreen>
       _todoBloc = findBloc<TodoBloc>();
       _taskBloc = findBloc<TaskBloc>();
       _isInit = true;
-      _repository.getRemoveAdsState().then((value) {
+      _repository.firebase.getRemoveAdsState().then((value) {
         setState(() {
           _isBuyRemoveAds = value;
         });
@@ -197,7 +197,7 @@ class _SettingScreenState extends State<SettingScreen>
                   children: <Widget>[
                     Text(
                       '${"Preferred hand".tr} ',
-                      style: kTitleStyle,
+                      style: NotemonTextStyle.kTitleStyle,
                     ),
                     ToggleButtons(
                       isSelected:
@@ -228,19 +228,19 @@ class _SettingScreenState extends State<SettingScreen>
                   children: [
                     Text(
                       "Language".tr,
-                      style: kTitleStyle,
+                      style: NotemonTextStyle.kTitleStyle,
                     ),
                     ToggleButtons(
-                      isSelected: LocalData.getLang() == 'vi'
+                      isSelected: NotemonHive.localData.getLang() == 'vi'
                           ? [true, false]
                           : [false, true],
                       onPressed: (index) {
                         if (index == 0) {
                           Get.updateLocale(Locale('vi', 'VN'));
-                          LocalData.setLang("vi");
+                          NotemonHive.localData.setLang("vi");
                         } else {
                           Get.updateLocale(Locale('en', 'US'));
-                          LocalData.setLang("en");
+                          NotemonHive.localData.setLang("en");
                         }
                         setState(() {});
                       },
@@ -288,7 +288,7 @@ class _SettingScreenState extends State<SettingScreen>
                               children: [
                                 Text(
                                   "Remove ads".tr,
-                                  style: kMediumStyle.copyWith(
+                                  style: NotemonTextStyle.kMediumStyle.copyWith(
                                     color: Colors.white,
                                   ),
                                 ),
@@ -297,7 +297,8 @@ class _SettingScreenState extends State<SettingScreen>
                                   children: [
                                     Text(
                                       "Buy me a coffee",
-                                      style: kMediumStyle.copyWith(
+                                      style: NotemonTextStyle.kMediumStyle
+                                          .copyWith(
                                         color: Colors.white,
                                       ),
                                     ),
@@ -343,18 +344,18 @@ class _SettingScreenState extends State<SettingScreen>
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                 onTap: () async {
-                  AuthServices _auth = AuthServices();
-                  await _auth.signOut();
+                  await _repository.authServices.signOut();
                   updateLoginState(false);
                   deleteAll();
-                  _repository.initUser();
+                  _repository.firebase.initUser();
                   Get.offAllNamed('/signIn');
                 },
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: Text(
                     'Sign out'.tr,
-                    style: kMediumStyle.copyWith(color: Colors.red),
+                    style: NotemonTextStyle.kMediumStyle
+                        .copyWith(color: Colors.red),
                   ),
                 ),
               ),
