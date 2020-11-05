@@ -66,15 +66,17 @@ class _FilterPickerState extends State<FilterPicker>
                         ? setPriorityColor(priorityList[priority.index])
                         : TodoColors.scaffoldWhite,
                   ),
-                  Text(
-                    '${name.tr}',
-                    style: TextStyle(
-                      fontFamily: 'Alata',
-                      fontSize: fontSize(),
-                      fontWeight: FontWeight.w500,
-                      color: _catagories[index] == false
-                          ? setPriorityColor(priorityList[priority.index])
-                          : TodoColors.scaffoldWhite,
+                  SizedBox(
+                    child: Text(
+                      '${name.tr}',
+                      style: TextStyle(
+                        fontFamily: 'Alata',
+                        fontSize: fontSize(),
+                        fontWeight: FontWeight.w500,
+                        color: _catagories[index] == false
+                            ? setPriorityColor(priorityList[priority.index])
+                            : TodoColors.scaffoldWhite,
+                      ),
                     ),
                   ),
                 ],
@@ -130,7 +132,7 @@ class _FilterPickerState extends State<FilterPicker>
         ),
         child: Center(
           child: Text(
-            priorityList[value.index].tr,
+            shortPriorityList[value.index].tr,
             style: kNormalStyle.copyWith(
               color: priority == value
                   ? TodoColors.scaffoldWhite

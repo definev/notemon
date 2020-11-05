@@ -95,6 +95,8 @@ class NotemonDict extends Translations {
           'Good morning,': 'Good morning,',
           'Good afternoon,': 'Good afternoon,',
           'Good evening,': 'Good evening,',
+          'Easy to use.': 'Dễ sử dụng.',
+          "Help you focus.": "Help you focus.",
         },
         'vi_VN': {
           'About this app': 'Về ứng dụng này',
@@ -188,6 +190,8 @@ class NotemonDict extends Translations {
           'Good morning,': 'Chào buổi sáng,',
           'Good afternoon,': 'Chào buổi chiều,',
           'Good evening,': 'Chào buổi tối,',
+          'Easy to use.': 'Dễ sử dụng.',
+          "Help you focus.": "Giúp bạn tập trung.",
         },
       };
 }

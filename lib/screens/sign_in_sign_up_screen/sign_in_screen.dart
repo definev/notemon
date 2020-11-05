@@ -91,21 +91,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                   )),
                               padding: const EdgeInsets.only(left: 50),
                               margin: const EdgeInsets.only(left: 10),
-                              // child: Center(
-                              //   child: Text(
-                              //     "Notemon",
-                              //     style: kBigTitleStyle.copyWith(
-                              //       fontFamily: "Tomorrow",
-                              //       color: Colors.white,
-                              //     ),
-                              //   ),
-                              // ),
                               child: Center(
                                 child: TypewriterAnimatedTextKit(
                                   text: [
                                     "Notemon",
-                                    "Easy to use.",
-                                    "Help you focus.",
+                                    "Easy to use.".tr,
+                                    "Help you focus.".tr,
                                     "Notemon",
                                   ],
                                   textStyle: kBigTitleStyle.copyWith(

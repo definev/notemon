@@ -48,9 +48,9 @@ class _MyAppState extends State<MyApp> {
 
   Widget currentRoute() {
     if (_isLogin == false) {
-      return SignInScreen();
+      return UnconstrainedBox(child: SignInScreen());
     } else if (_isStart == true) {
-      return HomeScreen();
+      return UnconstrainedBox(child: HomeScreen());
     }
     return Container();
   }
