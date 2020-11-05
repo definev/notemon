@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gottask/utils/text_editor_utils.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
@@ -46,7 +47,8 @@ class _NoteScreenState extends State<NoteScreen> {
   void initState() {
     super.initState();
     _textEditorController = _setTextEditorController();
-    zefyrMode = ZefyrMode.select;
+    zefyrMode =
+        widget.noteMode == NoteMode.add ? ZefyrMode.edit : ZefyrMode.select;
   }
 
   @override
@@ -56,6 +58,17 @@ class _NoteScreenState extends State<NoteScreen> {
         title: Text("Detail note".tr),
         backgroundColor: widget.themeColor,
         actions: [
+          IconButton(
+              icon: Icon(
+                Icons.copy,
+              ),
+              onPressed: () {
+                log(jsonEncode(_textEditorController.document));
+                Clipboard.setData(
+                  ClipboardData(
+                      text: jsonEncode(_textEditorController.document)),
+                );
+              }),
           IconButton(
               icon: Icon(
                 zefyrMode == ZefyrMode.select ? Icons.edit : Icons.lock_rounded,

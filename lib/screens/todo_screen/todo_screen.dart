@@ -312,7 +312,7 @@ class _TodoScreenState extends State<TodoScreen>
       padding: const EdgeInsets.only(left: 3, top: 10, bottom: 5),
       child: Text(
         title.tr,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -327,7 +327,8 @@ class _TodoScreenState extends State<TodoScreen>
             padding: const EdgeInsets.only(left: 3),
             child: Text(
               "Note".tr,
-              style: kNormalStyle.copyWith(color: Colors.grey[600]),
+              style: NotemonTextStyle.kNormalStyle
+                  .copyWith(color: Colors.grey[600]),
             ),
           ),
           IconButton(
@@ -551,7 +552,8 @@ class _TodoScreenState extends State<TodoScreen>
                           duration: animationController.duration,
                           child: Text(
                             'No files'.tr,
-                            style: kTitleStyle.copyWith(color: Colors.grey),
+                            style: NotemonTextStyle.kTitleStyle
+                                .copyWith(color: Colors.grey),
                           ),
                         ),
                       ),
@@ -747,7 +749,8 @@ class _TodoScreenState extends State<TodoScreen>
                 child: Center(
                   child: Text(
                     'No files'.tr,
-                    style: kTitleStyle.copyWith(color: Colors.grey),
+                    style: NotemonTextStyle.kTitleStyle
+                        .copyWith(color: Colors.grey),
                   ),
                 ),
               ),
@@ -935,7 +938,8 @@ class _TodoScreenState extends State<TodoScreen>
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'Rename to-do'.tr,
-            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+            labelStyle:
+                NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
           ),
@@ -989,7 +993,8 @@ class _TodoScreenState extends State<TodoScreen>
                 ),
                 Text(
                   ' ${"Edit to-do".tr}',
-                  style: kNormalStyle.copyWith(color: Colors.white),
+                  style: NotemonTextStyle.kNormalStyle
+                      .copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -1025,7 +1030,7 @@ class _TodoScreenState extends State<TodoScreen>
                   ),
                   Text(
                     'Do not go out if recording not done.'.tr,
-                    style: kTitleStyle,
+                    style: NotemonTextStyle.kTitleStyle,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -1102,7 +1107,7 @@ class _TodoScreenState extends State<TodoScreen>
         child: Center(
           child: Text(
             priorityList[value].tr,
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value]),

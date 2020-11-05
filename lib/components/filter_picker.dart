@@ -141,7 +141,7 @@ class _FilterPickerState extends State<FilterPicker>
         child: Center(
           child: Text(
             priorityList[value.index].tr,
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: priority == value
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value.index]),
@@ -168,7 +168,7 @@ class _FilterPickerState extends State<FilterPicker>
       padding: const EdgeInsets.only(bottom: 5, left: 3, top: 2),
       child: Text(
         text,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -227,7 +227,7 @@ class _FilterPickerState extends State<FilterPicker>
                 child: Center(
                   child: Text(
                     'Cancel'.tr,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       color: Colors.black45,
                     ),
                   ),
@@ -251,7 +251,7 @@ class _FilterPickerState extends State<FilterPicker>
                 child: Center(
                   child: Text(
                     'Ok'.tr,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       color: Colors.white,
                     ),
                   ),
@@ -278,7 +278,7 @@ class _FilterPickerState extends State<FilterPicker>
                   Get.locale == Locale('en', 'US')
                       ? '${widget.nameFilter.tr} filter'
                       : 'Bộ lọc ${widget.nameFilter.tr.toLowerCase()}',
-                  style: kBigTitleStyle.copyWith(
+                  style: NotemonTextStyle.kBigTitleStyle.copyWith(
                     fontFamily: 'Tomorrow',
                     fontSize: 25,
                   ),
@@ -303,7 +303,7 @@ class _FilterPickerState extends State<FilterPicker>
                           child: Center(
                             child: Text(
                               "Reset".tr,
-                              style: kNormalStyle.copyWith(
+                              style: NotemonTextStyle.kNormalStyle.copyWith(
                                 color: Colors.white,
                               ),
                             ),

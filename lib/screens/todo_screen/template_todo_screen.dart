@@ -42,7 +42,7 @@ class _TemplateTodoScreenState extends State<TemplateTodoScreen> {
                   Center(
                     child: Text(
                       "Template",
-                      style: kBigTitleStyle.copyWith(
+                      style: NotemonTextStyle.kBigTitleStyle.copyWith(
                         fontSize: 60,
                         color: TodoColors.blueMoon,
                       ),
@@ -116,7 +116,8 @@ class _TemplateTodoScreenState extends State<TemplateTodoScreen> {
                                 child: Center(
                                   child: Text(
                                     "${Get.locale == Locale("en", "") ? templateTodo.name.en : templateTodo.name.vi}",
-                                    style: kMediumStyle.copyWith(fontSize: 16),
+                                    style: NotemonTextStyle.kMediumStyle
+                                        .copyWith(fontSize: 16),
                                   ),
                                 ),
                               ),

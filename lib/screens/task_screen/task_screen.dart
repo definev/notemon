@@ -358,14 +358,14 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     children: [
                       Text(
                         "${"Doing in another device".tr},\n",
-                        style: kBigTitleStyle.copyWith(
+                        style: NotemonTextStyle.kBigTitleStyle.copyWith(
                             fontFamily: 'Source_Sans_Pro',
                             color: Colors.white,
                             fontSize: 35),
                       ),
                       Text(
                         "${"Don't distract!".tr} 😊",
-                        style: kBigTitleStyle.copyWith(
+                        style: NotemonTextStyle.kBigTitleStyle.copyWith(
                             fontFamily: 'Source_Sans_Pro',
                             color: Colors.white,
                             fontSize: 35),
@@ -468,7 +468,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                       children: [
                         Text(
                           "“Facedown your phone to start timing.”".tr,
-                          style: kMediumStyle,
+                          style: NotemonTextStyle.kMediumStyle,
                           textAlign: TextAlign.center,
                         ),
                         Text(
@@ -594,12 +594,12 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                               vertical: 5,
                             ),
                             labelText: 'Add achievement'.tr,
-                            labelStyle:
-                                kNormalStyle.copyWith(color: Colors.grey),
+                            labelStyle: NotemonTextStyle.kNormalStyle
+                                .copyWith(color: Colors.grey),
                             border: InputBorder.none,
                           ),
                           controller: _achieveTextController,
-                          style: kNormalStyle.copyWith(
+                          style: NotemonTextStyle.kNormalStyle.copyWith(
                             fontFamily: "Source_Sans_Pro",
                           ),
                         ),
@@ -671,7 +671,8 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                 SizedBox(height: 5),
                 Text(
                   'Warning:'.tr,
-                  style: kTitleStyle.copyWith(color: Colors.yellow[900]),
+                  style: NotemonTextStyle.kTitleStyle
+                      .copyWith(color: Colors.yellow[900]),
                 ),
                 Text(
                   'Are you sure?'.tr,
@@ -702,7 +703,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           child: Center(
                             child: Text(
                               'Cancel'.tr,
-                              style: kTitleStyle.copyWith(
+                              style: NotemonTextStyle.kTitleStyle.copyWith(
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
                               ),
@@ -730,7 +731,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                           child: Center(
                             child: Text(
                               'Give up'.tr,
-                              style: kTitleStyle.copyWith(
+                              style: NotemonTextStyle.kTitleStyle.copyWith(
                                 decorationStyle: TextDecorationStyle.double,
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
@@ -775,7 +776,7 @@ class _TaskScreenState extends State<TaskScreen> with BlocCreator {
                     StringFormatter.format(
                         _achievelists[_achievelists.length - index - 1]),
                     overflow: TextOverflow.clip,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       decoration:
                           _isDoneAchieve[_achievelists.length - index - 1] ==
                                   false

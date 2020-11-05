@@ -317,7 +317,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 10),
       child: Text(
         title.tr,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -332,7 +332,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
             padding: const EdgeInsets.only(left: 3),
             child: Text(
               "Note".tr,
-              style: kNormalStyle.copyWith(color: Colors.grey[600]),
+              style: NotemonTextStyle.kNormalStyle
+                  .copyWith(color: Colors.grey[600]),
             ),
           ),
           IconButton(
@@ -546,7 +547,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                   children: [
                     Text(
                       'No files'.tr,
-                      style: kTitleStyle.copyWith(color: Colors.grey),
+                      style: NotemonTextStyle.kTitleStyle
+                          .copyWith(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -605,7 +607,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                         duration: animationController.duration,
                         child: Text(
                           'No files'.tr,
-                          style: kTitleStyle.copyWith(color: Colors.grey),
+                          style: NotemonTextStyle.kTitleStyle
+                              .copyWith(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -697,7 +700,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
         child: Center(
           child: Text(
             priorityList[value].tr,
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value]),
@@ -1051,7 +1054,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'To-do name'.tr,
-            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+            labelStyle:
+                NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
           ),
@@ -1099,7 +1103,8 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 ),
                 Text(
                   ' ${"Add to-do".tr}',
-                  style: kNormalStyle.copyWith(color: Colors.white),
+                  style: NotemonTextStyle.kNormalStyle
+                      .copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -1135,7 +1140,7 @@ class _AddTodoScreenState extends State<AddTodoScreen>
                 ),
                 Text(
                   'Do not go out if recording not done.'.tr,
-                  style: kTitleStyle,
+                  style: NotemonTextStyle.kTitleStyle,
                 ),
                 Padding(
                   padding:

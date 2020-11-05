@@ -115,8 +115,8 @@ class _SplashScreenState extends State<SplashScreen>
                                   widget.isInit == null
                                       ? 'Let\'s go!'.tr
                                       : 'Go back'.tr,
-                                  style: kNormalStyle.copyWith(
-                                      color: Colors.white),
+                                  style: NotemonTextStyle.kNormalStyle
+                                      .copyWith(color: Colors.white),
                                 ),
                                 Icon(
                                   AntDesign.arrowright,

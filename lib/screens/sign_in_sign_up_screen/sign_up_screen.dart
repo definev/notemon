@@ -98,7 +98,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   child: Text(
                                     'Notemon',
                                     textAlign: TextAlign.center,
-                                    style: kBigTitleStyle.copyWith(
+                                    style: NotemonTextStyle.kBigTitleStyle
+                                        .copyWith(
                                       fontFamily: "Tomorrow",
                                       color: Colors.white,
                                     ),
@@ -165,16 +166,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   onFieldSubmitted: (_) =>
                                       _passwordFocusNode.requestFocus(),
                                   cursorColor: TodoColors.deepPurple,
-                                  style: kMediumStyle,
+                                  style: NotemonTextStyle.kMediumStyle,
                                   decoration: InputDecoration(
-                                    errorStyle: kTinySmallStyle.copyWith(
+                                    errorStyle: NotemonTextStyle.kTinySmallStyle
+                                        .copyWith(
                                       color: Colors.red,
                                       fontSize: 10,
                                     ),
                                     labelText: 'Email',
-                                    labelStyle: kMediumStyle,
+                                    labelStyle: NotemonTextStyle.kMediumStyle,
                                     hintText: 'Your email'.tr,
-                                    hintStyle: kTinySmallStyle,
+                                    hintStyle: NotemonTextStyle.kTinySmallStyle,
                                   ),
                                 ),
                               ),
@@ -206,16 +208,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       _reWritePasswordFocusNode.requestFocus(),
                                   obscureText: true,
                                   cursorColor: TodoColors.deepPurple,
-                                  style: kMediumStyle,
+                                  style: NotemonTextStyle.kMediumStyle,
                                   decoration: InputDecoration(
-                                    errorStyle: kTinySmallStyle.copyWith(
+                                    errorStyle: NotemonTextStyle.kTinySmallStyle
+                                        .copyWith(
                                       color: Colors.red,
                                       fontSize: 10,
                                     ),
                                     labelText: 'Password'.tr,
-                                    labelStyle: kMediumStyle,
+                                    labelStyle: NotemonTextStyle.kMediumStyle,
                                     hintText: 'Your password'.tr,
-                                    hintStyle: kTinySmallStyle,
+                                    hintStyle: NotemonTextStyle.kTinySmallStyle,
                                   ),
                                 ),
                               ),
@@ -278,16 +281,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   },
                                   obscureText: true,
                                   cursorColor: TodoColors.deepPurple,
-                                  style: kMediumStyle,
+                                  style: NotemonTextStyle.kMediumStyle,
                                   decoration: InputDecoration(
-                                    errorStyle: kTinySmallStyle.copyWith(
+                                    errorStyle: NotemonTextStyle.kTinySmallStyle
+                                        .copyWith(
                                       color: Colors.red,
                                       fontSize: 10,
                                     ),
                                     labelText: 'Rewrite password'.tr,
-                                    labelStyle: kMediumStyle,
+                                    labelStyle: NotemonTextStyle.kMediumStyle,
                                     hintText: 'Rewrite your password'.tr,
-                                    hintStyle: kTinySmallStyle,
+                                    hintStyle: NotemonTextStyle.kTinySmallStyle,
                                   ),
                                 ),
                               ),
@@ -356,8 +360,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: Center(
                                 child: Text(
                                   'Sign up and login'.tr,
-                                  style: kMediumStyle.copyWith(
-                                      color: Colors.white),
+                                  style: NotemonTextStyle.kMediumStyle
+                                      .copyWith(color: Colors.white),
                                 ),
                               ),
                             ),

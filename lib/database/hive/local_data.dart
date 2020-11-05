@@ -1,12 +1,12 @@
 import 'package:hive/hive.dart';
 
 class LocalData {
-  static Box storage;
-  static Future<void> init() async {
+  Box storage;
+  Future<void> init() async {
     storage = await Hive.openBox("local");
   }
 
-  static String getLang() {
+  String getLang() {
     String res = storage.get("lang");
     if (res == null) {
       storage.put("lang", "vi");
@@ -15,7 +15,7 @@ class LocalData {
     return storage.get("lang");
   }
 
-  static void setLang(String lang) {
+  void setLang(String lang) {
     storage.put("lang", lang);
   }
 }

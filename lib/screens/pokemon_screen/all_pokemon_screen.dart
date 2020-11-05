@@ -287,7 +287,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                   children: <Widget>[
                     Text(
                       'Hold to buy'.tr,
-                      style: kNormalSmallStyle.copyWith(
+                      style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                         color: _currentStarPoint >= 30
                             ? TodoColors.deepPurple
                             : Colors.grey,
@@ -298,7 +298,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                       children: [
                         Text(
                           '30 ',
-                          style: kNormalSmallStyle.copyWith(
+                          style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                             color: _currentStarPoint >= 30
                                 ? TodoColors.deepPurple
                                 : Colors.grey,
@@ -425,8 +425,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         Material(
                           child: Text(
                             _allPokemonBloc.pokemonStateList.collectedPokemon(),
-                            style: kNormalSuperSmallStyle.copyWith(
-                                color: TodoColors.deepPurple),
+                            style: NotemonTextStyle.kNormalSuperSmallStyle
+                                .copyWith(color: TodoColors.deepPurple),
                           ),
                         ),
                       GestureDetector(
@@ -448,8 +448,8 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                         Material(
                           child: Text(
                             _allPokemonBloc.pokemonStateList.collectedPokemon(),
-                            style: kNormalSuperSmallStyle.copyWith(
-                                color: TodoColors.deepPurple),
+                            style: NotemonTextStyle.kNormalSuperSmallStyle
+                                .copyWith(color: TodoColors.deepPurple),
                           ),
                         ),
                     ],
@@ -476,7 +476,7 @@ class _AllPokemonScreenState extends State<AllPokemonScreen>
                           Material(
                             child: Text(
                               '${_starBloc.addStar - _starBloc.loseStar} ',
-                              style: kNormalSmallStyle,
+                              style: NotemonTextStyle.kNormalSmallStyle,
                             ),
                           ),
                           Image.asset(

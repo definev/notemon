@@ -126,7 +126,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                   child: Text(
                     widget.todo.content,
                     overflow: TextOverflow.ellipsis,
-                    style: kNormalSmallStyle.copyWith(
+                    style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                       decoration: _isChecked
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
@@ -140,7 +140,7 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     priorityList[widget.todo.priority.index].tr,
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       color: setPriorityColor(
                           priorityList[widget.todo.priority.index]),
                     ),
@@ -217,8 +217,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                     ),
                     Text(
                       _isChecked == false ? 'Check'.tr : 'Done'.tr,
-                      style: kTinySmallStyle.copyWith(
-                          color: Colors.white, fontSize: 12),
+                      style: NotemonTextStyle.kTinySmallStyle
+                          .copyWith(color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),
@@ -267,8 +267,8 @@ class _TodoTileState extends State<TodoTile> with BlocCreator, FilterMixin {
                       ),
                       Text(
                         'Delete'.tr,
-                        style: kTinySmallStyle.copyWith(
-                            color: Colors.white, fontSize: 12),
+                        style: NotemonTextStyle.kTinySmallStyle
+                            .copyWith(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),

@@ -92,7 +92,7 @@ class AddDialog extends StatelessWidget {
             children: [
               Text(
                 "   $title   ",
-                style: kNormalSmallStyle.copyWith(
+                style: NotemonTextStyle.kNormalSmallStyle.copyWith(
                   fontSize: 13,
                   color: TodoColors.blueMoon,
                 ),

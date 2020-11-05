@@ -96,7 +96,7 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
                           ),
                           Text(
                             shortPriorityList[widget.task.priority.index].tr,
-                            style: kNormalStyle.copyWith(
+                            style: NotemonTextStyle.kNormalStyle.copyWith(
                               fontFamily: "Source_Sans_Pro",
                               color: setPriorityColor(
                                   priorityList[widget.task.priority.index]),
@@ -111,8 +111,8 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
                   children: <Widget>[
                     Text(
                       '$starValue ',
-                      style:
-                          kNormalSuperSmallStyle.copyWith(color: Colors.white),
+                      style: NotemonTextStyle.kNormalSuperSmallStyle
+                          .copyWith(color: Colors.white),
                     ),
                     Image.asset(
                       'assets/png/star.png',
@@ -124,7 +124,8 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
             ),
             Text(
               widget.task.taskName,
-              style: kBigTitleStyle.copyWith(color: Colors.white),
+              style:
+                  NotemonTextStyle.kBigTitleStyle.copyWith(color: Colors.white),
               overflow: TextOverflow.ellipsis,
             ),
             Column(
@@ -140,8 +141,8 @@ class _TaskTileState extends State<TaskTile> with FilterMixin {
                 const SizedBox(height: 12),
                 Text(
                   durationFormat(widget.task.completeTimer),
-                  style: kNormalSmallStyle.copyWith(
-                      color: Colors.white.withOpacity(0.7)),
+                  style: NotemonTextStyle.kNormalSmallStyle
+                      .copyWith(color: Colors.white.withOpacity(0.7)),
                 ),
               ],
             ),

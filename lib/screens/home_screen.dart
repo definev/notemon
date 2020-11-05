@@ -15,6 +15,7 @@ import 'package:gottask/components/component.dart';
 import 'package:gottask/models/model.dart';
 import 'package:gottask/repository/repository.dart';
 import 'package:gottask/screens/character_screen/character_screen.dart';
+import 'package:gottask/screens/pokemon_screen/all_pokemon_screen.dart';
 import 'package:gottask/screens/task_screen/task_export.dart';
 import 'package:gottask/screens/todo_screen/add_todo_screen.dart';
 import 'package:gottask/screens/todo_screen/template_todo_screen.dart';
@@ -556,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen>
                             onTap: () async {
                               await compareTime();
 
-                              Get.to(CharacterScreen());
+                              Get.to(SpriteScreen());
 
                               // Get.to(
                               //   BlocProvider<HandSideBloc>.value(
@@ -598,7 +599,7 @@ class _HomeScreenState extends State<HomeScreen>
                           return GestureDetector(
                             onTap: () async {
                               await compareTime();
-                              Get.to(CharacterScreen());
+                              Get.to(SpriteScreen());
 
                               // Get.to(
                               //   BlocProvider<HandSideBloc>.value(
@@ -626,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen>
                           return GestureDetector(
                             onTap: () async {
                               await compareTime();
-                              Get.to(CharacterScreen());
+                              Get.to(SpriteScreen());
 
                               // Get.to(
                               //   BlocProvider<HandSideBloc>.value(
@@ -669,7 +670,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   if (snapshot.data == null) {
                                     return Text(
                                       '0 ',
-                                      style: kNormalStyle,
+                                      style: NotemonTextStyle.kNormalStyle,
                                     );
                                   }
                                   if (snapshot.data.data == null) {
@@ -677,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         {"addStar": 0, "loseStar": 0});
                                     return Text(
                                       '0 ',
-                                      style: kNormalStyle,
+                                      style: NotemonTextStyle.kNormalStyle,
                                     );
                                   }
                                   Starpoint _starPoint =
@@ -687,7 +688,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         snapshot.data.data);
                                   return Text(
                                     '${_starPoint.star} ',
-                                    style: kNormalStyle,
+                                    style: NotemonTextStyle.kNormalStyle,
                                   );
                                 },
                               ),
@@ -708,12 +709,12 @@ class _HomeScreenState extends State<HomeScreen>
                 children: <Widget>[
                   Text(
                     getTimeNow(),
-                    style:
-                        kBigTitleStyle.copyWith(color: const Color(0xFF061058)),
+                    style: NotemonTextStyle.kBigTitleStyle
+                        .copyWith(color: const Color(0xFF061058)),
                   ),
                   Text(
                     '${DateFormat.yMMMEd(Get.locale.toString()).format(DateTime.now())}',
-                    style: kNormalStyle.copyWith(
+                    style: NotemonTextStyle.kNormalStyle.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -790,12 +791,12 @@ class _HomeScreenState extends State<HomeScreen>
                 physics: const BouncingScrollPhysics(),
                 addRepaintBoundaries: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: _pokemonStateList.length,
+                itemCount: _pokemonStateList.length - 1,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () async {
                       await compareTime();
-                      Get.to(CharacterScreen());
+                      Get.to(SpriteScreen());
 
                       // Get.to(
                       //   BlocProvider<HandSideBloc>.value(
@@ -882,7 +883,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             Text(
               'To-do list'.tr,
-              style: kTitleStyle,
+              style: NotemonTextStyle.kTitleStyle,
             ),
             _todoFilter(),
           ],
@@ -898,7 +899,7 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 Text(
                   shortPriorityList[_todoFilterMap['priority'].index].tr,
-                  style: kBigTitleStyle.copyWith(
+                  style: NotemonTextStyle.kBigTitleStyle.copyWith(
                     fontFamily: "Source_Sans_Pro",
                     fontSize: 18,
                     color: setPriorityColor(
@@ -1055,7 +1056,7 @@ class _HomeScreenState extends State<HomeScreen>
                 return Center(
                   child: Text(
                     'Empty to-do'.tr,
-                    style: kNormalStyle,
+                    style: NotemonTextStyle.kNormalStyle,
                   ),
                 );
               } else {
@@ -1074,7 +1075,7 @@ class _HomeScreenState extends State<HomeScreen>
             return Center(
               child: Text(
                 'Empty to-do'.tr,
-                style: kNormalStyle,
+                style: NotemonTextStyle.kNormalStyle,
               ),
             );
           },
@@ -1093,7 +1094,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             Text(
               'Task list'.tr,
-              style: kTitleStyle,
+              style: NotemonTextStyle.kTitleStyle,
             ),
             _taskFilter(),
           ],
@@ -1109,7 +1110,7 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 Text(
                   priorityList[_taskFilterMap['priority'].index].tr,
-                  style: kBigTitleStyle.copyWith(
+                  style: NotemonTextStyle.kBigTitleStyle.copyWith(
                     fontFamily: "Source_Sans_Pro",
                     fontSize: 18,
                     color: setPriorityColor(
@@ -1263,7 +1264,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Center(
               child: Text(
                 'Empty task'.tr,
-                style: kNormalStyle,
+                style: NotemonTextStyle.kNormalStyle,
               ),
             ),
           );
@@ -1275,7 +1276,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: Center(
                 child: Text(
                   'Empty task'.tr,
-                  style: kNormalStyle,
+                  style: NotemonTextStyle.kNormalStyle,
                 ),
               ),
             );
@@ -1295,7 +1296,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Center(
                   child: Text(
                     'Empty task'.tr,
-                    style: kNormalStyle,
+                    style: NotemonTextStyle.kNormalStyle,
                   ),
                 ),
               );
@@ -1390,7 +1391,7 @@ class _HomeScreenState extends State<HomeScreen>
                               return GestureDetector(
                                 onTap: () async {
                                   await compareTime();
-                                  Get.to(CharacterScreen());
+                                  Get.to(SpriteScreen());
                                   // Get.to(
                                   //   BlocProvider<HandSideBloc>.value(
                                   //     value: HandSideBloc(),
@@ -1418,7 +1419,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 onTap: () async {
                                   await compareTime();
 
-                                  Get.to(CharacterScreen());
+                                  Get.to(SpriteScreen());
                                   // Get.to(
                                   //   BlocProvider<HandSideBloc>.value(
                                   //     value: HandSideBloc(),
@@ -1458,11 +1459,11 @@ class _HomeScreenState extends State<HomeScreen>
                                       (BuildContext context, StarState state) {
                                     if (state is StarLoaded) {
                                       return Text('${state.currentStar} ',
-                                          style: kNormalStyle);
+                                          style: NotemonTextStyle.kNormalStyle);
                                     }
                                     return Text(
                                       '0 ',
-                                      style: kNormalStyle,
+                                      style: NotemonTextStyle.kNormalStyle,
                                     );
                                   },
                                 ),
@@ -1483,12 +1484,12 @@ class _HomeScreenState extends State<HomeScreen>
                   children: <Widget>[
                     Text(
                       getTimeNow(),
-                      style: kBigTitleStyle.copyWith(
-                          color: const Color(0xFF061058)),
+                      style: NotemonTextStyle.kBigTitleStyle
+                          .copyWith(color: const Color(0xFF061058)),
                     ),
                     Text(
                       '${DateFormat.yMMMEd().format(DateTime.now())}',
-                      style: kNormalStyle.copyWith(
+                      style: NotemonTextStyle.kNormalStyle.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -1538,15 +1539,13 @@ class _HomeScreenState extends State<HomeScreen>
                         onTap: () async {
                           await compareTime();
 
-                          Get.to(CharacterScreen());
-                          // Get.to(
-                          //   BlocProvider<HandSideBloc>.value(
-                          //     value: HandSideBloc(),
-                          //     child: AllPokemonScreen(
-                          //       currentPokemon: index,
-                          //     ),
-                          //   ),
-                          // );
+                          Get.to(SpriteScreen());
+                          Get.to(
+                            BlocProvider<HandSideBloc>.value(
+                              value: HandSideBloc(),
+                              child: AllPokemonScreen(currentPokemon: index),
+                            ),
+                          );
                         },
                         child: Container(
                           width: 56.2,
@@ -1627,7 +1626,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             Text(
               'To-do list'.tr,
-              style: kTitleStyle,
+              style: NotemonTextStyle.kTitleStyle,
             ),
             _todoFilter(),
           ],
@@ -1643,7 +1642,7 @@ class _HomeScreenState extends State<HomeScreen>
                 return Center(
                   child: Text(
                     'Empty to-do'.tr,
-                    style: kNormalStyle,
+                    style: NotemonTextStyle.kNormalStyle,
                   ),
                 );
               } else {
@@ -1657,7 +1656,7 @@ class _HomeScreenState extends State<HomeScreen>
                   return Center(
                     child: Text(
                       'Empty to-do'.tr,
-                      style: kNormalStyle,
+                      style: NotemonTextStyle.kNormalStyle,
                     ),
                   );
                 }
@@ -1676,7 +1675,7 @@ class _HomeScreenState extends State<HomeScreen>
             return Center(
               child: Text(
                 'Empty to-do'.tr,
-                style: kNormalStyle,
+                style: NotemonTextStyle.kNormalStyle,
               ),
             );
           },
@@ -1695,7 +1694,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: <Widget>[
             Text(
               'Task list'.tr,
-              style: kTitleStyle,
+              style: NotemonTextStyle.kTitleStyle,
             ),
             _taskFilter(),
           ],
@@ -1713,7 +1712,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Center(
                   child: Text(
                     'Empty task'.tr,
-                    style: kNormalStyle,
+                    style: NotemonTextStyle.kNormalStyle,
                   ),
                 ),
               );
@@ -1729,7 +1728,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Center(
                     child: Text(
                       'Empty task'.tr,
-                      style: kNormalStyle,
+                      style: NotemonTextStyle.kNormalStyle,
                     ),
                   ),
                 );
@@ -1800,7 +1799,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Center(
               child: Text(
                 'Empty task'.tr,
-                style: kNormalStyle,
+                style: NotemonTextStyle.kNormalStyle,
               ),
             ),
           );

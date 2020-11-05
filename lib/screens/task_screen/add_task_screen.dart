@@ -79,7 +79,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     ),
                     Text(
                       ' ${"Add Task".tr.capitalize}',
-                      style: kNormalStyle.copyWith(color: Colors.white),
+                      style: NotemonTextStyle.kNormalStyle
+                          .copyWith(color: Colors.white),
                     ),
                   ],
                 ),
@@ -172,7 +173,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             return Center(
               child: Text(
                 'Empty achieve.'.tr,
-                style: kNormalSmallStyle,
+                style: NotemonTextStyle.kNormalSmallStyle,
               ),
             );
           }
@@ -180,7 +181,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             return Center(
               child: Text(
                 'Empty achieve.'.tr,
-                style: kNormalSmallStyle,
+                style: NotemonTextStyle.kNormalSmallStyle,
               ),
             );
           }
@@ -217,11 +218,12 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                     vertical: 5,
                   ),
                   labelText: 'Add achievement'.tr,
-                  labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+                  labelStyle: NotemonTextStyle.kNormalStyle
+                      .copyWith(color: Colors.grey),
                   border: InputBorder.none,
                 ),
                 controller: _achieveTextController,
-                style: kNormalStyle.copyWith(
+                style: NotemonTextStyle.kNormalStyle.copyWith(
                   fontFamily: "Source_Sans_Pro",
                 ),
               ),
@@ -263,7 +265,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 10),
       child: Text(
         title.tr,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -282,7 +284,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(10),
           labelText: 'Task name'.tr,
-          labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+          labelStyle:
+              NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey),
           border: InputBorder.none,
         ),
         controller: _taskNameTextController,
@@ -330,7 +333,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         child: Center(
           child: Text(
             priorityList[value].tr,
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value]),
@@ -467,7 +470,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                 ),
                 Text(
                   'Please fill in the blank.'.tr,
-                  style: kTitleStyle,
+                  style: NotemonTextStyle.kTitleStyle,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -487,7 +490,8 @@ class _AddTaskScreenState extends State<AddTaskScreen>
                       child: Center(
                         child: Text(
                           'Cancel'.tr,
-                          style: kTitleStyle.copyWith(color: Colors.white),
+                          style: NotemonTextStyle.kTitleStyle
+                              .copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -522,7 +526,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
             children: <Widget>[
               Text(
                 StringFormatter.format(snapshot.data[index]),
-                style: kNormalSuperSmallStyle,
+                style: NotemonTextStyle.kNormalSuperSmallStyle,
               ),
               GestureDetector(
                 child: Icon(

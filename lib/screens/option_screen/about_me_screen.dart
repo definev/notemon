@@ -38,8 +38,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
       appBar: AppBar(
         title: Text(
           'About this app'.tr,
-          style: kTitleStyle.copyWith(
-              fontFamily: 'Montserrat', color: Colors.white),
+          style: NotemonTextStyle.kTitleStyle
+              .copyWith(fontFamily: 'Montserrat', color: Colors.white),
         ),
         actions: <Widget>[
           IconButton(
@@ -76,7 +76,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                       ),
                       Text(
                         'Contact me'.tr,
-                        style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
+                        style: NotemonTextStyle.kTitleStyle
+                            .copyWith(fontFamily: 'Montserrat'),
                       ),
                       SizedBox(
                         height: 5,
@@ -98,8 +99,7 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                   }
                                   Clipboard.setData(
                                     ClipboardData(
-                                      text: 'big.plus.uwu@gmail.com',
-                                    ),
+                                        text: 'big.plus.uwu@gmail.com'),
                                   );
                                   if (_isCheckGmail == true)
                                     Scaffold.of(context).showSnackBar(
@@ -142,7 +142,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                                             Center(
                                               child: Text(
                                                 'big.plus.uwu@gmail.com',
-                                                style: kNormalStyle,
+                                                style: NotemonTextStyle
+                                                    .kNormalStyle,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             )
@@ -242,7 +243,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
                       ),
                       Text(
                         'Lisence',
-                        style: kTitleStyle.copyWith(fontFamily: 'Montserrat'),
+                        style: NotemonTextStyle.kTitleStyle
+                            .copyWith(fontFamily: 'Montserrat'),
                       ),
                       SizedBox(
                         height: 5,
@@ -252,7 +254,8 @@ class _AboutMeScreenState extends State<AboutMeScreen>
 © 2020 Pokémon. © 1995–2020 Nintendo/Creatures Inc./GAME FREAK inc. Pokémon, Pokémon character names, Nintendo Switch, Nintendo 3DS, Nintendo DS, Wii, Wii U, and WiiWare are trademarks of Nintendo. The YouTube logo is a trademark of Google Inc. Other trademarks are the property of their respective owners.
 
 Distribution in any form and any channels now known or in the future of derivative works based on the copyrighted property trademarks, service marks, trade names and other proprietary property (Fan Art) of The Pokémon Company International, Inc., its affiliates and licensors (Pokémon) constitutes a royalty-free, non-exclusive, irrevocable, transferable, sub-licensable, worldwide license from the Fan Art's creator to Pokémon to use, transmit, copy, modify, and display Fan Art (and its derivatives) for any purpose. No further consideration or compensation of any kind will be given for any Fan Art. Fan Art creator gives up any claims that the use of the Fan Art violates any of their rights, including moral rights, privacy rights, proprietary rights publicity rights, rights to credit for material or ideas or any other right, including the right to approve the way such material is used. In no uncertain terms, does Pokémon's use of Fan Art constitute a grant to Fan Art's creator to use the Pokémon intellectual property or Fan Art beyond a personal, noncommercial home use.''',
-                        style: kTinySmallStyle.copyWith(fontSize: 9),
+                        style: NotemonTextStyle.kTinySmallStyle
+                            .copyWith(fontSize: 9),
                       ),
                       SizedBox(height: 10),
                     ],

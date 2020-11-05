@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:gottask/bloc/bloc.dart';
 import 'package:gottask/database/todo_table.dart';
 import 'package:gottask/models/model.dart';
 
 import 'dart:async';
+
+import 'package:gottask/models/sprite.dart';
+import 'package:gottask/models/sprite_store.dart';
 
 class FirebaseMethods {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -424,5 +428,60 @@ class FirebaseMethods {
           starMap,
           merge: true,
         );
+  }
+
+  Future<void> setSprite(Sprite sprite) async {
+    await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('sprite')
+        .document('sprite')
+        .setData(sprite.toJson());
+  }
+
+  Future<Sprite> getSprite() async {
+    DocumentSnapshot snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('sprite')
+        .document('sprite')
+        .get();
+    if (snapshot.data != null) {
+      return Sprite.fromJson(snapshot.data);
+    } else {
+      Sprite sprite = Sprite(
+        name: user.displayName,
+        component: Component.defaultComponent,
+        backgroundColor: Colors.amber.toHex(),
+      );
+      setSprite(sprite);
+
+      return sprite;
+    }
+  }
+
+  Future<void> setStore(SpriteStore store) async {
+    await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('store')
+        .document('store')
+        .setData(store.toJson());
+  }
+
+  Future<SpriteStore> getStore() async {
+    DocumentSnapshot snapshot = await _firestore
+        .collection('databases')
+        .document(user.uid)
+        .collection('store')
+        .document('store')
+        .get();
+    if (snapshot.data != null) {
+      return SpriteStore.fromJson(snapshot.data);
+    } else {
+      SpriteStore store = SpriteStore.defaultStore;
+      setStore(store);
+      return store;
+    }
   }
 }

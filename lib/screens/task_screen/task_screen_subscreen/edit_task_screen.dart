@@ -23,7 +23,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
       padding: const EdgeInsets.only(left: 3, bottom: 5, top: 2),
       child: Text(
         title.tr,
-        style: kNormalStyle.copyWith(color: Colors.grey[600]),
+        style: NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey[600]),
       ),
     );
   }
@@ -42,7 +42,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             labelText: 'Task name'.tr,
-            labelStyle: kNormalStyle.copyWith(color: Colors.grey),
+            labelStyle:
+                NotemonTextStyle.kNormalStyle.copyWith(color: Colors.grey),
             focusColor: TodoColors.lightOrange,
             border: InputBorder.none,
           ),
@@ -76,7 +77,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
                 ),
                 Text(
                   ' ${"Edit task".tr}',
-                  style: kNormalStyle.copyWith(color: Colors.white),
+                  style: NotemonTextStyle.kNormalStyle
+                      .copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -193,7 +195,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> with FilterMixin {
         child: Center(
           child: Text(
             priorityList[value],
-            style: kNormalStyle.copyWith(
+            style: NotemonTextStyle.kNormalStyle.copyWith(
               color: _priority == PriorityState.values[value]
                   ? TodoColors.scaffoldWhite
                   : setPriorityColor(priorityList[value]),

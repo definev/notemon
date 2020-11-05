@@ -51,6 +51,7 @@ dependencies:
   hive_flutter:
   zefyr: ^0.12.0
   image: ^2.1.18
+  diacritic: ^0.1.1
 
 flutter_icons:
   android: true
@@ -111,16 +112,23 @@ flutter:
     - assets/characters/Skin/rare/
     - assets/characters/Skin/superrare/
     - assets/characters/Skin/trivial/
-    - assets/characters/Skin/rare/
     - assets/characters/Shadow/
-    - assets/characters/Hair_Men/
-    - assets/characters/Hair_Men_Tail/
-    - assets/characters/Hair_Women/
-    - assets/characters/Hair_Women_Tail/
+    - assets/characters/Hair/trivial/
+    - assets/characters/Hair/rare/
+    - assets/characters/Hair/superrare/
+    - assets/characters/Hair_Tail/trivial/
+    - assets/characters/Hair_Tail/rare/
+    - assets/characters/Hair_Tail/superrare/
   fonts:
     - family: Alata
       fonts:
         - asset: assets/fonts/Alata/Alata-Regular.ttf
+    # - family: FVF-Fernando
+    #   fonts:
+    #     - asset: assets/fonts/FVF-Fernando/FVF-Fernando.ttf
+    - family: Pixel
+      fonts:
+        - asset: assets/fonts/Pixel/Pixel.ttf
     - family: ABeeZee
       fonts:
         - asset: assets/fonts/ABeeZee/ABeeZee-Regular.ttf
